@@ -1,20 +1,20 @@
 <template>
   <v-app>
     <v-main>
-      <HomePage/>
+      <OfferRide/>
     </v-main>
   </v-app>
 </template>
 
 <script>
 
-import HomePage from './components/HomePage.vue';
+import OfferRide from './components/OfferRide.vue';
 
 export default {
   name: 'App',
 
   components: {
-    HomePage
+    OfferRide
   },
 
   data: () => ({
