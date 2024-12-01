@@ -41,7 +41,7 @@
   <v-container>
     <v-row justify=center>
       <v-col cols="12" md="4" sm="6">
-              <v-btn rounded="lg" size="x-large"  height="200" color="#008557" href="https://github.com/vuetifyjs/vuetify-loader/tree/next" block>Ich suche eine Fahrt</v-btn> 
+              <v-btn rounded="lg" size="x-large"  height="200" color="#008557" href="BookRide.vue" block>Ich suche eine Fahrt</v-btn> 
       </v-col>
 
       <v-col cols="12" md="4" sm="6">
@@ -93,20 +93,7 @@ export default {
       },
     ],
 
-    whatsNext: [
-      {
-        text: 'Explore components',
-        href: 'https://vuetifyjs.com',
-      },
-      {
-        text: 'Roadmap',
-        href: 'https://vuetifyjs.com/introduction/roadmap/',
-      },
-      {
-        text: 'Frequently Asked Questions',
-        href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-      },
-    ],
+    
   }),
 
 watch: {
