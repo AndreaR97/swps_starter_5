@@ -23,95 +23,50 @@
       <v-list :items="items"></v-list>
     </v-navigation-drawer>
 
-    <v-container fluid class="d-flex align-center justify-center" style="height: 100vh;">
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-textarea
-            label="Start"
-            row-height="15"
-            rows="2"
-            variant="outlined"
-            auto-grow
-            class="mb-4 text-field"
-            v-model="startText"
-          ></v-textarea>
-        </v-col>
-        <v-col cols="12" md="6">
-          <div></div> 
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-textarea
-            label="Ziel"
-            row-height="15"
-            rows="2"
-            variant="outlined"
-            auto-grow
-            class="mb-4 text-field"
-            v-model="zielText"
-          ></v-textarea>
-        </v-col>
-        <v-col cols="12" md="6">
-          <div></div> 
-        </v-col>
-        <v-col cols="12" md="3">
-          <v-text-field
-            label="Uhrzeit"
-            variant="outlined"
-            class="mb-4 text-field"
-            v-model="time"
-            :rules="[timeRule]"
-            placeholder="HH:MM"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="6" md="3">
-          <v-text-field
-            label="Datum"
-            variant="outlined"
-            class="mb-4 text-field"
-            v-model="date"
-            :rules="[dateRule]"
-            placeholder="YYYY-MM-DD"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" md="6">
-          <div></div> 
-        </v-col>
-        <v-col cols="9" md="2">
-          <v-select
-            :items="[1, 2, 3, 4, 5, 6, 7, 8, 9]"
-            label="Sitzplätze"
-            variant="outlined"
-            class="mb-4 text-field"
-          ></v-select>
-        </v-col>
-        <v-col cols="3" md="4"></v-col>
-      </v-row>
-    </v-container>
-
-    
-    <v-btn
-      absolute
-      bottom
-      left
-      color="#009260"
-      class="swap-button"
-      @click="swapStartAndZiel"
-    >
-      Tausche Start & Ziel
-    </v-btn>
-
-    
-    <v-btn
-      fixed
-      bottom
-      right
-      color="#009260"
-      class="weiter-button"
-      @click="navigateToHome"
-    >
-      Weiter
-    </v-btn>
-    <div id="map" class="independent-map"></div>
+    <div class="map-container">
+      <div id="map" class="independent-map"></div>
+      <v-text-field
+        v-model="startLocation"
+        label="Start der Route"
+        outlined
+        class="Startlocation"
+      ></v-text-field>
+      <v-text-field
+        v-model="endLocation"
+        label="Ziel der Route"
+        outlined
+        class="Endlocation"
+      ></v-text-field>
+      <v-text-field
+        v-model="date"
+        label="Datum"
+        outlined
+        class="Date"
+        type="date"
+        :rules="[dateRule]"
+      ></v-text-field>
+      <v-text-field
+        v-model="time"
+        label="Uhrzeit"
+        outlined
+        class="Time"
+        type="time"
+      ></v-text-field>
+      <v-text-field
+        v-model="freeSeats"
+        label="Freie Plätze"
+        outlined
+        class="Freeseats"
+        type="number"
+        :rules="[freeSeatsRule]"
+      ></v-text-field>
+      <v-btn
+        color="#009260"
+        class="Submitbutton"
+      >
+        Anbieten
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -122,32 +77,33 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 export default {
-  setup() {
-
-    const navigateToHome = () => {
-
-    };
-
-    return { navigateToHome };
-  },
   data() {
     return {
       drawer: false,
-      step: 1,
-      items: ["Anfrage", "Bestätigung"],
-      map: null, 
-      time: "",
-      date: "",
-      startText: "", 
-      zielText: "", 
+      items: [
+        { title: 'Foo', value: 'foo' },
+        { title: 'Bar', value: 'bar' },
+      ],
+      map: null,
+      startLocation: '',
+      endLocation: '',
+      date: '',
+      time: '',
+      freeSeats: '',
+      dateRule: value => {
+        const today = new Date();
+        const maxDate = new Date();
+        maxDate.setDate(today.getDate() + 28); // das datum muss in den näschten 4 wochen liegen
+        const selectedDate = new Date(value);
+        return selectedDate >= today && selectedDate <= maxDate || 'Datum muss innerhalb der nächsten 4 Wochen liegen';
+      },
+      freeSeatsRule: value => {
+        const number = parseInt(value, 10);
+        return number >= 1 && number <= 9 || 'Freie Plätze müssen eine ganze Zahl zwischen 1 und 9 sein';
+      },
     };
   },
   methods: {
-    swapStartAndZiel() {
-      const temp = this.startText;
-      this.startText = this.zielText;
-      this.zielText = temp;
-    },
     initMap() {
       const uniBayreuthCoords = [49.928809, 11.585835];
       this.map = L.map("map").setView(uniBayreuthCoords, 15);
@@ -166,25 +122,7 @@ export default {
       });
       L.Marker.prototype.options.icon = defaultIcon;
 
-      L.marker(uniBayreuthCoords).addTo(this.map).bindPopup("Universität Bayreuth").openPopup();
-    },
-    timeRule(value) {
-      const timePattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
-      return timePattern.test(value) || "Ungültige Uhrzeit. Format: HH:MM";
-    },
-    dateRule(value) {
-      const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-      if (!datePattern.test(value)) {
-        return "Ungültiges Datum. Format: YYYY-MM-DD";
-      }
-      const inputDate = new Date(value);
-      const today = new Date();
-      const fourWeeksFromNow = new Date();
-      fourWeeksFromNow.setDate(today.getDate() + 28);
-      return (
-        (inputDate >= today && inputDate <= fourWeeksFromNow) ||
-        "Datum muss innerhalb der nächsten 4 Wochen liegen"
-      );
+      L.marker(uniBayreuthCoords).addTo(this.map);
     },
   },
   mounted() {
@@ -194,32 +132,84 @@ export default {
 </script>
 
 <style scoped>
-.mb-4 {
-  margin-bottom: 16px;
-}
-.text-field {
-  margin-left: 16px;
-  margin-right: 50px;
-}
-.swap-button {
-  position: absolute;
-  bottom: 620px;
-  right: 1015px;
-  z-index: 5000;
-}
-.weiter-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 5000;
+.map-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: calc(100vh - 64px); /* damit man nicht scrollen kann */
+  padding-right: 100px;
 }
 .independent-map {
-  position: absolute;
-  top: 200px;
-  left: 1000px;
   width: 800px;
   height: 600px;
-  border: 1px solid hwb(0 0% 100%);
+  border-radius: 15px;
   z-index: 500;
+}
+
+.Startlocation {
+  position: absolute;
+  top: 200px; 
+  left: 100px; 
+  width: 700px; 
+  height: 150px; 
+  z-index: 1000;
+  font-family: 'Minion Pro Italic'; ;
+  font-size: 30px; 
+}
+
+.Endlocation {
+  position: absolute;
+  top: 350px; 
+  left: 100px; 
+  width: 700px; 
+  height: 150px; 
+  z-index: 1000;
+  font-family: 'Minion Pro Italic'; ;
+  font-size: 30px; 
+}
+
+.Date {
+  position: absolute;
+  top: 500px; 
+  left: 100px; 
+  width: 275px; 
+  height: 150px; 
+  z-index: 1000;
+  font-family: 'Minion Pro Italic'; ;
+  font-size: 30px; 
+}
+
+.Time {
+  position: absolute;
+  top: 500px; 
+  left: 525px; 
+  width: 275px; 
+  height: 150px; 
+  z-index: 1000;
+  font-family: 'Minion Pro Italic'; ;
+  font-size: 30px; 
+}
+
+.Freeseats {
+  position: absolute;
+  top: 650px; 
+  left: 100px; 
+  width: 250px; 
+  height: 150px; 
+  z-index: 1000;
+  font-family: 'Minion Pro Italic'; ;
+  font-size: 30px; 
+}
+
+.Submitbutton {
+  position: absolute;
+  top: 650px; 
+  left: 500px; 
+  width: 300px;
+  height: 100px;
+  z-index: 1000;
+  font-family: 'Minion Pro Italic';
+  font-size: 20px;
+  color: #48535A;
 }
 </style>
