@@ -37,6 +37,9 @@
         outlined
         class="Endlocation"
       ></v-text-field>
+      <v-btn icon @click="swapLocations" class="SwapButton">
+        <v-icon>mdi-swap-horizontal</v-icon>
+      </v-btn>
       <v-text-field
         v-model="date"
         label="Datum"
@@ -124,6 +127,11 @@ export default {
 
       L.marker(uniBayreuthCoords).addTo(this.map);
     },
+    swapLocations() {
+      const temp = this.startLocation;
+      this.startLocation = this.endLocation;
+      this.endLocation = temp;
+    },
   },
   mounted() {
     this.initMap();
@@ -154,7 +162,7 @@ export default {
   height: 150px; 
   z-index: 1000;
   font-family: 'Minion Pro Italic'; ;
-  font-size: 30px; 
+  font-size: 30px; /* schriftgröße ändern geht irgendwie nicht :/ */
 }
 
 .Endlocation {
@@ -211,5 +219,14 @@ export default {
   font-family: 'Minion Pro Italic';
   font-size: 20px;
   color: #48535A;
+}
+
+.SwapButton {
+  position: absolute;
+  top: 280px;
+  left: 650px;
+  z-index: 1000;
+  width: 80px;
+  height: 80px;
 }
 </style>
