@@ -41,24 +41,15 @@
   <v-container>
     <v-row justify=center>
       <v-col cols="12" md="4" sm="6">
-              <v-btn rounded="lg" size="x-large"  height="200" color="#008557" href="BookRide.vue" block>Ich suche eine Fahrt</v-btn> 
+              <v-btn rounded="lg" size="x-large"  height="200" color="#008557" @click="$router.push('/bookride')" block>Ich suche eine Fahrt</v-btn> 
       </v-col>
 
       <v-col cols="12" md="4" sm="6">
-              <v-btn rounded="lg" size="x-large"  height="200" color="#008557" href="https://github.com/vuetifyjs/vuetify-loader/tree/next" block>Ich biete eine Fahrt</v-btn>
+        <v-btn rounded="lg" size="x-large"  height="200" color="#008557" @click="$router.push('/offerride')" block>Ich biete eine Fahrt</v-btn>
       </v-col>
      </v-row>
       
      <v-row justify=center>
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
         </v-row>
   </v-container>
 </template>
@@ -81,18 +72,6 @@ export default {
         value: 'bar',
       }
     ],
-
-    ecosystem: [
-      {
-        text: 'Ich biete eine Fahrt',
-        href: 'https://github.com/vuetifyjs/vuetify-loader/tree/next',
-      },
-      {
-        text: 'Ich suche eine Fahrt',
-        href: 'https://github.com/vuetifyjs/vuetify/tree/next',
-      },
-    ],
-
     
   }),
 
