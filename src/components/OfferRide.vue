@@ -157,7 +157,7 @@ export default {
 
 .Startlocation {
   position: absolute;
-  top: 240px; /* moved 10px down */
+  top: 240px; 
   left: 100px; 
   width: 700px; 
   height: 150px; 
@@ -168,7 +168,7 @@ export default {
 
 .Endlocation {
   position: absolute;
-  top: 390px; /* moved 10px down */
+  top: 390px; 
   left: 100px; 
   width: 700px; 
   height: 150px; 
@@ -179,7 +179,7 @@ export default {
 
 .Date {
   position: absolute;
-  top: 540px; /* moved 10px down */
+  top: 540px; 
   left: 100px; 
   width: 275px; 
   height: 150px; 
@@ -190,7 +190,7 @@ export default {
 
 .Time {
   position: absolute;
-  top: 540px; /* moved 10px down */
+  top: 540px; 
   left: 525px; 
   width: 275px; 
   height: 150px; 
@@ -201,7 +201,7 @@ export default {
 
 .Freeseats {
   position: absolute;
-  top: 690px; /* moved 10px down */
+  top: 690px; 
   left: 100px; 
   width: 250px; 
   height: 150px; 
@@ -212,7 +212,7 @@ export default {
 
 .Submitbutton {
   position: absolute;
-  top: 690px; /* moved 10px down */
+  top: 690px; 
   left: 500px; 
   width: 300px;
   height: 100px;
@@ -224,7 +224,7 @@ export default {
 
 .SwapButton {
   position: absolute;
-  top: 320px; /* moved 10px down */
+  top: 320px; 
   left: 650px;
   z-index: 1000;
   width: 80px;
