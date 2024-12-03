@@ -8,7 +8,7 @@
         <v-icon>mdi-message-text</v-icon>
       </v-btn>
       <v-btn icon>
-        <v-icon>mdi-account</v-icon>
+        <v-icon @click="$router.push('/loginpage')">mdi-account</v-icon>
       </v-btn>
       <v-btn icon>
         <v-icon>mdi-logout</v-icon>
