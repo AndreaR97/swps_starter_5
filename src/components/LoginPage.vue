@@ -6,7 +6,7 @@
       <h1 class="title">Anmelden</h1>
       <input type="text" placeholder="jemand@example.com" class="name" />
       <input type="password" placeholder="Kennwort" class="passwort" />
-      <button class="loginbutton">Anmelden</button>
+      <button @click="$router.push('/profilepage')" class="loginbutton">Anmelden</button>
       <p class="subtitle">
         Melden Sie sich mit Ihrer persönlichen <span class="highlight">Benutzerkennung@myubt.de</span> an.<br> <br>
         Log in with your personal<br>
