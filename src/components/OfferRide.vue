@@ -66,6 +66,7 @@
       <v-btn
         color="#009260"
         class="Submitbutton"
+        @click="$router.push('/HomePage')"
       >
         Anbieten
       </v-btn>
@@ -156,7 +157,7 @@ export default {
 
 .Startlocation {
   position: absolute;
-  top: 200px; 
+  top: 240px; /* moved 10px down */
   left: 100px; 
   width: 700px; 
   height: 150px; 
@@ -167,7 +168,7 @@ export default {
 
 .Endlocation {
   position: absolute;
-  top: 350px; 
+  top: 390px; /* moved 10px down */
   left: 100px; 
   width: 700px; 
   height: 150px; 
@@ -178,7 +179,7 @@ export default {
 
 .Date {
   position: absolute;
-  top: 500px; 
+  top: 540px; /* moved 10px down */
   left: 100px; 
   width: 275px; 
   height: 150px; 
@@ -189,7 +190,7 @@ export default {
 
 .Time {
   position: absolute;
-  top: 500px; 
+  top: 540px; /* moved 10px down */
   left: 525px; 
   width: 275px; 
   height: 150px; 
@@ -200,7 +201,7 @@ export default {
 
 .Freeseats {
   position: absolute;
-  top: 650px; 
+  top: 690px; /* moved 10px down */
   left: 100px; 
   width: 250px; 
   height: 150px; 
@@ -211,7 +212,7 @@ export default {
 
 .Submitbutton {
   position: absolute;
-  top: 650px; 
+  top: 690px; /* moved 10px down */
   left: 500px; 
   width: 300px;
   height: 100px;
@@ -223,7 +224,7 @@ export default {
 
 .SwapButton {
   position: absolute;
-  top: 280px;
+  top: 320px; /* moved 10px down */
   left: 650px;
   z-index: 1000;
   width: 80px;
