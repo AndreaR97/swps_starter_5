@@ -155,6 +155,17 @@ export default {
   z-index: 500;
 }
 
+.v-text-field >>> input {
+    font-size: 1.4em;
+    font-weight: 100;
+    text-transform: capitalize;
+}
+
+.v-text-field >>> label{
+    font-size: 1.1em;
+    font-weight: 100;
+}
+
 .Startlocation {
   position: absolute;
   top: 240px; 
@@ -162,7 +173,7 @@ export default {
   width: 700px; 
   height: 150px; 
   z-index: 1000;
-  font-family: 'Minion Pro Italic'; ;
+  font-family: 'Minion Pro Italic';
   font-size: 30px; /* schriftgröße ändern geht irgendwie nicht :/ */
 }
 
