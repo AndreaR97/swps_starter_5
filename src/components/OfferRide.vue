@@ -140,7 +140,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .map-container {
   display: flex;
   justify-content: flex-end;
@@ -155,13 +155,13 @@ export default {
   z-index: 500;
 }
 
-.v-text-field >>> input {
+.v-text-field input {
     font-size: 1.4em;
     font-weight: 100;
     text-transform: capitalize;
 }
 
-.v-text-field >>> label{
+.v-text-field label{
     font-size: 1.1em;
     font-weight: 100;
 }
