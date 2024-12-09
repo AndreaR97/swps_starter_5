@@ -13,7 +13,7 @@
         <v-icon @click="$router.push('/loginpage')">mdi-account</v-icon>
       </v-btn>
       <v-btn icon>
-        <v-icon>mdi-logout</v-icon>
+        <v-icon @click="$router.push('/testpage')">mdi-logout</v-icon>
       </v-btn>
     </v-app-bar>
 
@@ -86,6 +86,7 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
+  z-index: 1; /* Ensure it does not cover other components */
 }
 
 .profilebackground {
