@@ -1,18 +1,32 @@
 <template>
   <div class="container">
-    <input type="text" class="centered-textfield" />
-    <button class="centered-button">Submit</button>
+    <input type="text" v-model="inputValue" class="centered-textfield" placeholder="Enter text" />
+    <button class="centered-button" @click="submitData">Submit</button>
   </div>
 </template>
 
 <script>
+import { supabase } from '../lib/supabaseClient';
+
 export default {
   name: 'TestPage',
   data() {
     return {
+      inputValue: '', // Eingabewert
     };
-  }
-}
+  },
+  methods: {
+    async submitData() {
+      // Einfügen der Daten in die Datenbank
+      await supabase
+        .from('test_table') // Tabellenname
+        .insert([{ eingabe: this.inputValue }]); // Spalte und Wert
+
+      // Eingabewert zurücksetzen
+      this.inputValue = '';
+    },
+  },
+};
 </script>
 
 <style>
@@ -21,7 +35,6 @@ export default {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  z-index: 0;
   background-color: green;
 }
 
@@ -29,7 +42,6 @@ export default {
   width: 200px;
   height: 50px;
   font-size: 20px;
-  z-index: 1000;
   text-align: center;
   background-color: white;
 }
@@ -39,7 +51,6 @@ export default {
   width: 100px;
   height: 40px;
   font-size: 16px;
-  z-index: 1000;
   text-align: center;
   background-color: white;
 }
