@@ -178,6 +178,27 @@
       </v-stepper-content>
     </div>
     
+    <div v-if="step === 3"> 
+      <v-stepper-content step="4">
+        <v-stepper-window>
+
+      <v-container align="center" justify = center>
+        <h2>Diese Fahrt jetzt buchen?</h2>
+      </v-container>
+
+      <v-card-actions>
+        <v-row align="center" justify="center">
+          <v-col cols="auto">
+              <v-btn variant="tonal" rounded="sm" density="default" size="large" color="#008557" @click="dialog = !dialog; overlay = !overlay"  block>Ja</v-btn> 
+          </v-col>
+          <v-col cols="auto">
+              <v-btn rounded="sm" density="default" size="large" color="#008557" @click="$router.push('/homepage')" block>Abbrechen</v-btn>
+          </v-col>
+        </v-row>
+      </v-card-actions>
+      </v-stepper-window>
+      </v-stepper-content>
+    </div>
 
   </v-stepper-items>
 
@@ -186,7 +207,60 @@
    @click:next="setStep(this.step+1)"
    ></v-stepper-actions>
 </v-stepper>
+
+
+<v-fade-transition hide-on-leave> 
+  <v-overlay v-model="overlay">
+    <div class = "centered-container">
+      <v-card 
+        v-if="dialog"
+        elevation="16"
+        class="text-center"
+        width="600"
+      >
+
+        <v-divider></v-divider>
+
+        <div class="py-12 text-center">
+          <v-icon
+          class="icon-container"
+            color="#009260"
+            icon="mdi-check-circle-outline"
+            size="128"
+          ></v-icon>
+
+          <div> 
+            <h3>Deine Fahrt wurde gebucht!</h3>
+            <p>Du wirst nun weitergeleitet.</p>
+        </div>
+        </div>
+
+        <v-divider></v-divider>
+
+        <div class="pa-4 text-end">
+          <v-btn
+            class="text-none"
+            color="medium-emphasis"
+            min-width="92"
+            variant="outlined"
+            @click="dialog = false; overlay = false; $router.push('/profilepage') "
+          >
+            OK
+          </v-btn>
+        </div>
+      </v-card>
+    </div>
+    </v-overlay>
+    </v-fade-transition>
+
 </template>
+
+<script setup>
+import { ref } from 'vue'
+
+const dialog = ref(false) //dient dem Öffnen und Schließen des Popup-Dialogs
+const overlay = ref(false)  //dient dem Overlay für den Popup-Dialog
+</script>
 
 <script>
 import L from "leaflet";
@@ -373,6 +447,41 @@ export default {
   z-index: 1000;
   width: 80px;
   height: 80px;
+}
+
+/* Container für Bestätigung */
+.centered-container { 
+    display: flex;
+    justify-content: center; 
+    position: fixed; 
+    width: 100vw;
+    top: 3em;
+  }
+  .icon-container { animation: fadeIn 0.4s;	}
+
+  /*Icon animation */
+  @keyframes fadeIn {
+   0% {
+		transform: translateX(0) scale(0);
+
+		opacity: 0;
+  }
+  45% {
+		transform: translate(0)
+		scale(1.3);
+
+		opacity: 1;
+	}
+  75% {
+		transform: translate(0)
+		scale(.9);
+	}
+  100% {
+		transform: translateX(0) scale(1,1);
+
+		opacity: 1;
+  }
+
 }
 
 </style>
