@@ -178,6 +178,27 @@
       </v-stepper-content>
     </div>
     
+    <div v-if="step === 3"> 
+  <v-stepper-content step="4">
+    <v-stepper-window>
+
+  <v-container align="center" justify = center>
+    <h2>Diese Fahrt jetzt buchen?</h2>
+  </v-container>
+
+  <v-card-actions>
+    <v-row align="center" justify="center">
+      <v-col cols="auto">
+          <v-btn variant="tonal" rounded="sm" density="default" size="large" color="#008557" @click="dialog = !dialog; overlay = !overlay"  block>Ja</v-btn> 
+      </v-col>
+      <v-col cols="auto">
+          <v-btn rounded="sm" density="default" size="large" color="#008557" @click="$router.push('/homepage')" block>Abbrechen</v-btn>
+      </v-col>
+    </v-row>
+  </v-card-actions>
+  </v-stepper-window>
+  </v-stepper-content>
+</div>
 
   </v-stepper-items>
 
@@ -191,15 +212,12 @@
 <v-fade-transition hide-on-leave> 
   <v-overlay v-model="overlay">
     <div class = "centered-container">
-      <v-card 
-        v-if="dialog"
-        elevation="16"
-        class="text-center"
-        width="600"
+      <v-dialog
+      v-model="dialog"
+      max-width="600"
+      persistent
       >
-
-        <v-divider></v-divider>
-
+      <v-card>
         <div class="py-12 text-center">
           <v-icon
           class="icon-container"
@@ -222,12 +240,13 @@
             color="medium-emphasis"
             min-width="92"
             variant="outlined"
-            @click="dialog = false; overlay = false; $router.push('/profilepage') "
+            @click="$router.push('/profilepage') "
           >
             OK
           </v-btn>
         </div>
       </v-card>
+      </v-dialog>
     </div>
     </v-overlay>
     </v-fade-transition>
@@ -428,6 +447,30 @@ export default {
   height: 80px;
 }
 
+.icon-container { animation: fadeIn 0.4s;	}
+
+/*Icon animation */
+@keyframes fadeIn {
+0% {
+transform: translateX(0) scale(0);
+
+opacity: 0;
+}
+45% {
+transform: translate(0)
+scale(1.3);
+
+opacity: 1;
+}
+75% {
+transform: translate(0)
+scale(.9);
+}
+100% {
+transform: translateX(0) scale(1,1);
+
+opacity: 1;
+}
+}
+
 </style>
-
-
