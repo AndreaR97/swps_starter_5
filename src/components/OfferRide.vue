@@ -1,4 +1,269 @@
 <template>
+  <div class="container1">
+    <!-- Navigation Bar -->
+    <v-app-bar density="compact" class="navbar">
+      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Title</v-toolbar-title>
+      <v-spacer></v-spacer>
+    </v-app-bar>
+
+    <!-- Navigation Drawer -->
+    <v-navigation-drawer
+      v-model="drawer"
+      :location="$vuetify.display.mobile ? 'bottom' : undefined"
+      temporary
+    >
+      <v-list :items="items"></v-list>
+    </v-navigation-drawer>
+
+    <!-- 4 Rows mit jeweils 25% der Containerhöhe -->
+    <!-- Row 1: Start der Route -->
+    <div class="row">
+      <div class="col">
+        <v-text-field
+          v-model="startLocation"
+          label="Start der Route"
+          outlined
+          class="location-field"
+        ></v-text-field>
+      </div>
+      <div class="col"></div> <!-- Leere Spalte für die rechte Seite -->
+    </div>
+
+    <!-- Row 2: Ziel der Route und Karte -->
+    <div class="row">
+      <div class="col">
+        <v-text-field
+          v-model="endLocation"
+          label="Ziel der Route"
+          outlined
+          class="location-field"
+        ></v-text-field>
+      </div>
+      <div class="col">
+        <div id="map" class="independent-map"></div> <!-- Karte -->
+      </div>
+    </div>
+
+    <!-- Row 3: Datum und Uhrzeit -->
+    <div class="row">
+      <div class="col">
+        <v-text-field
+          v-model="date"
+          label="Datum"
+          outlined
+          class="datetime-field"
+          type="date"
+        ></v-text-field>
+        <v-text-field
+          v-model="time"
+          label="Uhrzeit"
+          outlined
+          class="datetime-field"
+          type="time"
+        ></v-text-field>
+      </div>
+      <div class="col"></div> <!-- Leere Spalte für die rechte Seite -->
+    </div>
+
+    <!-- Row 4: Sitzplätze und Bestätigen (Button zusammen mit den Sitzplätzen) -->
+    <div class="row">
+      <div class="col">
+        <div class="seats-and-submit">
+          <v-text-field
+            v-model="freeSeats"
+            label="Freie Plätze"
+            outlined
+            class="seats-field"
+            type="number"
+          ></v-text-field>
+          <v-btn
+            color="#009260"
+            class="Submitbutton"
+            @click="$router.push('/HomePage')"
+          >
+            Anbieten
+          </v-btn>
+        </div>
+      </div>
+      <div class="col"></div> <!-- Leere Spalte für die rechte Seite -->
+    </div>
+  </div>
+</template>
+
+<script>
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+export default {
+  data() {
+    return {
+      drawer: false,
+      items: [
+        { title: 'Foo', value: 'foo' },
+        { title: 'Bar', value: 'bar' },
+      ],
+      map: null,
+      startLocation: '',
+      endLocation: '',
+      date: '',
+      time: '',
+      freeSeats: '',
+      dateRule: value => {
+        const today = new Date();
+        const maxDate = new Date();
+        maxDate.setDate(today.getDate() + 28); // das datum muss in den nächsten 4 wochen liegen
+        const selectedDate = new Date(value);
+        return selectedDate >= today && selectedDate <= maxDate || 'Datum muss innerhalb der nächsten 4 Wochen liegen';
+      },
+      freeSeatsRule: value => {
+        const number = parseInt(value, 10);
+        return number >= 1 && number <= 9 || 'Freie Plätze müssen eine ganze Zahl zwischen 1 und 9 sein';
+      },
+    };
+  },
+  methods: {
+    initMap() {
+      const uniBayreuthCoords = [49.928809, 11.585835];
+      this.map = L.map("map").setView(uniBayreuthCoords, 15);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(this.map);
+
+      const defaultIcon = L.icon({
+        iconUrl: markerIcon,
+        shadowUrl: markerShadow,
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      });
+      L.Marker.prototype.options.icon = defaultIcon;
+
+      L.marker(uniBayreuthCoords).addTo(this.map);
+    },
+    swapLocations() {
+      const temp = this.startLocation;
+      this.startLocation = this.endLocation;
+      this.endLocation = temp;
+    },
+  },
+  mounted() {
+    this.initMap();
+  },
+};
+</script>
+
+<style scoped>
+/* Container-Layout */
+.container1 {
+  width: 90%; /* Container ist nun 90% der Bildschirmbreite */
+  max-width: 1200px; /* Maximale Breite von 1200px */
+  height: 80vh; /* Container nimmt 80% der Bildschirmhöhe ein */
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto; /* Zentriert den Container */
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  height: 25%; /* Jede Row nimmt 25% der Containerhöhe ein */
+}
+
+.col {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* Styling der Eingabefelder und Buttons */
+.location-field,
+.datetime-field,
+.seats-field {
+  width: 80%; /* Eingabefelder sind 80% der Breite der Column */
+  margin: 10px; /* Einheitlicher Abstand von 10px um alle Eingabefelder */
+}
+
+.Submitbutton {
+  width: 40%; /* Button hat jetzt eine kleinere Breite */
+  margin-top: 10px;
+  height: 50px;
+  font-size: 18px;
+}
+
+/* Styling für die Karte */
+.independent-map {
+  width: 100%;
+  height: 100%;
+  max-width: 600px; /* Karte ist maximal 600px in der Breite */
+  max-height: 600px; /* Karte ist maximal 600px in der Höhe */
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 15px;
+  z-index: 500;
+}
+
+/* Sitzplätze und Button nebeneinander in der gleichen Row */
+.seats-and-submit {
+  display: flex;
+  justify-content: space-between;
+  width: 100%; /* Container für Sitzplätze und Button nimmt 100% der Breite */
+}
+
+.seats-and-submit > .v-text-field {
+  width: 30%; /* Sitzplätze nehmen jetzt nur 30% der Breite */
+}
+
+.seats-and-submit > .v-btn {
+  width: 60%; /* Button nimmt 60% der Breite */
+}
+
+/* Mobile Anpassungen */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column; /* Stacken der Rows auf mobilen Geräten */
+    height: auto;
+  }
+
+  .location-field,
+  .datetime-field,
+  .seats-field,
+  .Submitbutton {
+    width: 90%; /* Eingabefelder und Buttons auf 90% der Breite setzen */
+  }
+
+  /* Karte passt sich der mobilen Ansicht an */
+  .independent-map {
+    width: 90%;
+    height: auto;
+  }
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <!--
+
+<template>
   <div>
     <v-app-bar density="compact" style="background-color:#E9E9ED;">
       <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
@@ -242,3 +507,7 @@ export default {
   height: 80px;
 }
 </style>
+
+
+
+-->

@@ -177,6 +177,20 @@
         <v-text-field>Part one</v-text-field>
       </v-stepper-content>
     </div>
+
+
+    <div v-if="step === 3"> 
+      <v-stepper-content step="4">
+
+      <div class="fullscreen-container">
+        <v-btn class="confirmation-button" elevation="5">
+          <v-icon large>mdi-check</v-icon>
+        </v-btn>
+      </div>
+
+
+      </v-stepper-content>
+    </div>
     
 
   </v-stepper-items>
@@ -347,7 +361,7 @@ export default {
   position: absolute;
   top: 690px; 
   left: 100px; 
-  width: 250px; 
+  width: 250px;
   height: 150px; 
   z-index: 1000;
   font-family: 'Minion Pro Italic'; ;
@@ -374,6 +388,36 @@ export default {
   width: 80px;
   height: 80px;
 }
+
+
+
+.fullscreen-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 95vh;
+  width: 95vw;
+}
+
+.confirmation-button {
+  background-color: #4CAF50;  
+  border-radius: 50%;        
+  width: 150px;              
+  height: 150px;              
+  display: flex;            
+  justify-content: center; 
+  align-items: center;      
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); 
+}
+
+/* Stile für das Icon im Button */
+.confirmation-button .v-icon {
+  color: white;              
+  font-size: 60px;          
+}
+
+
+
 
 </style>
 
