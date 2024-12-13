@@ -1,9 +1,7 @@
-<template> 
-  <v-card
-    color=""
-    height="200px"
-    rounded="0"
-    flat>
+<template>
+<v-container>
+<v-row>
+  <v-card flat height="20px">
 
   <v-app-bar density="compact"
     style="background-color:#E9E9ED;">
@@ -36,10 +34,13 @@
       ></v-list>
     </v-navigation-drawer>
   </v-card>
+</v-row>
+</v-container>
 
-  <!--<v-stepper editable model-value="step">-->
 
-  <v-stepper v-model="step">    
+  <!--Stepper für den Buchungsprozess-->
+  <v-container fluid >
+  <v-stepper fluid v-model="step">    
   <v-stepper-header> 
     <v-stepper-item
         title="Suche eine Fahrt"
@@ -81,73 +82,74 @@
         <v-stepper-window>
           <div>
           <div class="map-container">
-          <b-container fluid>
-          <b-row>
-        <b-col>
-          <v-text-field
-          v-model="startLocation"
-          label="Start der Route"
-          outlined
-          class="Startlocation"
-          ></v-text-field>
-        </b-col>
+          <v-container fluid>
+          <v-row>     <!--overall row-container-->
+            <v-col cols="6">   <!--overall column left side-->
+              <v-row>
+                  <v-text-field
+                  v-model="startLocation"
+                  label="Start der Route"
+                  outlined
+                  class="Startlocation"
+                  ></v-text-field>
+                </v-row>
 
-        <b-col cols="12" sm="6">
-          <div id="map" class="independent-map"></div>
-        </b-col>
-      </b-row>
-      
-      <b-row>
-        <b-col cols="12" sm="6">
-     <v-text-field
-       v-model="endLocation"
-       label="Ziel der Route"
-       outlined
-       class="Endlocation"
-     ></v-text-field>
-      </b-col>
-      </b-row>
+                <v-row>
+                    <v-text-field
+                      v-model="endLocation"
+                      label="Ziel der Route"
+                      outlined
+                      class="Endlocation"
+                    ></v-text-field>
+                      </v-row>
 
-     <v-btn icon @click="swapLocations" class="SwapButton">
-       <v-icon>mdi-swap-horizontal</v-icon>
-     </v-btn>
+                    <v-btn icon @click="swapLocations" class="SwapButton">
+                      <v-icon>mdi-swap-horizontal</v-icon>
+                    </v-btn>
 
-     <b-row>
-        <b-col cols="12" sm="3">
-          <v-text-field
-          v-model="date"
-          label="Datum"
-          outlined
-          class="Date"
-          type="date"
-          :rules="[dateRule]">   
-          </v-text-field>
-        </b-col>
+                    <v-row>
+                      <v-col>
+                        <v-text-field
+                        v-model="date"
+                        label="Datum"
+                        outlined
+                        class="Date"
+                        type="date"
+                        :rules="[dateRule]">   
+                        </v-text-field>
+                      </v-col>
 
-        <b-col cols="12" sm="3">
-          <v-text-field
-          v-model="time"
-          label="Uhrzeit"
-          outlined
-          class="Time"
-          type="time"
-          ></v-text-field>
-        </b-col>
-      </b-row>
+                      <v-col >
+                        <v-text-field
+                        v-model="time"
+                        label="Uhrzeit"
+                        outlined
+                        class="Time"
+                        type="time"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+
+                    <v-row>
+                        <v-col cols="6">
+                          <v-text-field
+                            v-model="freeSeats"
+                            label="Benötigte Plätze"
+                            outlined
+                            class="Neededseats"
+                            type="number"
+                            :rules="[freeSeatsRule]"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+            </v-col>
+            <v-col cols="6">
+        <v-sheet height="200px" class="pa-2 ma-2"> <div id="map" class="independent-map"></div> </v-sheet>
+      </v-col>     
      
-      <b-row>
-        <b-col cols="12" sm="4">
-          <v-text-field
-            v-model="freeSeats"
-            label="Benötigte Plätze"
-            outlined
-            class="Neededseats"
-            type="number"
-            :rules="[freeSeatsRule]"
-          ></v-text-field>
-        </b-col>
-      </b-row>
-    </b-container>
+      
+    </v-row>
+    </v-container>
      <!---&& Suchfunktion mit Datenbank in den Button einfügen--->
    </div>
  </div>
@@ -250,7 +252,7 @@
     </div>
     </v-overlay>
     </v-fade-transition>
-
+  </v-container>
 </template>
 
 <script setup>
@@ -278,20 +280,6 @@ export default {
         { title: 'Bar', value: 'bar' },
       ],
 
-     steps: [
-      {
-        text: 'Explore components',
-        href: 'https://vuetifyjs.com',
-      },
-      {
-        text: 'Roadmap',
-        href: 'https://vuetifyjs.com/introduction/roadmap/',
-      },
-      {
-        text: 'Frequently Asked Questions',
-        href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-      },
-    ],
       map: null,
       startLocation: '',
       endLocation: '',
@@ -349,12 +337,12 @@ export default {
 .map-container {
   display: flex;
   justify-content: flex-end;
-  align-items: center;
+  align-items: start;
   height: calc(100vh - 64px); /* damit man nicht scrollen kann */
   padding-right: 100px;
 }
 .independent-map {
-  width: 800px;
+  width: 600px;
   height: 600px;
   border-radius: 15px;
   z-index: 500;
@@ -379,7 +367,7 @@ export default {
   height: 150px; 
   z-index: 1000;
   font-family: 'Minion Pro Italic';
-  font-size: 30px; /* schriftgröße ändern geht irgendwie nicht :/ */
+  font-size: 30px;
 }
 
 .Endlocation {
