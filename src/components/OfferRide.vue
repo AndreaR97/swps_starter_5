@@ -5,6 +5,15 @@
       <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Title</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn icon>
+        <v-icon>mdi-message-text</v-icon>
+      </v-btn>
+      <v-btn icon>
+        <v-icon @click="$router.push('/loginpage')">mdi-account</v-icon>
+      </v-btn>
+      <v-btn icon>
+        <v-icon>mdi-logout</v-icon>
+      </v-btn>
     </v-app-bar>
 
     <!-- Navigation Drawer -->
@@ -80,7 +89,7 @@
           <v-btn
             color="#009260"
             class="Submitbutton"
-            @click="$router.push('/HomePage')"
+            @click="dialog = !dialog; overlay = !overlay" 
           >
             Anbieten
           </v-btn>
@@ -89,7 +98,60 @@
       <div class="col"></div> <!-- Leere Spalte für die rechte Seite -->
     </div>
   </div>
+  
+  <!--Overlay und Dialogfenster für Bestätigung-->
+  <v-fade-transition hide-on-leave> 
+  <v-overlay v-model="overlay">
+    <div class = "centered-container">
+      <v-dialog
+      v-model="dialog"
+      max-width="600"
+      persistent
+      >
+
+      <v-card>
+        <div class="py-12 text-center">
+          <v-icon
+          class="icon-container"
+            color="#009260"
+            icon="mdi-check-circle-outline"
+            size="128"
+          ></v-icon>
+
+          <div> 
+            <h3>Das Fahrtenangebot wurde übermittelt!</h3>
+            <p>Du wirst nun weitergeleitet.</p>
+        </div>
+        </div>
+
+        <v-divider></v-divider>
+
+        <div class="pa-4 text-end">
+          <v-btn
+            class="text-none"
+            color="medium-emphasis"
+            min-width="92"
+            variant="outlined"
+            @click="$router.push('/profilepage')"
+          >
+            OK
+          </v-btn>
+        </div>
+        </v-card>
+      </v-dialog>
+    </div>
+    </v-overlay>
+    </v-fade-transition>
+
 </template>
+
+
+<script setup>
+import { ref } from 'vue'
+
+const dialog = ref(false) //dient dem Öffnen und Schließen des Popup-Dialogs
+const overlay = ref(false)
+</script>
 
 <script>
 import L from "leaflet";
@@ -153,7 +215,15 @@ export default {
   },
   mounted() {
     this.initMap();
-  },
+  }, 
+  
+  watch: {
+      overlay (val) {
+        val && setTimeout(() => {
+          this.overlay = false
+        }, 2000)
+      },
+    },
 };
 </script>
 
@@ -245,6 +315,42 @@ export default {
     height: auto;
   }
 }
+
+  /* Container für Bestätigung */
+  .centered-container { 
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    position: fixed; 
+    width: 90em;
+    top: 3em;
+  }
+
+  /* Icon Animation */
+  .icon-container { animation: fadeIn 0.4s;	}
+  
+  @keyframes fadeIn {
+   0% {
+		transform: translateX(0) scale(0);
+
+		opacity: 0;
+  }
+  45% {
+		transform: translate(0)
+		scale(1.3);
+
+		opacity: 1;
+	}
+  75% {
+		transform: translate(0)
+		scale(.9);
+	}
+  100% {
+		transform: translateX(0) scale(1,1);
+
+		opacity: 1;
+  }
+  }
 </style>
 
 
@@ -265,29 +371,6 @@ export default {
 
 <template>
   <div>
-    <v-app-bar density="compact" style="background-color:#E9E9ED;">
-      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Title</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>mdi-message-text</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon @click="$router.push('/loginpage')">mdi-account</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon>mdi-logout</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-navigation-drawer
-      v-model="drawer"
-      :location="$vuetify.display.mobile ? 'bottom' : undefined"
-      temporary
-    >
-      <v-list :items="items"></v-list>
-    </v-navigation-drawer>
-
     <div class="map-container">
       <div id="map" class="independent-map"></div>
       <v-text-field
@@ -328,68 +411,12 @@ export default {
         type="number"
         :rules="[freeSeatsRule]"
       ></v-text-field>
-      <v-btn
-        color="#009260"
-        class="Submitbutton"
-        @click="dialog = !dialog; overlay = !overlay" 
-      >
-        Anbieten
-      </v-btn>
     </div>
   </div>
 
-  <v-fade-transition hide-on-leave> 
-  <v-overlay v-model="overlay">
-    <div class = "centered-container">
-      <v-card 
-        v-if="dialog"
-        elevation="16"
-        class="text-center"
-        width="600"
-      >
-
-        <v-divider></v-divider>
-
-        <div class="py-12 text-center">
-          <v-icon
-          class="icon-container"
-            color="#009260"
-            icon="mdi-check-circle-outline"
-            size="128"
-          ></v-icon>
-
-          <div> 
-            <h3>Das Fahrtenangebot wurde übermittelt!</h3>
-            <p>Du wirst nun weitergeleitet.</p>
-        </div>
-        </div>
-
-        <v-divider></v-divider>
-
-        <div class="pa-4 text-end">
-          <v-btn
-            class="text-none"
-            color="medium-emphasis"
-            min-width="92"
-            variant="outlined"
-            @click="dialog = false; overlay = false; $router.push('/profilepage') "
-          >
-            OK
-          </v-btn>
-        </div>
-      </v-card>
-    </div>
-    </v-overlay>
-    </v-fade-transition>
-
+  
 </template>
 
-<script setup>
-import { ref } from 'vue'
-
-const dialog = ref(false) //dient dem Öffnen und Schließen des Popup-Dialogs
-const overlay = ref(false)
-</script>
 
 <script>
 import L from "leaflet";
@@ -455,14 +482,7 @@ export default {
   mounted() {
     this.initMap();
   },
-
-  watch: {
-      overlay (val) {
-        val && setTimeout(() => {
-          this.overlay = false
-        }, 2000)
-      },
-    },
+ 
 };
 </script>
 
@@ -567,41 +587,6 @@ export default {
   width: 80px;
   height: 80px;
 }
-
-
-/* Container für Bestätigung */
-  .centered-container { 
-    display: flex;
-    justify-content: center; 
-    position: fixed; 
-    width: 100vw;
-    top: 3em;
-  }
-
-  /* Icon Animation */
-  .icon-container { animation: fadeIn 0.4s;	}
-  
-  @keyframes fadeIn {
-   0% {
-		transform: translateX(0) scale(0);
-
-		opacity: 0;
-  }
-  45% {
-		transform: translate(0)
-		scale(1.3);
-
-		opacity: 1;
-	}
-  75% {
-		transform: translate(0)
-		scale(.9);
-	}
-  100% {
-		transform: translateX(0) scale(1,1);
-
-		opacity: 1;
-  }
 
 }
 </style>
