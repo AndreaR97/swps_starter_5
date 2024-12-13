@@ -177,20 +177,6 @@
         <v-text-field>Part one</v-text-field>
       </v-stepper-content>
     </div>
-
-
-    <div v-if="step === 3"> 
-      <v-stepper-content step="4">
-
-      <div class="fullscreen-container">
-        <v-btn class="confirmation-button" elevation="5">
-          <v-icon large>mdi-check</v-icon>
-        </v-btn>
-      </div>
-
-
-      </v-stepper-content>
-    </div>
     
 
   </v-stepper-items>
@@ -200,7 +186,60 @@
    @click:next="setStep(this.step+1)"
    ></v-stepper-actions>
 </v-stepper>
+
+
+<v-fade-transition hide-on-leave> 
+  <v-overlay v-model="overlay">
+    <div class = "centered-container">
+      <v-card 
+        v-if="dialog"
+        elevation="16"
+        class="text-center"
+        width="600"
+      >
+
+        <v-divider></v-divider>
+
+        <div class="py-12 text-center">
+          <v-icon
+          class="icon-container"
+            color="#009260"
+            icon="mdi-check-circle-outline"
+            size="128"
+          ></v-icon>
+
+          <div> 
+            <h3>Deine Fahrt wurde gebucht!</h3>
+            <p>Du wirst nun weitergeleitet.</p>
+        </div>
+        </div>
+
+        <v-divider></v-divider>
+
+        <div class="pa-4 text-end">
+          <v-btn
+            class="text-none"
+            color="medium-emphasis"
+            min-width="92"
+            variant="outlined"
+            @click="dialog = false; overlay = false; $router.push('/profilepage') "
+          >
+            OK
+          </v-btn>
+        </div>
+      </v-card>
+    </div>
+    </v-overlay>
+    </v-fade-transition>
+
 </template>
+
+<script setup>
+import { ref } from 'vue'
+
+const dialog = ref(false) //dient dem Öffnen und Schließen des Popup-Dialogs
+const overlay = ref(false)  //dient dem Overlay für den Popup-Dialog
+</script>
 
 <script>
 import L from "leaflet";
@@ -388,36 +427,6 @@ export default {
   width: 80px;
   height: 80px;
 }
-
-
-
-.fullscreen-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 95vh;
-  width: 95vw;
-}
-
-.confirmation-button {
-  background-color: #4CAF50;  
-  border-radius: 50%;        
-  width: 150px;              
-  height: 150px;              
-  display: flex;            
-  justify-content: center; 
-  align-items: center;      
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); 
-}
-
-/* Stile für das Icon im Button */
-.confirmation-button .v-icon {
-  color: white;              
-  font-size: 60px;          
-}
-
-
-
 
 </style>
 

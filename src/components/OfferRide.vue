@@ -331,13 +331,65 @@ export default {
       <v-btn
         color="#009260"
         class="Submitbutton"
-        @click="$router.push('/HomePage')"
+        @click="dialog = !dialog; overlay = !overlay" 
       >
         Anbieten
       </v-btn>
     </div>
   </div>
+
+  <v-fade-transition hide-on-leave> 
+  <v-overlay v-model="overlay">
+    <div class = "centered-container">
+      <v-card 
+        v-if="dialog"
+        elevation="16"
+        class="text-center"
+        width="600"
+      >
+
+        <v-divider></v-divider>
+
+        <div class="py-12 text-center">
+          <v-icon
+          class="icon-container"
+            color="#009260"
+            icon="mdi-check-circle-outline"
+            size="128"
+          ></v-icon>
+
+          <div> 
+            <h3>Das Fahrtenangebot wurde übermittelt!</h3>
+            <p>Du wirst nun weitergeleitet.</p>
+        </div>
+        </div>
+
+        <v-divider></v-divider>
+
+        <div class="pa-4 text-end">
+          <v-btn
+            class="text-none"
+            color="medium-emphasis"
+            min-width="92"
+            variant="outlined"
+            @click="dialog = false; overlay = false; $router.push('/profilepage') "
+          >
+            OK
+          </v-btn>
+        </div>
+      </v-card>
+    </div>
+    </v-overlay>
+    </v-fade-transition>
+
 </template>
+
+<script setup>
+import { ref } from 'vue'
+
+const dialog = ref(false) //dient dem Öffnen und Schließen des Popup-Dialogs
+const overlay = ref(false)
+</script>
 
 <script>
 import L from "leaflet";
@@ -353,6 +405,7 @@ export default {
         { title: 'Foo', value: 'foo' },
         { title: 'Bar', value: 'bar' },
       ],
+
       map: null,
       startLocation: '',
       endLocation: '',
@@ -402,10 +455,18 @@ export default {
   mounted() {
     this.initMap();
   },
+
+  watch: {
+      overlay (val) {
+        val && setTimeout(() => {
+          this.overlay = false
+        }, 2000)
+      },
+    },
 };
 </script>
 
-<style>
+<style scoped>
 .map-container {
   display: flex;
   justify-content: flex-end;
@@ -506,8 +567,41 @@ export default {
   width: 80px;
   height: 80px;
 }
+
+
+/* Container für Bestätigung */
+  .centered-container { 
+    display: flex;
+    justify-content: center; 
+    position: fixed; 
+    width: 100vw;
+    top: 3em;
+  }
+
+  /* Icon Animation */
+  .icon-container { animation: fadeIn 0.4s;	}
+  
+  @keyframes fadeIn {
+   0% {
+		transform: translateX(0) scale(0);
+
+		opacity: 0;
+  }
+  45% {
+		transform: translate(0)
+		scale(1.3);
+
+		opacity: 1;
+	}
+  75% {
+		transform: translate(0)
+		scale(.9);
+	}
+  100% {
+		transform: translateX(0) scale(1,1);
+
+		opacity: 1;
+  }
+
+}
 </style>
-
-
-
--->

@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
-    "@supabase/supabase-js": "^2.45.4",
+    "@supabase/supabase-js": "^2.47.3",
     "core-js": "^3.8.3",
     "leaflet": "^1.9.4",
     "leaflet-css": "^0.1.0",
