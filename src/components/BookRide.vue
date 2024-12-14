@@ -1,41 +1,26 @@
 <template>
-<v-container>
-<v-row>
-  <v-card flat height="20px">
-
-  <v-app-bar density="compact"
-    style="background-color:#E9E9ED;">
-    
+    <v-app-bar density="compact" style="background-color:#009260;">
       <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-
       <v-toolbar-title>Title</v-toolbar-title>
-
       <v-spacer></v-spacer>
-          <v-btn icon>
-              <v-icon>mdi-message-text</v-icon>
-          </v-btn>
+      <v-btn icon>
+        <v-icon>mdi-message-text</v-icon>
+      </v-btn>
+      <v-btn icon>
+        <v-icon @click="$router.push('/loginpage')">mdi-account</v-icon>
+      </v-btn>
+      <v-btn icon>
+        <v-icon @click="$router.push('/testpage')">mdi-logout</v-icon>
+      </v-btn>
+    </v-app-bar>
 
-          <v-btn icon>
-               <v-icon @click="$router.push('/loginpage')">mdi-account</v-icon>
-          </v-btn>
-
-          <v-btn icon>
-              <v-icon>mdi-logout</v-icon>
-          </v-btn>
-  </v-app-bar>
-    
     <v-navigation-drawer
       v-model="drawer"
       :location="$vuetify.display.mobile ? 'bottom' : undefined"
       temporary
     >
-      <v-list
-        :items="items"
-      ></v-list>
+      <v-list :items="items"></v-list>
     </v-navigation-drawer>
-  </v-card>
-</v-row>
-</v-container>
 
 
   <!--Stepper für den Buchungsprozess-->
@@ -176,7 +161,79 @@
 
     <div v-if="step === 2"> 
       <v-stepper-content step="3">
-        <v-text-field>Part one</v-text-field>
+        <v-container fluid>
+          <v-row>
+            <v-col cols="6" class="left-column">
+              <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                <span style="font-family: 'Arial'; font-weight: bold; font-size: 30px; color: #009260;">Fahrer:</span>
+                <div style="display: flex; align-items: center; margin-top: 10px;">
+                  <img src="/assets/Profilbild.png" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 25px;">
+                  <div>
+                    <span style="font-family: 'Minion Pro Regular'; font-weight: bold; font-size: 30px;">Max Mustermann</span><br>
+                    <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">Rolle: Student</span><br>
+                    <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">Freie Plätze(mir mir): 3</span>
+                  </div>
+                </div>
+              </div>
+              <v-divider class="my-4"></v-divider>
+              <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                <span style="font-family: 'Arial'; font-weight: bold; font-size: 30px; color: #009260;">Mitfahrer:</span>
+                <div style="display: flex; align-items: center; margin-top: 10px;">
+                  <img src="/assets/Profilbild.png" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 25px;">
+                  <div>
+                    <span style="font-family: 'Minion Pro Regular'; font-weight: bold; font-size: 30px;">Erika Mustermann</span><br>
+                    <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">Rolle: Mitarbeiter</span><br>
+                  </div>
+                </div>
+              </div>
+
+              <v-divider class="my-4"></v-divider>
+              <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                <div style="display: flex; align-items: center; margin-top: 10px;">
+                  <img src="/assets/Profilbild.png" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 25px;">
+                  <div>
+                    <span style="font-family: 'Minion Pro Regular'; font-weight: bold; font-size: 30px;">leandor</span><br>
+                    <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">Rolle: ahhhhh</span><br>
+                  </div>
+                </div>
+              </div>
+
+              <v-divider class="my-4"></v-divider>
+              <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                <div style="display: flex; align-items: center; margin-top: 10px;">
+                  <img src="/assets/Profilbild.png" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 25px;">
+                  <div>
+                    <span style="font-family: 'Minion Pro Regular'; font-weight: bold; font-size: 30px;">leandor</span><br>
+                    <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">Rolle: ahhhhh</span><br>
+                  </div>
+                </div>
+              </div>
+
+            </v-col>
+            <v-col cols="6" class="right-column">
+              <div style="display: flex; justify-content: center; height: 100%; position: relative;">
+                <div style="border-left: 3px solid black; height: 100%; position: relative;">
+                  <div style="position: absolute; top: 0; left: -6px; width: 10px; height: 10px; background-color: black; border-radius: 50%;"></div>
+                  <span style="position: absolute; top: -15px; left: -70px; font-family: Arial; color: #7F8990; font-size: 25px;">Start</span>
+                  <span style="position: absolute; top: -15px; left: 20px; font-family: Arial; color: #7F8990; font-size: 25px;">10:32</span>
+                  <span style="position: absolute; top: 10px; left: 20px; font-family: Arial; color: #7F8990; font-size: 25px;">Bayreuth</span>
+                  <div style="position: absolute; top: 33%; left: -6px; width: 10px; height: 10px; background-color: black; border-radius: 50%; transform: translateY(-50%);"></div>
+                  <span style="position: absolute; top: 29%; left: -105px; font-family: Arial; color: #009260; font-size: 25px;">Einsteig</span>
+                  <span style="position: absolute; top: 29%; left: 20px; font-family: Arial; color: #009260; font-size: 25px;">11:15</span>
+                  <span style="position: absolute; top: 34%; left: 20px; font-family: Arial; color: #009260; font-size: 25px;">Nürnberg</span>
+                  <div style="position: absolute; top: 66%; left: -6px; width: 10px; height: 10px; background-color: black; border-radius: 50%; transform: translateY(-50%);"></div>
+                  <span style="position: absolute; top: 62%; left: -110px; font-family: Arial; color: #009260; font-size: 25px;">Ausstieg</span>
+                  <span style="position: absolute; top: 62%; left: 20px; font-family: Arial; color: #009260; font-size: 25px;">12:45</span>
+                  <span style="position: absolute; top: 67%; left: 20px; font-family: Arial; color: #009260; font-size: 25px;">Würzburg</span>
+                  <div style="position: absolute; bottom: 0; left: -6px; width: 10px; height: 10px; background-color: black; border-radius: 50%;"></div>
+                  <span style="position: absolute; top: 96%; left: -60px; font-family: Arial; color: #7F8990; font-size: 25px;">Ziel</span>
+                  <span style="position: absolute; top: 96%; left: 20px; font-family: Arial; color: #7F8990; font-size: 25px;">14:00</span>
+                  <span style="position: absolute; top: 101%; left: 20px; font-family: Arial; color: #7F8990; font-size: 25px;">Köln</span>
+                </div>
+              </div>
+            </v-col>
+          </v-row>
+        </v-container>
       </v-stepper-content>
     </div>
     
@@ -461,4 +518,15 @@ opacity: 1;
 }
 }
 
+.thick-black-divider {
+  border-left: 40px solid black;
+}
+
+.left-column {
+  padding: 50px;
+}
+
+.right-column {
+  padding: 50px;
+}
 </style>
