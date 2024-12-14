@@ -1,7 +1,7 @@
 <template>
 <v-container>
 <v-row>
-  <v-card flat height="20px">
+  <v-card flat height="10px">
 
   <v-app-bar density="compact"
     style="background-color:#E9E9ED;">
@@ -39,7 +39,7 @@
 
 
   <!--Stepper für den Buchungsprozess-->
-  <v-container fluid >
+  <v-container fluid>
   <v-stepper fluid v-model="step">    
   <v-stepper-header> 
     <v-stepper-item
@@ -157,26 +157,64 @@
     </div> 
 
     <div v-if="step === 1"> 
-      <p>Inhalt für Schritt 2: Wähle eine Fahrt aus</p> 
       <v-stepper-content step="2">
+        <v-container fluid>
+          <v-row dense>
+          <v-col cols="6">
+            <v-card class="overflow-y-auto"
+            max-height="450px">
         <v-list lines="two">
-            <v-list-item
-              v-for="n in 3"
-              :key="n"
-              :title="'Item ' + n"
-              subtitle="Lorem ipsum dolor sit amet consectetur adipisicing elit"
-            > <template v-slot:prepend>
-              <img src="/assets/unibayreuthlogo.png"/>
+          <v-item-group>
+          <v-list-item
+            v-for="(person, n) in rideOffers"
+            :key="n"
+            :title="person.name"
+            link
+          >
+          <v-divider class="mb-2"></v-divider>
+          <template v-slot:prepend>
+            <v-avatar color="info">
+              <v-icon icon="mdi-account-circle"></v-icon>
+            </v-avatar>
         </template>
+
+        <template v-slot:append>
+          <v-list-item-action>
+            <v-btn @click="selected = rideOffers.slice(n, n+1)">Auswählen</v-btn>
+          </v-list-item-action>
+        </template>
+
+          <v-card> 
+              <div class="ma-1">
+                  <v-row no-gutters>
+                    <v-sheet elevation="1" height="40" class="pa-2 ma-2"  border rounded> {{ person.time}}</v-sheet>
+
+                    <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded> {{ person.price}}</v-sheet>
+                  </v-row>
+                </div>
+            </v-card>
         </v-list-item>
-          </v-list>
-        
+        </v-item-group>
+        </v-list>
+      </v-card>
+      </v-col>
+    </v-row>
+    </v-container>
       </v-stepper-content>
     </div>
 
     <div v-if="step === 2"> 
       <v-stepper-content step="3">
-        <v-text-field>Part one</v-text-field>
+        <v-sheet> 
+            <v-row justify="center">
+          <a
+            v-for="i in selected"
+            :key="i"
+          >
+            {{ i.name }}, {{ i.rideid }}
+          </a>
+        </v-row>
+           </v-sheet>
       </v-stepper-content>
     </div>
     
@@ -255,6 +293,7 @@
   </v-container>
 </template>
 
+
 <script setup>
 import { ref } from 'vue'
 
@@ -269,15 +308,62 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
 export default {
-
+ 
   data() {
     return {
       drawer: false,
       group: null,
       step: 0,
+      selected: 0,
+
       items: [
         { title: 'Foo', value: 'foo' },
         { title: 'Bar', value: 'bar' },
+      ],
+
+      rideOffers: [
+      {
+        name: 'Cara',
+        time: '10:30 Uhr',
+        price: "5,00€",
+        rideid: "4"
+      },
+      {
+        name: 'Johannes',
+        time: '11:40 Uhr',
+        price: "5,00€",
+        rideid: "5"
+      },
+        {
+        name: 'Maria',
+        time: '11:50 Uhr',
+        price: "7,50€",
+        rideid: "500"
+      },
+      {
+        name: 'Sarah',
+        time: '11:50 Uhr',
+        price: "2,50€",
+        rideid: "1"
+      },
+      {
+        name: 'Manuel',
+        time: '14:00 Uhr',
+        price: "6,50€",
+        rideid: "7"
+      },
+      {
+        name: 'Noah',
+        time: '11:50 Uhr',
+        price: "2,90€",
+        rideid: "2"
+      },
+      {
+        name: 'Manuel',
+        time: '12:10 Uhr',
+        price: "6,50€",
+        rideid: "9"
+      },
       ],
 
       map: null,
@@ -299,6 +385,8 @@ export default {
       },
     };
   },
+  
+
   methods: {
     setStep(a) { this.step = a; },
     initMap() {
