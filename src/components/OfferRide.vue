@@ -27,36 +27,30 @@
 
     <!-- 4 Rows mit jeweils 25% der Containerhöhe -->
     <!-- Row 1: Start der Route -->
-    <div class="row">
-      <div class="col">
+    <v-row>
+      <v-col>
+        <div class="row">
         <v-text-field
           v-model="startLocation"
           label="Start der Route"
           outlined
           class="location-field"
         ></v-text-field>
-      </div>
-      <div class="col"></div> <!-- Leere Spalte für die rechte Seite -->
-    </div>
+        </div>
 
     <!-- Row 2: Ziel der Route und Karte -->
     <div class="row">
-      <div class="col">
         <v-text-field
           v-model="endLocation"
           label="Ziel der Route"
           outlined
           class="location-field"
         ></v-text-field>
-      </div>
-      <div class="col">
-        <div id="map" class="independent-map"></div> <!-- Karte -->
-      </div>
     </div>
 
     <!-- Row 3: Datum und Uhrzeit -->
     <div class="row">
-      <div class="col">
+      <v-col>
         <v-text-field
           v-model="date"
           label="Datum"
@@ -64,6 +58,8 @@
           class="datetime-field"
           type="date"
         ></v-text-field>
+        </v-col>
+      <v-col>
         <v-text-field
           v-model="time"
           label="Uhrzeit"
@@ -71,8 +67,7 @@
           class="datetime-field"
           type="time"
         ></v-text-field>
-      </div>
-      <div class="col"></div> <!-- Leere Spalte für die rechte Seite -->
+      </v-col>
     </div>
 
     <!-- Row 4: Sitzplätze und Bestätigen (Button zusammen mit den Sitzplätzen) -->
@@ -95,10 +90,15 @@
           </v-btn>
         </div>
       </div>
-      <div class="col"></div> <!-- Leere Spalte für die rechte Seite -->
     </div>
+  </v-col>
+
+  <div class="col">
+        <div id="map" class="independent-map"></div> <!-- Karte -->
   </div>
-  
+
+</v-row>
+</div>  
   <!--Overlay und Dialogfenster für Bestätigung-->
   <v-fade-transition hide-on-leave> 
   <v-overlay v-model="overlay">
@@ -142,7 +142,6 @@
     </div>
     </v-overlay>
     </v-fade-transition>
-
 </template>
 
 
