@@ -1,29 +1,7 @@
 <template>
   <div class="container1">
     <!-- Navigation Bar -->
-    <v-app-bar density="compact" class="navbar">
-      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Title</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>mdi-message-text</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon @click="$router.push('/loginpage')">mdi-account</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon>mdi-logout</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <!-- Navigation Drawer -->
-    <v-navigation-drawer
-      v-model="drawer"
-      :location="$vuetify.display.mobile ? 'bottom' : undefined"
-      temporary
-    >
-      <v-list :items="items"></v-list>
-    </v-navigation-drawer>
+   <NavigationBar></NavigationBar>
 
     <!-- 4 Rows mit jeweils 25% der Containerhöhe -->
     <!-- Row 1: Start der Route -->
@@ -157,15 +135,11 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import NavigationBar from './NavigationBar.vue';
 
 export default {
   data() {
     return {
-      drawer: false,
-      items: [
-        { title: 'Foo', value: 'foo' },
-        { title: 'Bar', value: 'bar' },
-      ],
       map: null,
       startLocation: '',
       endLocation: '',

@@ -1,29 +1,9 @@
 <template>
   <div class="bookride">
+    <NavigationBar></NavigationBar>
+
     <!--<img src="/assets/profilpage.png" alt="ProfilePageBackground" class="profilebackground" />-->
 
-    <v-app-bar density="compact" style="background-color:#009260;">
-      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Title</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>mdi-message-text</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon @click="$router.push('/loginpage')">mdi-account</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon @click="$router.push('/testpage')">mdi-logout</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-navigation-drawer
-      v-model="drawer"
-      :location="$vuetify.display.mobile ? 'bottom' : undefined"
-      temporary
-    >
-      <v-list :items="items"></v-list>
-    </v-navigation-drawer>
 
     <!--Stepper für den Buchungsprozess-->
     <v-container fluid>
@@ -66,81 +46,74 @@
           <div v-if="step === 0">
             <v-stepper-window>
               <div>
-                <div class="map-container">
-                  <v-container fluid>
-                    <v-row>
-                      <!--overall row-container-->
-                      <v-col cols="6">
-                        <!--overall column left side-->
-                        <v-row>
+                <v-row>
+                    <v-col>
+                      <div class="row">
+                      <v-text-field
+                        v-model="startLocation"
+                        label="Start der Route"
+                        outlined
+                        class="location-field"
+                      ></v-text-field>
+                      </div>
+
+                    <!-- Row 2: Ziel der Route und Karte -->
+                    <div class="row">
+                        <v-text-field
+                          v-model="endLocation"
+                          label="Ziel der Route"
+                          outlined
+                          class="location-field"
+                        ></v-text-field>
+                    </div>
+
+                    <!-- Row 3: Datum und Uhrzeit -->
+                    <div class="row">
+                      <v-col>
+                        <v-text-field
+                          v-model="date"
+                          label="Datum"
+                          outlined
+                          class="datetime-field"
+                          type="date"
+                        ></v-text-field>
+                        </v-col>
+
+                        <v-col>
                           <v-text-field
-                            v-model="startLocation"
-                            label="Start der Route"
+                            v-model="time"
+                            label="Uhrzeit"
                             outlined
-                            class="Startlocation"
+                            class="datetime-field"
+                            type="time"
                           ></v-text-field>
-                        </v-row>
+                        </v-col>
+                      </div>
 
-                        <v-row>
-                          <v-text-field
-                            v-model="endLocation"
-                            label="Ziel der Route"
-                            outlined
-                            class="Endlocation"
-                          ></v-text-field>
-                        </v-row>
+                  <!-- Row 4: Sitzplätze und Bestätigen (Button zusammen mit den Sitzplätzen) -->
+                  <div class="row">
+                    <v-col cols="6">
+                      <div class="seats-and-submit">
+                        <v-text-field
+                          v-model="freeSeats"
+                          label="Freie Plätze"
+                          outlined
+                          class="seats-field"
+                          type="number"
+                        ></v-text-field>
+                      </div>
+                    </v-col>
+                    </div>
+                  </v-col>
 
-                        <v-btn icon @click="swapLocations" class="SwapButton">
-                          <v-icon>mdi-swap-horizontal</v-icon>
-                        </v-btn>
-
-                        <v-row>
-                          <v-col>
-                            <v-text-field
-                              v-model="date"
-                              label="Datum"
-                              outlined
-                              class="Date"
-                              type="date"
-                              :rules="[dateRule]"
-                            ></v-text-field>
-                          </v-col>
-
-                          <v-col>
-                            <v-text-field
-                              v-model="time"
-                              label="Uhrzeit"
-                              outlined
-                              class="Time"
-                              type="time"
-                            ></v-text-field>
-                          </v-col>
-                        </v-row>
-
-                        <v-row>
-                          <v-col cols="6">
-                            <v-text-field
-                              v-model="freeSeats"
-                              label="Benötigte Plätze"
-                              outlined
-                              class="Neededseats"
-                              type="number"
-                              :rules="[freeSeatsRule]"
-                            ></v-text-field>
-                          </v-col>
-                        </v-row>
-                      </v-col>
-                      <v-col cols="6">
-                        <v-sheet height="200px" class="pa-2 ma-2">
-                          <div id="map" class="independent-map"></div>
-                        </v-sheet>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                  <!---&& Suchfunktion mit Datenbank in den Button einfügen--->
+                <div class="col">
+                      <div id="map" class="independent-map"></div> <!-- Karte -->
                 </div>
-              </div>
-            </v-stepper-window>
+
+              </v-row>
+            </div>  
+              
+      </v-stepper-window>
           </div>
 
     <div v-if="step === 1"> 
@@ -184,6 +157,9 @@
         </v-item-group>
         </v-list>
       </v-card>
+      </v-col>
+      <v-col>
+        <MapComponent></MapComponent>
       </v-col>
     </v-row>
     </v-container>
@@ -353,6 +329,8 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import MapComponent from './MapComponent.vue';
+import NavigationBar from './NavigationBar.vue';
 
 export default {
  
@@ -474,6 +452,20 @@ export default {
   width: 100%;
   height: 100%;
   z-index: 1; /* Ensure it does not cover other components */
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  height: 25%; /* Jede Row nimmt 25% der Containerhöhe ein */
+}
+
+.col {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
 .profilebackground {

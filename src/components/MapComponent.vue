@@ -1,14 +1,16 @@
 <template>
     <v-container>
       <v-card>
-        <v-card-title>
-          Hallo, {{ userName }}! <!-- Display the user's name -->
+      <!--<v-card-title>
+          Hallo, {{ userName }}! Display the user's name
         </v-card-title>
         <v-card-subtitle>
           Wichtige Orte in Bayreuth
         </v-card-subtitle>
+      -->
+        
         <v-card-text>
-          <div id="map" style="height: 400px; width: 100%;"></div>
+          <div id="map" style="max-height: 450px; width: 100%;"></div>
         </v-card-text>
       </v-card>
     </v-container>
