@@ -166,55 +166,56 @@
       </v-stepper-content>
     </div>
 
+    <!--Defines step 2-->
           <div v-if="step === 2">
             <v-stepper-content step="3">
               <v-container fluid>
                 <v-row>
+                  <!--Left column showing "Mitfahrer"-->
                   <v-col cols="6" class="left-column">
-                    <div style="display: flex; flex-direction: column; align-items: flex-start;">
-                      <span style="font-family: 'Arial'; font-weight: bold; font-size: 30px; color: #009260;">Fahrer:</span>
+                    <v-card class="overflow-y-auto"
+                          max-height="490px">
+                      <!--design properties for the head section: Fahrer-->
+                      <span style="font-family: 'Arial'; font-weight: bold; font-size: 30px; color: #009260; padding:10px">Fahrer:</span> 
                       <div style="display: flex; align-items: center; margin-top: 10px;">
-                        <img src="/assets/Profilbild.png" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 25px;">
+                        <img src="/assets/Profilbild.png" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 25px; margin-left: 20px;">
                         <div>
-                          <span style="font-family: 'Minion Pro Regular'; font-weight: bold; font-size: 30px;">Max Mustermann</span><br>
-                          <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">Rolle: Student</span><br>
-                          <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">Freie Plätze(mir mir): 3</span>
+                          <span style="font-family: 'Minion Pro Regular'; font-weight: bold; font-size: 30px; ">{{ selected[0] ? selected[0].name: selected.name}}</span><br>
+                          <span style="font-family: 'Minion Pro Regular'; font-size: 20px; ">Rolle: {{ selected[0] ? selected[0].role: selected.role}}</span><br>
+                          <span style="font-family: 'Minion Pro Regular'; font-size: 20px; ">Freie Plätze: {{selected[0] ? selected[0].seats: selected.seats}}</span>
                         </div>
                       </div>
-                    </div>
+                  
+                      <!--section two: list of "Mitfahrer"-->
                     <v-divider class="my-4"></v-divider>
-                    <div style="display: flex; flex-direction: column; align-items: flex-start;">
-                      <span style="font-family: 'Arial'; font-weight: bold; font-size: 30px; color: #009260;">Mitfahrer:</span>
-                      <div style="display: flex; align-items: center; margin-top: 10px;">
-                        <img src="/assets/Profilbild.png" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 25px;">
-                        <div>
-                          <span style="font-family: 'Minion Pro Regular'; font-weight: bold; font-size: 30px;">Erika Mustermann</span><br>
-                          <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">Rolle: Mitarbeiter</span><br>
-                        </div>
-                      </div>
-                    </div>
+                      <span style="font-family: 'Arial'; font-weight: bold; font-size: 30px; color: #009260; padding:10px;">Mitfahrer:</span>
 
-                    <v-divider class="my-4"></v-divider>
-                    <div style="display: flex; flex-direction: column; align-items: flex-start;">
-                      <div style="display: flex; align-items: center; margin-top: 10px;">
-                        <img src="/assets/Profilbild.png" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 25px;">
-                        <div>
-                          <span style="font-family: 'Minion Pro Regular'; font-weight: bold; font-size: 30px;">leandor</span><br>
-                          <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">Rolle: ahhhhh</span><br>
-                        </div>
-                      </div>
-                    </div>
+                      <v-list lines="two">
+                        <v-item-group>
+                        <v-list-item
+                          v-for="(person, n) in ride"
+                          :key="n"
+                          link
+                        >
+                        <template v-slot:title>
+                          <div>
+                            <span :style="{ fontFamily: 'Minion Pro Regular', fontSize: '20px', fontWeight: 'bold' }">{{`${person.name} ${person.surname}`}}</span><br>
+                          </div>
+                        </template>
+                        <!--design properties for the title of each item-->
 
-                    <v-divider class="my-4"></v-divider>
-                    <div style="display: flex; flex-direction: column; align-items: flex-start;">
-                      <div style="display: flex; align-items: center; margin-top: 10px;">
-                        <img src="/assets/Profilbild.png" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 25px;">
-                        <div>
-                          <span style="font-family: 'Minion Pro Regular'; font-weight: bold; font-size: 30px;">leandor</span><br>
-                          <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">Rolle: ahhhhh</span><br>
-                        </div>
-                      </div>
-                    </div>
+                        <template v-slot:prepend>
+                          <img src="/assets/Profilbild.png" alt="Profilbild" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 25px;">
+                        </template>
+                          <div>
+                            <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">Rolle: {{ person.role}}</span><br>
+                          </div>
+                      </v-list-item>
+                      <!-- <v-divider class="mb-4"></v-divider> -->
+                      </v-item-group>
+                    </v-list>
+                  </v-card>
+  
                   </v-col>
                   <v-col cols="6" class="right-column">
                     <div style="display: flex; justify-content: center; height: 100%; position: relative;">
@@ -349,46 +350,81 @@ export default {
       rideOffers: [
       {
         name: 'Cara',
+        role: 'Student',
         time: '10:30 Uhr',
         price: "5,00€",
+        seats: "4",
         rideid: "4"
       },
       {
         name: 'Johannes',
+        role: 'Student',
         time: '11:40 Uhr',
         price: "5,00€",
+        seats: "4",
         rideid: "5"
       },
         {
         name: 'Maria',
+        role: 'Student',
         time: '11:50 Uhr',
         price: "7,50€",
+        seats: "4",
         rideid: "500"
       },
       {
         name: 'Sarah',
+        role: 'Mitarbeiter',
         time: '11:50 Uhr',
         price: "2,50€",
+        seats: "1",
         rideid: "1"
       },
       {
         name: 'Manuel',
+        role: 'Mitarbeiter',
         time: '14:00 Uhr',
         price: "6,50€",
+        seats: "4",
         rideid: "7"
       },
       {
         name: 'Noah',
+        role: 'Student',
         time: '11:50 Uhr',
         price: "2,90€",
+        seats: "3",
         rideid: "2"
       },
       {
         name: 'Manuel',
+        role: 'Student',
         time: '12:10 Uhr',
         price: "6,50€",
+        seats: "4",
         rideid: "9"
       },
+      ],
+
+      ride: [
+      {
+        name: 'Allison',
+        surname: 'Peters',
+        role: 'Student',
+        rideid: "4"
+      },
+      {
+        name: 'Thomas',
+        surname: 'Meyer',
+        role: 'Student',
+        rideid: "4"
+      },
+      {
+        name: 'Maria',
+        surname: 'Bauer',
+        role: 'Student',
+        rideid: "4"
+      }
       ],
 
       map: null,
