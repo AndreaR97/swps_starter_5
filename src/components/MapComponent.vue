@@ -10,7 +10,7 @@
       -->
         
         <v-card-text>
-          <div id="map" style="max-height: 450px; width: 100%;"></div>
+          <div id="map" style="max-height: 600px; width: 100%;"></div>
         </v-card-text>
       </v-card>
     </v-container>
@@ -107,6 +107,6 @@
   <style scoped>
   /* Adjust map container height */
   #map {
-    height: 400px;
+    height: 550px;
   }
   </style>

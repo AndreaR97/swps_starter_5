@@ -122,7 +122,7 @@
           <v-row dense>
           <v-col cols="6">
             <v-card class="overflow-y-auto"
-            max-height="450px">
+            max-height="600px">
         <v-list lines="two">
           <v-item-group>
           <v-list-item
