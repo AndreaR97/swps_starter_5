@@ -483,6 +483,24 @@ export default {
 </script>
 
 <style scoped>
+
+
+
+
+.v-sheet.v-theme-light--v-stepper {
+  height: 100vh !important;       /* Mit !important erzwingt man die Anwendung der Regel */
+  min-height: 100vh !important;
+  width: 100vw !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+
+
 .bookride {
   position: relative;
   width: 100%;

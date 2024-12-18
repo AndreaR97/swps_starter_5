@@ -1,133 +1,133 @@
 <template>
   <div class="container1">
     <!-- Navigation Bar -->
-   <NavigationBar></NavigationBar>
+    <NavigationBar></NavigationBar>
 
-    <!-- 4 Rows mit jeweils 25% der Containerhöhe -->
-    <!-- Row 1: Start der Route -->
-    <v-row>
-      <v-col>
-        <div class="row">
-        <v-text-field
-          v-model="startLocation"
-          label="Start der Route"
-          outlined
-          class="location-field"
-        ></v-text-field>
-        </div>
+    <!-- Container mit zwei Spalten -->
+    <v-row no-gutters>
+      <!-- Spalte 1 (4 Rows mit den Eingabefeldern) -->
+      <v-col cols="12" md="6">
+        <!-- Row 1: Start der Route -->
+        <v-row no-gutters class="input-row">
+          <v-col cols="12">
+            <v-text-field
+              v-model="startLocation"
+              label="Start der Route"
+              outlined
+              class="start-location"
+            ></v-text-field>
+          </v-col>
+        </v-row>
 
-    <!-- Row 2: Ziel der Route und Karte -->
-    <div class="row">
-        <v-text-field
-          v-model="endLocation"
-          label="Ziel der Route"
-          outlined
-          class="location-field"
-        ></v-text-field>
-    </div>
+        <!-- Row 2: Ziel der Route -->
+        <v-row no-gutters class="input-row">
+          <v-col cols="12">
+            <v-text-field
+              v-model="endLocation"
+              label="Ziel der Route"
+              outlined
+              class="end-location"
+            ></v-text-field>
+          </v-col>
+        </v-row>
 
-    <!-- Row 3: Datum und Uhrzeit -->
-    <div class="row">
-      <v-col>
-        <v-text-field
-          v-model="date"
-          label="Datum"
-          outlined
-          class="datetime-field"
-          type="date"
-        ></v-text-field>
-        </v-col>
-      <v-col>
-        <v-text-field
-          v-model="time"
-          label="Uhrzeit"
-          outlined
-          class="datetime-field"
-          type="time"
-        ></v-text-field>
+        <!-- Row 3: Datum und Uhrzeit -->
+        <v-row no-gutters class="input-row">
+          <v-col cols="6">
+            <v-text-field
+              v-model="date"
+              label="Datum"
+              outlined
+              class="datetime-field"
+              type="date"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+              v-model="time"
+              label="Uhrzeit"
+              outlined
+              class="datetime-field"
+              type="time"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+
+        <!-- Row 4: Sitzplätze und Button zum Anbieten -->
+        <v-row no-gutters class="input-row">
+          <v-col cols="6">
+            <v-text-field
+              v-model="freeSeats"
+              label="Freie Plätze"
+              outlined
+              class="seats-field"
+              type="number"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="6">
+            <v-btn
+              color="#009260"
+              class="submit-button"
+              @click="dialog = !dialog; overlay = !overlay"
+            >
+              Anbieten
+            </v-btn>
+          </v-col>
+        </v-row>
       </v-col>
-    </div>
 
-    <!-- Row 4: Sitzplätze und Bestätigen (Button zusammen mit den Sitzplätzen) -->
-    <div class="row">
-      <div class="col">
-        <div class="seats-and-submit">
-          <v-text-field
-            v-model="freeSeats"
-            label="Freie Plätze"
-            outlined
-            class="seats-field"
-            type="number"
-          ></v-text-field>
-          <v-btn
-            color="#009260"
-            class="Submitbutton"
-            @click="dialog = !dialog; overlay = !overlay" 
-          >
-            Anbieten
-          </v-btn>
-        </div>
-      </div>
-    </div>
-  </v-col>
-
-  <div class="col">
-        <div id="map" class="independent-map"></div> <!-- Karte -->
+      <!-- Spalte 2 (Karte ohne Rows) -->
+      <v-col cols="12" md="6">
+        <div id="map" class="independent-map"></div>
+      </v-col>
+    </v-row>
   </div>
 
-</v-row>
-</div>  
-  <!--Overlay und Dialogfenster für Bestätigung-->
-  <v-fade-transition hide-on-leave> 
-  <v-overlay v-model="overlay">
-    <div class = "centered-container">
-      <v-dialog
-      v-model="dialog"
-      max-width="600"
-      persistent
-      >
+  <!-- Overlay und Dialogfenster für Bestätigung -->
+  <v-fade-transition hide-on-leave>
+    <v-overlay v-model="overlay">
+      <div class="centered-container">
+        <v-dialog v-model="dialog" max-width="600" persistent>
+          <v-card>
+            <div class="py-12 text-center">
+              <v-icon
+                class="icon-container"
+                color="#009260"
+                icon="mdi-check-circle-outline"
+                size="128"
+              ></v-icon>
 
-      <v-card>
-        <div class="py-12 text-center">
-          <v-icon
-          class="icon-container"
-            color="#009260"
-            icon="mdi-check-circle-outline"
-            size="128"
-          ></v-icon>
+              <div>
+                <h3>Das Fahrtenangebot wurde übermittelt!</h3>
+                <p>Du wirst nun weitergeleitet.</p>
+              </div>
+            </div>
 
-          <div> 
-            <h3>Das Fahrtenangebot wurde übermittelt!</h3>
-            <p>Du wirst nun weitergeleitet.</p>
-        </div>
-        </div>
+            <v-divider></v-divider>
 
-        <v-divider></v-divider>
-
-        <div class="pa-4 text-end">
-          <v-btn
-            class="text-none"
-            color="medium-emphasis"
-            min-width="92"
-            variant="outlined"
-            @click="$router.push('/profilepage')"
-          >
-            OK
-          </v-btn>
-        </div>
-        </v-card>
-      </v-dialog>
-    </div>
+            <div class="pa-4 text-end">
+              <v-btn
+                class="text-none"
+                color="medium-emphasis"
+                min-width="92"
+                variant="outlined"
+                @click="$router.push('/profilepage')"
+              >
+                OK
+              </v-btn>
+            </div>
+          </v-card>
+        </v-dialog>
+      </div>
     </v-overlay>
-    </v-fade-transition>
+  </v-fade-transition>
 </template>
 
-
 <script setup>
-import { ref } from 'vue'
+import { ref } from "vue";
 
-const dialog = ref(false) //dient dem Öffnen und Schließen des Popup-Dialogs
-const overlay = ref(false)
+const dialog = ref(false); // Dient dem Öffnen und Schließen des Popup-Dialogs
+const overlay = ref(false);
 </script>
 
 <script>
@@ -135,28 +135,17 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import NavigationBar from './NavigationBar.vue';
+import NavigationBar from "./NavigationBar.vue";
 
 export default {
   data() {
     return {
       map: null,
-      startLocation: '',
-      endLocation: '',
-      date: '',
-      time: '',
-      freeSeats: '',
-      dateRule: value => {
-        const today = new Date();
-        const maxDate = new Date();
-        maxDate.setDate(today.getDate() + 28); // das datum muss in den nächsten 4 wochen liegen
-        const selectedDate = new Date(value);
-        return selectedDate >= today && selectedDate <= maxDate || 'Datum muss innerhalb der nächsten 4 Wochen liegen';
-      },
-      freeSeatsRule: value => {
-        const number = parseInt(value, 10);
-        return number >= 1 && number <= 9 || 'Freie Plätze müssen eine ganze Zahl zwischen 1 und 9 sein';
-      },
+      startLocation: "",
+      endLocation: "",
+      date: "",
+      time: "",
+      freeSeats: "",
     };
   },
   methods: {
@@ -180,158 +169,120 @@ export default {
 
       L.marker(uniBayreuthCoords).addTo(this.map);
     },
-    swapLocations() {
-      const temp = this.startLocation;
-      this.startLocation = this.endLocation;
-      this.endLocation = temp;
-    },
   },
   mounted() {
     this.initMap();
-  }, 
-  
-  watch: {
-      overlay (val) {
-        val && setTimeout(() => {
-          this.overlay = false
-        }, 2000)
-      },
-    },
+  },
 };
 </script>
 
 <style scoped>
-/* Container-Layout */
+/* Container füllt den gesamten Bildschirm */
 .container1 {
-  width: 90%; /* Container ist nun 90% der Bildschirmbreite */
-  max-width: 1200px; /* Maximale Breite von 1200px */
-  height: 80vh; /* Container nimmt 80% der Bildschirmhöhe ein */
-  background-color: white;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  margin: 0 auto; /* Zentriert den Container */
+  background-color: white;
 }
 
-.row {
+/* Container für die Spalten */
+.v-row {
   display: flex;
-  width: 100%;
-  height: 25%; /* Jede Row nimmt 25% der Containerhöhe ein */
+  flex-direction: row;
+  height: 100%;
 }
 
-.col {
-  flex: 1;
+/* Spalte 1 (mit 4 Rows) */
+.v-col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Jede Row in der ersten Spalte hat 25% der Höhe */
+.input-row {
+  flex: 1; /* Diese Rows nehmen jeweils 25% der Höhe ein */
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
 }
 
-/* Styling der Eingabefelder und Buttons */
-.location-field,
-.datetime-field,
+/* Klassenspezifische Styles */
+
+/* Start der Route */
+.start-location {
+  margin-left: 5%;
+  margin-right: 5%;
+  width: 80%;
+  text-align: center;
+}
+
+/* Ziel der Route */
+.end-location {
+  margin-left: 5%;
+  margin-right: 5%;
+  width: 80%;
+  text-align: center;
+}
+
+/* Datum und Uhrzeit */
+.datetime-field {
+  margin-left: 5%;
+  margin-right: 5%;
+  width: 80%;
+  text-align: center;
+}
+
+/* Sitzplätze */
 .seats-field {
-  width: 80%; /* Eingabefelder sind 80% der Breite der Column */
-  margin: 10px; /* Einheitlicher Abstand von 10px um alle Eingabefelder */
+  margin-left: 5%;
+  margin-right: 5%;
+  width: 80%;
+  text-align: center;
 }
 
-.Submitbutton {
-  width: 40%; /* Button hat jetzt eine kleinere Breite */
-  margin-top: 10px;
-  height: 50px;
-  font-size: 18px;
-}
-
-/* Styling für die Karte */
+/* Karte: Quadratisch und responsiv */
 .independent-map {
   width: 100%;
-  height: 100%;
-  max-width: 600px; /* Karte ist maximal 600px in der Breite */
-  max-height: 600px; /* Karte ist maximal 600px in der Höhe */
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 600px;
+  aspect-ratio: 1 / 1; /* Macht die Karte quadratisch */
+  margin: auto;
   border-radius: 15px;
-  z-index: 500;
+  border: 1px solid #ccc;
 }
 
-/* Sitzplätze und Button nebeneinander in der gleichen Row */
-.seats-and-submit {
+/* Overlay */
+.centered-container {
   display: flex;
-  justify-content: space-between;
-  width: 100%; /* Container für Sitzplätze und Button nimmt 100% der Breite */
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
 }
 
-.seats-and-submit > .v-text-field {
-  width: 30%; /* Sitzplätze nehmen jetzt nur 30% der Breite */
+.icon-container {
+  animation: fadeIn 0.4s;
 }
 
-.seats-and-submit > .v-btn {
-  width: 60%; /* Button nimmt 60% der Breite */
-}
-
-/* Mobile Anpassungen */
-@media (max-width: 768px) {
-  .row {
-    flex-direction: column; /* Stacken der Rows auf mobilen Geräten */
-    height: auto;
+@keyframes fadeIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
   }
-
-  .location-field,
-  .datetime-field,
-  .seats-field,
-  .Submitbutton {
-    width: 90%; /* Eingabefelder und Buttons auf 90% der Breite setzen */
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
   }
-
-  /* Karte passt sich der mobilen Ansicht an */
-  .independent-map {
-    width: 90%;
-    height: auto;
-  }
-}
-
-  /* Container für Bestätigung */
-  .centered-container { 
-    display: flex;
-    justify-content: center; 
-    align-items: center;
-    position: fixed; 
-    width: 90em;
-    top: 3em;
-  }
-
-  /* Icon Animation */
-  .icon-container { animation: fadeIn 0.4s;	}
-  
-  @keyframes fadeIn {
-   0% {
-		transform: translateX(0) scale(0);
-
-		opacity: 0;
-  }
-  45% {
-		transform: translate(0)
-		scale(1.3);
-
-		opacity: 1;
-	}
-  75% {
-		transform: translate(0)
-		scale(.9);
-	}
   100% {
-		transform: translateX(0) scale(1,1);
-
-		opacity: 1;
+    transform: scale(1);
+    opacity: 1;
   }
-  }
+}
 </style>
-
-
-
-
-
-
-
 
 
 
