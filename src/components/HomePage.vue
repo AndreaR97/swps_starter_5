@@ -64,17 +64,16 @@
 }
 
 .btn {
-  padding: 1.5rem 2rem; /* Mehr Padding für größere Buttons */
+  padding: 1rem 2rem;
   background-color: #008557;
   color: white;
   border: none;
   border-radius: 5px;
-  font-size: 1.2rem;
+  font-size: 1rem;
   cursor: pointer;
   width: 100%;
   max-width: 400px; /* Maximale Breite */
   height: auto;
-  min-height: 80px; /* Mindesthöhe für größere Buttons */
 }
 
 .btn:hover {

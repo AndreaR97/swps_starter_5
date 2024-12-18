@@ -1,5 +1,5 @@
-<template>
-<v-app-bar density="compact" class="navbar" >
+<template> 
+<v-app-bar density="compact" class="navbar" color="#009260"> <!-- Farbe könnt ihr wieder weiß machen wenn ihr das besser findet -->
     <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
     <v-toolbar-title>Title</v-toolbar-title>
     <v-spacer></v-spacer>
@@ -7,7 +7,7 @@
       <v-icon>mdi-message-text</v-icon>
     </v-btn>
     <v-btn icon>
-      <v-icon @click="$router.push('/loginpage')">mdi-account</v-icon>
+      <v-icon @click="$router.push('/registrationpage')">mdi-account</v-icon>
     </v-btn>
     <v-btn icon>
       <v-icon>mdi-logout</v-icon>

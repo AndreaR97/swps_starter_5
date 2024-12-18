@@ -5,6 +5,7 @@ import OfferRide from '@/components/OfferRide.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import ProfilePage from '@/components/ProfilePage.vue'; 
 import testpage from './components/testpage.vue';
+import RegistrationPage from './components/RegistrationPage.vue';
 
 const router = createRouter ({
   history: createWebHistory(process.env.BASE_URL),
@@ -15,7 +16,8 @@ const router = createRouter ({
     { path: '/homepage', component: HomePage},
     { path: '/loginpage', component: LoginPage},
     { path: '/profilepage', component: ProfilePage},
-    { path: '/testpage', component: testpage}
+    { path: '/testpage', component: testpage},
+    { path: '/registrationpage', component: RegistrationPage}
   ]
 })
 
