@@ -2,20 +2,8 @@
   <div class="profilepage">
     <img src="/assets/profilpage.png" alt="ProfilePageBackground" class="profilebackground" />
     
-    <v-app-bar density="compact" style="background-color:#E9E9ED;">
-      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Title</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>mdi-message-text</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon @click="$router.push('/loginpage')">mdi-account</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon @click="$router.push('/testpage')">mdi-logout</v-icon>
-      </v-btn>
-    </v-app-bar>
+    <!-- Navigation Bar -->
+    <NavigationBar></NavigationBar>
 
     <v-navigation-drawer
       v-model="drawer"
@@ -55,8 +43,13 @@
 </template>
 
 <script>
+import NavigationBar from './NavigationBar.vue';
+
 export default {
   name: 'ProfilePage',
+  components: {
+    NavigationBar
+  },
   data: () => ({
     drawer: false,
     group: null,
