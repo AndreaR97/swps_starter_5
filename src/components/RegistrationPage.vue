@@ -3,7 +3,7 @@
       <NavigationBar></NavigationBar>
       <v-container
         class="d-flex flex-column justify-center pt-5"
-        style="margin-top: 100px; height: 70vh;"
+        style="margin-top: 100px; height: 70vh; max-width: 70vh;"
       >
         <v-row class="mb-1">
           <v-col>
