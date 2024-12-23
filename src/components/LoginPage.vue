@@ -168,7 +168,7 @@ export default {
 
 .error-popup {
   position: fixed;
-  top: 25%;
+  top: 2%;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
