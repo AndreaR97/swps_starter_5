@@ -159,7 +159,7 @@ export default {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 150px;
+  margin-top: 150px auto;
 }
 
 .loginbutton:hover {
