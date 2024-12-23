@@ -1,21 +1,8 @@
 <template>
   <div class="container1">
+    <NavigationBar></NavigationBar>
     <!-- Navigation Bar -->
-    <v-app-bar density="compact" style="background-color:#009260;">
-      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Title</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>mdi-message-text</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon @click="$router.push('/loginpage')">mdi-account</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon @click="$router.push('/testpage')">mdi-logout</v-icon>
-      </v-btn>
-    </v-app-bar>
-
+    <!-- Removed old navigation bar code -->
     <v-navigation-drawer v-model="drawer" temporary>
       <v-list :items="items"></v-list>
     </v-navigation-drawer>
@@ -82,9 +69,13 @@
 </style>
 
 <script>
+import NavigationBar from './NavigationBar.vue';
+
 export default {
   name: 'HomePage',
-
+  components: {
+    NavigationBar,
+  },
   data: () => ({
     drawer: false,
     group: null,
