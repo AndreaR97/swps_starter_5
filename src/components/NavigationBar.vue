@@ -56,7 +56,7 @@ export default {
       if (this.isLoggedIn) {
         this.$router.push('/profilepage');
       } else {
-        this.$router.push('/registrationpage');
+        this.$router.push('/loginpage');
       }
     },
 

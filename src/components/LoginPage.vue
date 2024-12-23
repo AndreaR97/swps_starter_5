@@ -9,10 +9,19 @@
       <input type="password" placeholder="Kennwort" class="passwort" v-model="password" />
       <button @click="login" class="loginbutton">Anmelden</button>
       <p class="subtitle">
-        Melden Sie sich mit Ihrer persönlichen <span class="highlight">Benutzerkennung@myubt.de</span> an.<br> <br>
-        Log in with your personal<br>
-        <span class="highlight">User-ID@myubt.de</span>.
+        Melden Sie sich mit <span class="highlight">vorname.nachname@uni-bayreuth.de</span> an.<br> <br>
+        Log in with<br>
+        <span class="highlight">firstname.lastname@uni-bayreuth.de</span>.
       </p>
+      <v-row class="d-flex justify-center mt-3">
+        <v-btn 
+          variant="text" 
+          class="registration-link"
+          @click="goToRegistration"
+        >
+          Noch kein Konto? Registrieren
+        </v-btn>
+      </v-row>
     </div>
   </div>
 </template>
@@ -52,6 +61,9 @@ export default {
       } catch (error) {
         this.errorMessage = 'Fehler beim Anmelden';
       }
+    },
+    goToRegistration() {
+      this.$router.push('/registrationpage');
     }
   }
 };
@@ -74,7 +86,7 @@ export default {
 
 .whitebox {
   width: 450px;
-  height: 500px;
+  height: 550px;
   background-color: white;
   position: absolute;
   top: 50%;
@@ -162,5 +174,17 @@ export default {
   width: 100%;
   max-width: 500px;
   z-index: 1000;
+}
+
+.registration-link {
+  font-size: 1.2em;
+  width: 400px;
+  height: 60px;
+  font-weight: bold;
+  color: rgb(0, 82, 147);
+  text-decoration: underline;
+}
+.registration-link:hover {
+  color: rgb(0, 82, 147);
 }
 </style>
