@@ -1,12 +1,13 @@
 <template>
   <div class="loginpage">
+    <v-alert v-if="errorMessage" type="error" dismissible class="error-popup">{{ errorMessage }}</v-alert>
     <img src="/assets/anmeldepage.png" alt="LoginScreen" class="loginbackground" />
     <div class="whitebox">
       <img src="/assets/unibayreuthlogo.png" alt="Uni Bayreuth Logo" class="logo" />
       <h1 class="title">Anmelden</h1>
-      <input type="text" placeholder="jemand@example.com" class="name" />
-      <input type="password" placeholder="Kennwort" class="passwort" />
-      <button @click="$router.push('/profilepage')" class="loginbutton">Anmelden</button>
+      <input type="text" placeholder="jemand@example.com" class="name" v-model="email" />
+      <input type="password" placeholder="Kennwort" class="passwort" v-model="password" />
+      <button @click="login" class="loginbutton">Anmelden</button>
       <p class="subtitle">
         Melden Sie sich mit Ihrer persönlichen <span class="highlight">Benutzerkennung@myubt.de</span> an.<br> <br>
         Log in with your personal<br>
@@ -17,8 +18,38 @@
 </template>
 
 <script>
+import { supabase } from '../lib/supabaseClient';
+
 export default {
   name: "LoginPage",
+  data() {
+    return {
+      email: '',
+      password: '',
+      errorMessage: ''
+    };
+  },
+  methods: {
+    async login() {
+      this.errorMessage = '';
+      try {
+        const { data: user } = await supabase
+          .from('Person')
+          .select('E_Mail_Adresse, Passwort')
+          .eq('E_Mail_Adresse', this.email)
+          .eq('Passwort', this.password)
+          .single();
+        
+        if (user) {
+          this.$router.push('/profilepage');
+        } else {
+          this.errorMessage = 'Falsche Anmeldedaten';
+        }
+      } catch (error) {
+        this.errorMessage = 'Fehler beim Anmelden';
+      }
+    }
+  }
 };
 </script>
 
@@ -117,5 +148,15 @@ export default {
 
 .loginbutton:hover {
   background-color: rgb(0, 82, 147);
+}
+
+.error-popup {
+  position: fixed;
+  top: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 500px;
+  z-index: 1000;
 }
 </style>

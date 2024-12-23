@@ -87,6 +87,7 @@
   
   <script>
   import NavigationBar from './NavigationBar.vue';
+  import { supabase } from '../lib/supabaseClient';
   
   export default {
     components: {
@@ -130,13 +131,37 @@
       }
     },
     methods: {
-      validateForm() {
+      async validateForm() {
         this.errorMessage = '';
         if (!this.isFormValid) {
           this.errorMessage = 'Bitte füllen Sie alle Felder korrekt aus';
           return;
         }
-        this.$router.push('/loginpage');
+        try {
+          const { data: existingUser } = await supabase
+            .from('Person')
+            .select('E_Mail_Adresse')
+            .eq('E_Mail_Adresse', this.email)
+            .single();
+          
+          if (existingUser) {
+            this.errorMessage = 'Diese E-Mail-Adresse wird bereits verwendet';
+            return;
+          }
+  
+          await supabase
+            .from('Person') 
+            .insert([{
+              E_Mail_Adresse: this.email,
+              Passwort: this.password,
+              Vorname: this.firstName,
+              Nachname: this.lastName,
+              Rolle: this.role
+            }]);
+          this.$router.push('/loginpage');
+        } catch (error) {
+          this.errorMessage = 'Fehler beim Erstellen des Kontos';
+        }
       }
     }
   };
