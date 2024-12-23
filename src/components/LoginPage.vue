@@ -39,8 +39,12 @@ export default {
           .eq('E_Mail_Adresse', this.email)
           .eq('Passwort', this.password)
           .single();
-        
+
         if (user) {
+
+          const token = `dummy-token-for-${user.E_Mail_Adresse}`;
+          localStorage.setItem('authToken', token);
+
           this.$router.push('/profilepage');
         } else {
           this.errorMessage = 'Falsche Anmeldedaten';

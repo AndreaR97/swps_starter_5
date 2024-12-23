@@ -1,20 +1,22 @@
 <template> 
-<v-app-bar density="compact" class="navbar" color="#009260"> <!-- Farbe könnt ihr wieder weiß machen wenn ihr das besser findet -->
+  <v-app-bar density="compact" class="navbar" color="#009260">
     <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
     <v-toolbar-title>Title</v-toolbar-title>
     <v-spacer></v-spacer>
+
     <v-btn icon>
       <v-icon>mdi-message-text</v-icon>
     </v-btn>
-    <v-btn icon>
-      <v-icon @click="$router.push('/registrationpage')">mdi-account</v-icon>
+
+    <v-btn icon @click="handleAccountClick">
+      <v-icon>mdi-account</v-icon>
     </v-btn>
-    <v-btn icon>
+
+    <v-btn icon v-if="isLoggedIn" @click="logout">
       <v-icon>mdi-logout</v-icon>
     </v-btn>
   </v-app-bar>
 
-  <!-- Navigation Drawer -->
   <v-navigation-drawer
     v-model="drawer"
     :location="$vuetify.display.mobile ? 'bottom' : undefined"
@@ -24,10 +26,9 @@
   </v-navigation-drawer>
 </template>
 
+
 <script>
-
 export default {
-
   data: () => ({
     drawer: false,
     group: null,
@@ -41,13 +42,34 @@ export default {
         value: 'bar',
       }
     ],
-    
   }),
 
-watch: {
-    group () {
-      this.drawer = false
+  computed: {
+    isLoggedIn() {
+      return Boolean(localStorage.getItem('authToken'));
     },
   },
-}
+
+  methods: {
+
+    handleAccountClick() {
+      if (this.isLoggedIn) {
+        this.$router.push('/profilepage');
+      } else {
+        this.$router.push('/registrationpage');
+      }
+    },
+
+    logout() {
+      localStorage.removeItem('authToken'); 
+      this.$router.push('/loginpage'); 
+    },
+  },
+
+  watch: {
+    group() {
+      this.drawer = false;
+    },
+  },
+};
 </script>
