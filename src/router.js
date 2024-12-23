@@ -1,7 +1,7 @@
 import { createWebHistory, createRouter } from 'vue-router'
 import HomePage from '@/components/HomePage.vue'; 
 import BookRide from '@/components/BookRide.vue'; 
-import OfferRide from '@/components/OfferRide.vue'; 
+import OfferRide from '@/components/OfferRide.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import ProfilePage from '@/components/ProfilePage.vue'; 
 import testpage from './components/testpage.vue';
