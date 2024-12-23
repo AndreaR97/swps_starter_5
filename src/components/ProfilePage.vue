@@ -123,8 +123,13 @@ export default {
   data: () => ({
     passengerRides: [
       { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
+      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
+      { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
+      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
     ],
     driverRides: [
+      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
+      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
       { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
       { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
     ]
@@ -165,7 +170,7 @@ export default {
 }
 
 .right-area {
-  background-color: rgba(255, 255, 255, 0.815);
+  background-color: rgb(255, 255, 255);
   padding: 20px;
   border-radius: 10px;
   color: #000000;
