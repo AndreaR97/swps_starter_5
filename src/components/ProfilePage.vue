@@ -1,10 +1,5 @@
 <template>
   <div class="profilepage">
-    <img
-      src="/assets/profilpage.png"
-      alt="ProfilePageBackground"
-      class="profilebackground"
-    />
     <NavigationBar />
     <v-container fluid class="pa-5 main-container">
       <div style="height: 100px;"></div>
@@ -17,26 +12,28 @@
                 alt="ProfilePicture"
                 style="width: 150px; height: 150px;"
               />
-              <p style="margin-top: 10px; font-size: 24px;">Max Mustermann</p>
             </div>
           </div>
         </v-col>
         <v-col cols="12" md="6">
           <div class="right-area">
-            <div style="text-align: center; font-size: 25px;">
-              <p style="font-weight: bold;">Rolle: Student</p>
-              <p style="margin-top: 5px;">Eingespartes CO2: 5002 L</p>
+            <div style="text-align: left; font-size: 22px;"> 
+              <p style="font-weight: bold;">Vorname: Max</p>
+              <p style="font-weight: bold;">Nachname: Mustermann</p>
+              <p style="margin-top: 5px;">Rolle: Student</p>
             </div>
           </div>
         </v-col>
       </v-row>
-      <v-row class="rides-overview mt-20">
+      <v-row class="rides-overview mt-10"> 
         <v-col cols="12" md="6">
-          <v-card class="overflow-y-auto" max-height="400px">
-            <span
-              style="font-family: 'Arial'; font-weight: bold; font-size: 24px; color: #009260; padding:10px;"
-              >Geplante Fahrten als Mitfahrer:</span
-            >
+          <v-card class="overflow-y-auto" max-height="300px">
+            <div class="fixed-title">
+              <span
+                style="font-weight: bold; font-size: 24px; color: #009260; padding:10px;"
+                >Geplante Fahrten als Mitfahrer:</span
+              >
+            </div>
             <v-list lines="two">
               <v-item-group>
                 <v-list-item
@@ -48,7 +45,6 @@
                     <div>
                       <span
                         :style="{
-                          fontFamily: 'Minion Pro Regular',
                           fontSize: '20px',
                           fontWeight: 'bold'
                         }"
@@ -57,7 +53,6 @@
                       <br />
                       <span
                         :style="{
-                          fontFamily: 'Minion Pro Regular',
                           fontSize: '16px'
                         }"
                         >{{ ride.date }} um {{ ride.time }}</span
@@ -70,11 +65,13 @@
           </v-card>
         </v-col>
         <v-col cols="12" md="6">
-          <v-card class="overflow-y-auto" max-height="400px">
-            <span
-              style="font-family: 'Arial'; font-weight: bold; font-size: 24px; color: #009260; padding:10px;"
-              >Geplante Fahrten als Fahrer:</span
-            >
+          <v-card class="overflow-y-auto" max-height="300px">
+            <div class="fixed-title">
+              <span
+                style="font-weight: bold; font-size: 24px; color: #009260; padding:10px;"
+                >Geplante Fahrten als Fahrer:</span
+              >
+            </div>
             <v-list lines="two">
               <v-item-group>
                 <v-list-item
@@ -86,7 +83,6 @@
                     <div>
                       <span
                         :style="{
-                          fontFamily: 'Minion Pro Regular',
                           fontSize: '20px',
                           fontWeight: 'bold'
                         }"
@@ -95,7 +91,6 @@
                       <br />
                       <span
                         :style="{
-                          fontFamily: 'Minion Pro Regular',
                           fontSize: '16px'
                         }"
                         >{{ ride.date }} um {{ ride.time }}</span
@@ -107,6 +102,13 @@
             </v-list>
           </v-card>
         </v-col>
+      </v-row>
+
+      <v-row style="height: 50px;"></v-row>
+      <v-row justify="center"> 
+        <v-btn class="big-button" color="#009260" @click="$router.push('/')">
+          Weitere Fahrten planen
+        </v-btn> 
       </v-row>
     </v-container>
   </div>
@@ -123,11 +125,13 @@ export default {
   data: () => ({
     passengerRides: [
       { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
-      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
-      { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
-      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
+
     ],
     driverRides: [
+      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
+      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
+      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
+      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
       { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
       { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
       { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
@@ -144,15 +148,7 @@ export default {
   height: calc(100vh - 48px);
   overflow: hidden;
   z-index: 1;
-}
-
-.profilebackground {
-  width: 100%;
-  height: calc(100vh - 48px);
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
+  font-family: 'Arial', sans-serif; 
 }
 
 .main-container {
@@ -164,17 +160,17 @@ export default {
 }
 
 .left-area {
-  background-color: rgba(255, 255, 255, 0.0);
+  background-color: #ff000000; 
   padding: 20px;
   border-radius: 10px;
 }
 
 .right-area {
-  background-color: rgb(255, 255, 255);
+  background-color: #f0f0f0; 
   padding: 20px;
   border-radius: 10px;
   color: #000000;
-  margin-top: 50px;
+  margin-top: 25px;
 }
 
 .rides-overview {
@@ -182,7 +178,25 @@ export default {
 }
 
 .v-card {
+  background-color: #f0f0f0; 
   overflow-y: auto;
-  max-height: 400px;
+  max-height: 300px;
+  position: relative;
+}
+
+.v-list, .v-list-item {
+  background-color: #f0f0f0; 
+}
+
+.big-button {
+  font-size: 15px;
+  padding: 10px 32px;
+}
+
+.fixed-title {
+  position: sticky;
+  top: 0;
+  background-color: #f0f0f0; 
+  z-index: 1;
 }
 </style>
