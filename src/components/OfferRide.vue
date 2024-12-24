@@ -10,19 +10,23 @@
             <v-form>
 
               <v-row>
-                  <v-text-field
+                <v-autocomplete
                   label="Start der Route"
+                  clearable
                   type="email"
                   variant="solo-filled"
-                  ></v-text-field>
+                  :items="orte"
+                  ></v-autocomplete>
               </v-row>
 
               <v-row>
-                  <v-text-field
+                <v-autocomplete
                   label="Ziel der Route"
+                  clearable
                   type="email"
                   variant="solo-filled"
-                  ></v-text-field>
+                  :items="orte"
+                  ></v-autocomplete>
               </v-row>
 
               <v-row>
@@ -145,7 +149,13 @@
         date: "",
         time: "",
         freeSeats: "",
-      };
+      
+      orte: [
+        { title: 'Campus Bayreuth (Mensa)', value: 'foo' },
+        { title: 'Campus Kulmbach', value: 'bar' },
+        { title: 'Wittelsbacherring 10', value: 'bar' },
+      ]
+      }
     },
     methods: {
       initMap() {
@@ -200,6 +210,25 @@
 }
 .rounded{
   border-radius: 10px;
+}
+
+.icon-container {
+  animation: fadeIn 0.4s;
+}
+
+@keyframes fadeIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
   </style>
