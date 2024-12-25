@@ -125,6 +125,9 @@ export default {
   data: () => ({
     passengerRides: [
       { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
+      { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
+      { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
+      { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
 
     ],
     driverRides: [
@@ -189,8 +192,9 @@ export default {
 }
 
 .big-button {
-  font-size: 15px;
-  padding: 10px 32px;
+  font-size: 20px;
+  line-height: 5px;
+  padding: 30px 40px;
 }
 
 .fixed-title {
