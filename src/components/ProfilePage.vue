@@ -18,9 +18,9 @@
         <v-col cols="12" md="6">
           <div class="right-area">
             <div style="text-align: left; font-size: 22px;"> 
-              <p style="font-weight: bold;">Vorname: Max</p>
-              <p style="font-weight: bold;">Nachname: Mustermann</p>
-              <p style="margin-top: 5px;">Rolle: Student</p>
+              <p style="margin-top: 5px;">Rolle: {{ role }}</p>
+              <p style="font-weight: bold;">Name: {{ vorname }} {{ nachname }}</p>
+              <p style="font-weight: bold;">Email: {{ email }}</p>
             </div>
           </div>
         </v-col>
@@ -116,6 +116,7 @@
 
 <script>
 import NavigationBar from './NavigationBar.vue';
+import { supabase } from '../lib/supabaseClient';
 
 export default {
   name: 'ProfilePage',
@@ -123,10 +124,11 @@ export default {
     NavigationBar
   },
   data: () => ({
+    email: localStorage.getItem('userEmail'),
+    vorname: '',
+    nachname: '',
+    role: '',
     passengerRides: [
-      { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
-      { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
-      { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
       { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
 
     ],
@@ -141,6 +143,20 @@ export default {
       { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
     ]
   }),
+  async mounted() {
+    if (this.email) {
+      const { data: user } = await supabase
+        .from('Person')
+        .select('Vorname, Nachname, Rolle')
+        .eq('E_Mail_Adresse', this.email)
+        .single();
+      if (user) {
+        this.vorname = user.Vorname;
+        this.nachname = user.Nachname;
+        this.role = user.Rolle;
+      }
+    }
+  },
 };
 </script>
 

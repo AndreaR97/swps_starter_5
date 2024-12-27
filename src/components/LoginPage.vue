@@ -53,6 +53,8 @@ export default {
 
           const token = `dummy-token-for-${user.E_Mail_Adresse}`;
           localStorage.setItem('authToken', token);
+          localStorage.setItem('authToken', token);
+          localStorage.setItem('userEmail', user.E_Mail_Adresse);
 
           this.$router.push('/profilepage');
         } else {
