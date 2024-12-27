@@ -22,7 +22,16 @@
     :location="$vuetify.display.mobile ? 'bottom' : undefined"
     temporary
   >
-    <v-list :items="items"></v-list>
+    <v-list :items="items">
+      <v-list-item 
+        v-for="item in items"
+        :key = "item"
+        :title = "item.title"
+        @click="navigate(item.value)"
+        link
+      >
+    </v-list-item>
+    </v-list>
   </v-navigation-drawer>
 </template>
 
@@ -34,12 +43,8 @@ export default {
     group: null,
     items: [
       {
-        title: 'Foo',
-        value: 'foo',
-      },
-      {
-        title: 'Bar',
-        value: 'bar',
+        title: 'Zurück zur Startseite',
+        value: '/HomePage',
       }
     ],
   }),
@@ -64,6 +69,10 @@ export default {
       localStorage.removeItem('authToken'); 
       this.$router.push('/'); 
     },
+
+    navigate(value) { 
+      this.$router.push(value); }
+
   },
 
   watch: {

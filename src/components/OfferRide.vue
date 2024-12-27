@@ -14,6 +14,7 @@
                   label="Start der Route"
                   clearable
                   type="email"
+                  v-model="startLocation"
                   variant="solo-filled"
                   :items="orte"
                   ></v-autocomplete>
@@ -24,6 +25,7 @@
                   label="Ziel der Route"
                   clearable
                   type="email"
+                  v-model="endLocation"
                   variant="solo-filled"
                   :items="orte"
                   ></v-autocomplete>
@@ -35,6 +37,7 @@
                       <v-text-field
                       label="Datum"
                       type="date"
+                      v-model="date"
                       variant="solo-filled"
                       ></v-text-field>
                   </v-col>
@@ -43,6 +46,7 @@
                       <v-text-field
                       label="Uhrzeit"
                       type="time"
+                      v-model="time"
                       variant="solo-filled"
                       ></v-text-field>
                   </v-col>
@@ -55,6 +59,7 @@
                       <v-text-field
                       label="Sitzplätze"
                       type="number"
+                      v-model = "freeSeats"
                       variant="solo-filled"
                       ></v-text-field>
                   </v-col>
@@ -63,7 +68,7 @@
                   class="pr-0 align-items-center">
                       <v-btn
                       color="#009260"
-                      @click="dialog = !dialog; overlay = !overlay"
+                      @click="offerRide; dialog = !dialog; overlay = !overlay"
                       size="x-large"
                       class="rounded submit-button"
                       block>
@@ -139,24 +144,27 @@
   import markerIcon from "leaflet/dist/images/marker-icon.png";
   import markerShadow from "leaflet/dist/images/marker-shadow.png";
   import NavigationBar from "./NavigationBar.vue";
+  import { supabase } from '../lib/supabaseClient';
   
   export default {
     data() {
       return {
         map: null,
-        startLocation: "",
-        endLocation: "",
-        date: "",
-        time: "",
-        freeSeats: "",
+        startLocation: {required: true},
+        endLocation: '',
+        date: '',
+        time: '',
+        freeSeats: '',
       
-      orte: [
-        { title: 'Campus Bayreuth (Mensa)', value: 'foo' },
-        { title: 'Campus Kulmbach', value: 'bar' },
-        { title: 'Wittelsbacherring 10', value: 'bar' },
-      ]
+      orte: []
       }
     },
+    computed: {
+      requiredRule() {
+        return v => !!v || 'Dieses Feld ist erforderlich';
+      }
+    },
+
     methods: {
       initMap() {
         const uniBayreuthCoords = [49.928809, 11.585835];
@@ -178,9 +186,44 @@
   
         L.marker(uniBayreuthCoords).addTo(this.map);
       },
+
+      async getLocations() {
+        const { data: locations, error } = await supabase
+          .from('Ort')
+          .select('Adresse');
+  
+        // Check for errors
+        if (error) {
+          console.error('Error fetching data from Supabase:', error);
+          return;
+        }
+
+        locations.forEach((ort) => {
+        
+          this.orte.push(ort.Adresse);
+        })
+      },
+
+      async offerRide(){
+        try {
+          await supabase
+            .from('Fahrt') 
+            .insert([{
+              Fahrer: this.email,
+              Startort: this.startLocation,
+              Zielort: this.endLocation,
+              Abfahrtszeit: this.time,
+              Datum: this.date,
+              Sitzplätze: this.freeSeats,
+            }]);
+        } catch (error) {
+          this.errorMessage = 'Fehler beim Erstellen eines Fahrtangebots';
+        }
+      }
     },
-    mounted() {
+    async mounted(){
       this.initMap();
+      await this.getLocations();
     },
   };
   </script>
