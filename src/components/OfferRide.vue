@@ -226,6 +226,7 @@
       await this.getLocations();
     },
   };
+  
   </script>
 
   <style scoped>
