@@ -1,32 +1,23 @@
 <template>
   <div class="container1">
-    <NavigationBar></NavigationBar>
-    <!-- Navigation Bar -->
-    <!-- Removed old navigation bar code -->
+    <NavigationBar></NavigationBar>>
     <v-navigation-drawer v-model="drawer" temporary>
       <v-list :items="items"></v-list>
     </v-navigation-drawer>
 
-    <!-- First Empty Row -->
     <v-row>
       <v-col></v-col>
       <v-col></v-col>
     </v-row>
-
-    <!-- Second Row mit Buttons (Book Ride und Offer Ride) -->
     <v-row class="buttons-row">
-      <!-- Book Ride Button in Column 1 -->
       <v-col class="d-flex justify-center">
-        <v-btn @click="$router.push('/bookride')" class="btn">Book Ride</v-btn>
+        <v-btn @click="handleButtonClick('/bookride')" class="btn">Book Ride</v-btn>
       </v-col>
 
-      <!-- Offer Ride Button in Column 2 -->
       <v-col class="d-flex justify-center">
-        <v-btn @click="$router.push('/offerride')" class="btn">Offer Ride</v-btn>
+        <v-btn @click="handleButtonClick('/offerride')" class="btn">Offer Ride</v-btn>
       </v-col>
     </v-row>
-
-    <!-- Third Empty Row -->
     <v-row>
       <v-col></v-col>
       <v-col></v-col>
@@ -35,7 +26,7 @@
 </template>
 
 <style scoped>
-/* Container-Layout */
+
 .container1 {
   width: 100%;
   height: 100%;
@@ -46,7 +37,7 @@
 
 .buttons-row {
   display: flex;
-  justify-content: center; /* Buttons zentrieren */
+  justify-content: center; 
   align-items: center;
 }
 
@@ -90,6 +81,16 @@ export default {
       }
     ],
   }),
+
+  methods: {
+    handleButtonClick(route) {
+      if (localStorage.getItem('authToken')) {
+        this.$router.push(route);
+      } else {
+        this.$router.push({ path: '/loginpage', query: { redirectTo: route } });
+      }
+    }
+  },
 
   watch: {
     group() {

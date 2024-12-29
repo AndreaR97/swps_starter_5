@@ -5,11 +5,22 @@
     <div class="whitebox">
       <img src="/assets/unibayreuthlogo.png" alt="Uni Bayreuth Logo" class="logo" />
       <h1 class="title">Anmelden</h1>
-      <input type="text" placeholder="jemand@example.com" class="name" v-model="email" />
-      <input type="password" placeholder="Kennwort" class="passwort" v-model="password" />
+      <input 
+        type="text" 
+        placeholder="jemand@example.com" 
+        class="name" 
+        v-model="email" 
+      />
+      <input 
+        type="password" 
+        placeholder="Kennwort" 
+        class="passwort" 
+        v-model="password" 
+      />
       <button @click="login" class="loginbutton">Anmelden</button>
       <p class="subtitle">
-        Melden Sie sich mit <span class="highlight">vorname.nachname@uni-bayreuth.de</span> an.<br> <br>
+        Melden Sie sich mit 
+        <span class="highlight">vorname.nachname@uni-bayreuth.de</span> an.<br> <br>
         Log in with<br>
         <span class="highlight">firstname.lastname@uni-bayreuth.de</span>.
       </p>
@@ -50,13 +61,16 @@ export default {
           .single();
 
         if (user) {
-
           const token = `dummy-token-for-${user.E_Mail_Adresse}`;
-          localStorage.setItem('authToken', token);
           localStorage.setItem('authToken', token);
           localStorage.setItem('userEmail', user.E_Mail_Adresse);
 
-          this.$router.push('/profilepage');
+          const redirectRoute = this.$route.query.redirectTo;
+          if (redirectRoute) {
+            this.$router.push(redirectRoute);
+          } else {
+            this.$router.push('/profilepage');
+          }
         } else {
           this.errorMessage = 'Falsche Anmeldedaten';
         }
@@ -72,8 +86,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 .loginpage {
   background-color: brown;
 }
@@ -83,7 +95,6 @@ export default {
   height: 100%; 
   object-fit: cover; 
   position: absolute; 
-
 }
 
 .whitebox {
@@ -94,8 +105,8 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); 
-  border-radius: 10px; /* runde ecken oder? */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
 }
 
 .logo {
