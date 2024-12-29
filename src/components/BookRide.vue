@@ -129,7 +129,7 @@
             v-for="(person, n) in rideOffers"
             :key="n"
             :title="person.name"
-            :value="person.name"
+            :value="n"
             color= "#26874E"
             link
           >
