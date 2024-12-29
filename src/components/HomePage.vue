@@ -10,11 +10,11 @@
       <v-col></v-col>
     </v-row>
     <v-row class="buttons-row">
-      <v-col class="d-flex justify-center">
+      <v-col class="d-flex justify-end"> <!-- Align left button to the left -->
         <v-btn @click="handleButtonClick('/bookride')" class="btn">Book Ride</v-btn>
       </v-col>
 
-      <v-col class="d-flex justify-center">
+      <v-col class="d-flex justify-start"> <!-- Align right button to the right -->
         <v-btn @click="handleButtonClick('/offerride')" class="btn">Offer Ride</v-btn>
       </v-col>
     </v-row>
@@ -41,16 +41,20 @@
   align-items: center;
 }
 
+.buttons-row .v-col {
+  margin: 0 6rem; 
+}
+
 .btn {
-  padding: 1rem 2rem;
+  padding: 2rem 4rem; 
   background-color: #008557;
   color: white;
   border: none;
   border-radius: 5px;
-  font-size: 1rem;
+  font-size: 1.5rem; 
   cursor: pointer;
   width: 100%;
-  max-width: 400px; /* Maximale Breite */
+  max-width: 400px; 
   height: auto;
 }
 
