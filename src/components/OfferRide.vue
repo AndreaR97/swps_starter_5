@@ -261,11 +261,12 @@
       },
       async offerRide() {
         try {
+          const userEmail = localStorage.getItem('userEmail');
           const { error } = await supabase
             .from('Fahrt')
             .insert([{
               Farht_ID: 33,
-              Fahrer: "max.mustermann@uni-bayreuth.de",
+              Fahrer: userEmail,
               Startort: this.startLocation,
               Zielort: this.endLocation,
               Abfahrtszeit: this.time,
