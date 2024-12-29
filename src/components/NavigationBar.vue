@@ -1,6 +1,12 @@
 <template> 
   <v-app-bar density="compact" class="navbar" color="#009260">
-    <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-btn icon @click="this.$router.push('/')">
+      <v-icon>mdi-home</v-icon>
+      <v-tooltip
+        activator="parent"
+        location="bottom"
+      >Zurück zur Startseite</v-tooltip>
+    </v-btn>
     <v-toolbar-title>Title</v-toolbar-title>
     <v-spacer></v-spacer>
 
@@ -17,37 +23,11 @@
     </v-btn>
   </v-app-bar>
 
-  <v-navigation-drawer
-    v-model="drawer"
-    :location="$vuetify.display.mobile ? 'bottom' : undefined"
-    temporary
-  >
-    <v-list :items="items">
-      <v-list-item 
-        v-for="item in items"
-        :key = "item"
-        :title = "item.title"
-        @click="navigate(item.value)"
-        link
-      >
-    </v-list-item>
-    </v-list>
-  </v-navigation-drawer>
 </template>
 
 
 <script>
 export default {
-  data: () => ({
-    drawer: false,
-    group: null,
-    items: [
-      {
-        title: 'Zurück zur Startseite',
-        value: '/HomePage',
-      }
-    ],
-  }),
 
   computed: {
     isLoggedIn() {
@@ -75,10 +55,5 @@ export default {
 
   },
 
-  watch: {
-    group() {
-      this.drawer = false;
-    },
-  },
 };
 </script>

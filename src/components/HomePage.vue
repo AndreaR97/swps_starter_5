@@ -1,9 +1,6 @@
 <template>
   <div class="container1">
-    <NavigationBar></NavigationBar>>
-    <v-navigation-drawer v-model="drawer" temporary>
-      <v-list :items="items"></v-list>
-    </v-navigation-drawer>
+    <NavigationBar></NavigationBar>
 
     <v-row>
       <v-col></v-col>
@@ -11,11 +8,11 @@
     </v-row>
     <v-row class="buttons-row">
       <v-col class="d-flex justify-end"> <!-- Align left button to the left -->
-        <v-btn @click="handleButtonClick('/bookride')" class="btn">Book Ride</v-btn>
+        <v-btn @click="handleButtonClick('/bookride')" class="btn">Fahrt buchen</v-btn>
       </v-col>
 
       <v-col class="d-flex justify-start"> <!-- Align right button to the right -->
-        <v-btn @click="handleButtonClick('/offerride')" class="btn">Offer Ride</v-btn>
+        <v-btn @click="handleButtonClick('/offerride')" class="btn">Fahrt anbieten</v-btn>
       </v-col>
     </v-row>
     <v-row>
@@ -71,20 +68,6 @@ export default {
   components: {
     NavigationBar,
   },
-  data: () => ({
-    drawer: false,
-    group: null,
-    items: [
-      {
-        title: 'Foo',
-        value: 'foo',
-      },
-      {
-        title: 'Bar',
-        value: 'bar',
-      }
-    ],
-  }),
 
   methods: {
     handleButtonClick(route) {
@@ -96,10 +79,5 @@ export default {
     }
   },
 
-  watch: {
-    group() {
-      this.drawer = false;
-    },
-  },
 };
 </script>
