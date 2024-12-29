@@ -17,6 +17,7 @@
                   v-model="startLocation"
                   variant="solo-filled"
                   :items="orte"
+                  :rules="[startLocationRule]"
                   ></v-autocomplete>
               </v-row>
 
@@ -28,6 +29,7 @@
                   v-model="endLocation"
                   variant="solo-filled"
                   :items="orte"
+                  :rules="[endLocationRule]"
                   ></v-autocomplete>
               </v-row>
 
@@ -39,6 +41,7 @@
                       type="date"
                       v-model="date"
                       variant="solo-filled"
+                      :rules="[dateRule]"
                       ></v-text-field>
                   </v-col>
                   <v-col
@@ -48,6 +51,7 @@
                       type="time"
                       v-model="time"
                       variant="solo-filled"
+                      :rules="[timeRule]"
                       ></v-text-field>
                   </v-col>
               </v-row>
@@ -56,12 +60,13 @@
               <v-row>
                   <v-col
                   class="pl-0">
-                      <v-text-field
+                      <v-select
                       label="Sitzplätze"
-                      type="number"
-                      v-model = "freeSeats"
                       variant="solo-filled"
-                      ></v-text-field>
+                      v-model="freeSeats"
+                      :items="seats"
+                      :rules="[seatRule]"
+                      ></v-select>
                   </v-col>
 
                   <v-col
@@ -71,7 +76,8 @@
                       @click="offerRide; dialog = !dialog; overlay = !overlay"
                       size="x-large"
                       class="rounded submit-button"
-                      block>
+                      block
+                      :disabled="!isFormValid">
                       Anbieten
                       </v-btn>
                   </v-col>
@@ -155,17 +161,68 @@
         date: '',
         time: '',
         freeSeats: '',
+        seats: [1, 2, 3, 4, 5, 6, 7, 8, 9],
       
       orte: []
       }
     },
     computed: {
-      requiredRule() {
-        return v => !!v || 'Dieses Feld ist erforderlich';
+      startLocationRule() {
+        return v => !!v || 'Startort ist erforderlich';
+      },
+      endLocationRule() {
+        return v => !!v || 'Zielort ist erforderlich';
+      },
+      dateRule() {
+        return v => {
+          if (!v) return 'Datum ist erforderlich';
+          const today = this.getBerlinNow();
+          today.setHours(0,0,0,0);
+          const maxDate = new Date(today);
+          maxDate.setDate(today.getDate() + 28);
+          const selectedDate = new Date(v);
+          selectedDate.setHours(0,0,0,0);
+          return (selectedDate >= today && selectedDate <= maxDate)
+            || 'Datum muss in den nächsten 4 Wochen liegen';
+        };
+      },
+      timeRule() {
+        return v => {
+          if (!v) return 'Uhrzeit ist erforderlich';
+          const now = this.getBerlinNow();
+          const selectedDate = new Date(this.date);
+          if (selectedDate.toDateString() === now.toDateString()) {
+            const [hours, minutes] = v.split(':');
+            const chosenTime = this.getBerlinNow();
+            chosenTime.setHours(hours, minutes);
+            if (chosenTime <= now) {
+              return 'Uhrzeit muss in der Zukunft liegen';
+            }
+          }
+          return true;
+        };
+      },
+      seatRule() {
+        return v => {
+          if (!v) return 'Sitzplätze sind erforderlich';
+          return (v >= 1 && v <= 9) || 'Sitzplätze müssen zwischen 1 und 9 sein';
+        };
+      },
+      isFormValid() {
+        return (
+          this.startLocation &&
+          this.endLocation &&
+          this.dateRule(this.date) === true &&
+          this.timeRule(this.time) === true &&
+          this.seatRule(this.freeSeats) === true
+        );
       }
     },
 
     methods: {
+      getBerlinNow() {
+        return new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
+      },
       initMap() {
         const uniBayreuthCoords = [49.928809, 11.585835];
         this.map = L.map("map").setView(uniBayreuthCoords, 15);
@@ -192,7 +249,6 @@
           .from('Ort')
           .select('Adresse');
   
-        // Check for errors
         if (error) {
           console.error('Error fetching data from Supabase:', error);
           return;
@@ -201,30 +257,37 @@
         locations.forEach((ort) => {
         
           this.orte.push(ort.Adresse);
-        })
+        });
       },
-
-      async offerRide(){
+      async offerRide() {
         try {
-          await supabase
-            .from('Fahrt') 
+          const { error } = await supabase
+            .from('Fahrt')
             .insert([{
-              Fahrer: this.email,
+              Farht_ID: 33,
+              Fahrer: "max.mustermann@uni-bayreuth.de",
               Startort: this.startLocation,
               Zielort: this.endLocation,
               Abfahrtszeit: this.time,
               Datum: this.date,
-              Sitzplätze: this.freeSeats,
+              Sitzplätze: this.freeSeats
             }]);
+          if (error) {
+            console.error('Error inserting data:', error);
+            this.errorMessage = 'Fehler beim Erstellen eines Fahrtangebots';
+          } else {
+            console.log('Data inserted successfully');
+          }
         } catch (error) {
+          console.error('Unexpected error:', error);
           this.errorMessage = 'Fehler beim Erstellen eines Fahrtangebots';
         }
       }
     },
-    async mounted(){
+    async mounted() {
       this.initMap();
       await this.getLocations();
-    },
+    }
   };
   
   </script>
