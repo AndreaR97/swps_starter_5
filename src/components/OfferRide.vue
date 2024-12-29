@@ -140,7 +140,7 @@
 <script setup>
   import { ref } from "vue";
   
-  const dialog = ref(false); // Dient dem Öffnen und Schließen des Popup-Dialogs
+  const dialog = ref(false); 
   const overlay = ref(false);
   </script>
   
@@ -156,7 +156,7 @@
     data() {
       return {
         map: null,
-        startLocation: {required: true},
+        startLocation: '',
         endLocation: '',
         date: '',
         time: '',
@@ -265,13 +265,13 @@
           const { error } = await supabase
             .from('Fahrt')
             .insert([{
-              Farht_ID: 33,
+              Fahrt_ID: 2,
               Fahrer: userEmail,
               Startort: this.startLocation,
               Zielort: this.endLocation,
               Abfahrtszeit: this.time,
               Datum: this.date,
-              Sitzplätze: this.freeSeats
+              Sitzplaetze: this.freeSeats
             }]);
           if (error) {
             console.error('Error inserting data:', error);
