@@ -30,7 +30,6 @@
           <v-stepper-item
             title="Details zur Fahrt"
             value="3"
-            editable
             @click="setStep(2)"
           ></v-stepper-item>
 
@@ -124,11 +123,14 @@
             <v-card class="overflow-y-auto"
             max-height="600px">
         <v-list lines="two">
-          <v-item-group>
+          
+
           <v-list-item
             v-for="(person, n) in rideOffers"
             :key="n"
             :title="person.name"
+            :value="person.name"
+            color= "#26874E"
             link
           >
           <v-divider class="mb-2"></v-divider>
@@ -154,7 +156,7 @@
                 </div>
             </v-card>
         </v-list-item>
-        </v-item-group>
+
         </v-list>
       </v-card>
       </v-col>
@@ -342,11 +344,6 @@ export default {
       step: 0,
       selected: 0,
 
-      items: [
-        { title: 'Foo', value: 'foo' },
-        { title: 'Bar', value: 'bar' },
-      ],
-
       rideOffers: [
       {
         name: 'Cara',
@@ -474,7 +471,8 @@ export default {
       const temp = this.startLocation;
       this.startLocation = this.endLocation;
       this.endLocation = temp;
-    },
+    }
+
   },
   mounted() {
     this.initMap();
@@ -665,4 +663,5 @@ export default {
 .right-column {
   padding: 50px;
 }
+
 </style>
