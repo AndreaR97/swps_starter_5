@@ -9,8 +9,9 @@
           class="formItems">
             <v-form>
 
-              <v-row>
+              <v-row class="align-center" style="margin-bottom: 20px;">
                 <v-autocomplete
+                  ref="startLocInput"
                   label="Start der Route"
                   clearable
                   type="email"
@@ -21,8 +22,9 @@
                   ></v-autocomplete>
               </v-row>
 
-              <v-row>
+              <v-row class="align-center" style="margin-bottom: 20px;">
                 <v-autocomplete
+                  ref="endLocInput"
                   label="Ziel der Route"
                   clearable
                   type="email"
@@ -33,7 +35,7 @@
                   ></v-autocomplete>
               </v-row>
 
-              <v-row>
+              <v-row class="align-center" style="margin-bottom: 20px;">
                   <v-col
                   class="pl-0">
                       <v-text-field
@@ -57,7 +59,7 @@
               </v-row>
 
 
-              <v-row>
+              <v-row class="align-center" style="margin-bottom: 20px;">
                   <v-col
                   class="pl-0">
                       <v-select
@@ -152,10 +154,16 @@
     },
     computed: {
       startLocationRule() {
-        return v => !!v || 'Startort ist erforderlich';
+        return v => {
+          if (v === this.endLocation) return 'Start- und Zielort dürfen nicht gleich sein';
+          return !!v || 'Startort ist erforderlich';
+        };
       },
       endLocationRule() {
-        return v => !!v || 'Zielort ist erforderlich';
+        return v => {
+          if (v === this.startLocation) return 'Start- und Zielort dürfen nicht gleich sein';
+          return !!v || 'Zielort ist erforderlich';
+        };
       },
       dateRule() {
         return v => {
@@ -200,6 +208,15 @@
           this.timeRule(this.time) === true &&
           this.seatRule(this.freeSeats) === true
         );
+      }
+    },
+
+    watch: {
+      startLocation() {
+        this.$refs.endLocInput && this.$refs.endLocInput.validate();
+      },
+      endLocation() {
+        this.$refs.startLocInput && this.$refs.startLocInput.validate();
       }
     },
 
@@ -295,10 +312,11 @@
 /* Karte quadratisch machen */
 .independent-map {
     width: 100%;
-    max-width: 500px;
-    max-height: 500px;
+    max-width: 700px; /* Increase the max width */
+    max-height: 700px; /* Increase the max height */
     aspect-ratio: 1 / 1; /* Hält die Karte quadratisch */
     background-color: #ccc; /* Platzhalterfarbe für die Karte */
+    border-radius: 15px; 
 }
 
 .independent-map > * {
