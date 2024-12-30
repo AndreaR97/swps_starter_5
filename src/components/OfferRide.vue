@@ -117,17 +117,6 @@
 
             <v-divider></v-divider>
 
-            <div class="pa-4 text-end">
-              <v-btn
-                class="text-none"
-                color="medium-emphasis"
-                min-width="92"
-                variant="outlined"
-                @click="$router.push('/profilepage')"
-              >
-                OK
-              </v-btn>
-            </div>
           </v-card>
         </v-dialog>
       </div>
@@ -278,6 +267,9 @@
             console.log('Data inserted successfully');
             this.dialog = true;
             this.overlay = true;
+            setTimeout(() => {
+              this.$router.push('/profilepage');
+            }, 2000); // nach 2 Sekunden weiterleiten. und ich hab diesen ok button weg gemacht
           }
         } catch (error) {
           console.error('Unexpected error:', error);
