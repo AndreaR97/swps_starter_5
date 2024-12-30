@@ -73,7 +73,7 @@
                   class="pr-0 align-items-center">
                       <v-btn
                       color="#009260"
-                      @click="offerRide; dialog = !dialog; overlay = !overlay"
+                      @click="offerRide"
                       size="x-large"
                       class="rounded submit-button"
                       block
@@ -137,14 +137,7 @@
 
 </template>
 
-<script setup>
-  import { ref } from "vue";
-  
-  const dialog = ref(false); 
-  const overlay = ref(false);
-  </script>
-  
-  <script>
+<script>
   import L from "leaflet";
   import "leaflet/dist/leaflet.css";
   import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -153,6 +146,7 @@
   import { supabase } from '../lib/supabaseClient';
   
   export default {
+    components: { NavigationBar },
     data() {
       return {
         map: null,
@@ -162,7 +156,9 @@
         time: '',
         freeSeats: '',
         seats: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        orte: []
+        orte: [],
+        dialog: false,
+        overlay: false
       }
     },
     computed: {
@@ -261,10 +257,13 @@
       async offerRide() {
         try {
           const userEmail = localStorage.getItem('userEmail');
+          if (!userEmail) {
+            console.error('No user email found in localStorage.');
+            return;
+          }
           const { error } = await supabase
             .from('Fahrt')
             .insert([{
-              Fahrt_ID: 2,
               Fahrer: userEmail,
               Startort: this.startLocation,
               Zielort: this.endLocation,
@@ -277,6 +276,8 @@
             this.errorMessage = 'Fehler beim Erstellen eines Fahrtangebots';
           } else {
             console.log('Data inserted successfully');
+            this.dialog = true;
+            this.overlay = true;
           }
         } catch (error) {
           console.error('Unexpected error:', error);
