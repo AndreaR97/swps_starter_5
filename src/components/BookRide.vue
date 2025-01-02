@@ -21,7 +21,6 @@
           <v-stepper-item
             title="Wähle eine Fahrt aus"
             value="2"
-            editable
             @click="setStep(1)"
           ></v-stepper-item>
 
@@ -41,77 +40,110 @@
           ></v-stepper-item>
         </v-stepper-header>
 
-        <v-stepper-items>
+        <!--Inhalt der einzelnen Steps-->
+        <v-stepper-items>         
           <div v-if="step === 0">
             <v-stepper-window>
               <div>
                 <v-row>
-                    <v-col>
-                      <div class="row">
-                      <v-text-field
-                        v-model="startLocation"
-                        label="Start der Route"
-                        outlined
-                        class="location-field"
-                      ></v-text-field>
-                      </div>
+                  <v-container
+                      class="mt-2">
+                          <v-row
+                          class=" align-center">
+                            <v-col
+                              >
+                                <v-form>
+                                  <v-row class="pb-6 align-center">
+                                    <v-autocomplete
+                                      ref="startLocInput"
+                                      label="Start der Route"
+                                      clearable
+                                      type="email"
+                                      v-model="startLocation"
+                                      variant="solo-filled"
+                                      :items="orte"
+                                      :rules="[startLocationRule, requiredRule]"
+                                      ></v-autocomplete>
+                                  </v-row>
 
-                    <!-- Row 2: Ziel der Route und Karte -->
-                    <div class="row">
-                        <v-text-field
-                          v-model="endLocation"
-                          label="Ziel der Route"
-                          outlined
-                          class="location-field"
-                        ></v-text-field>
-                    </div>
+                                  <v-row class="justify-end mt-n13 mb-n4">
+                                    <v-btn icon @click="swapLocations" class="SwapButton">
+                                      <v-icon>mdi-swap-horizontal</v-icon>
+                                    </v-btn>
+                                  </v-row>
 
-                    <!-- Row 3: Datum und Uhrzeit -->
-                    <div class="row">
-                      <v-col>
-                        <v-text-field
-                          v-model="date"
-                          label="Datum"
-                          outlined
-                          class="datetime-field"
-                          type="date"
-                        ></v-text-field>
-                        </v-col>
+                                  <v-row class="pb-4 align-center">
+                                    <v-autocomplete
+                                      ref="endLocInput"
+                                      label="Ziel der Route"
+                                      clearable
+                                      type="email"
+                                      v-model="endLocation"
+                                      variant="solo-filled"
+                                      :items="orte"
+                                      :rules="[endLocationRule, requiredRule]"
+                                      ></v-autocomplete>
+                                  </v-row>
 
-                        <v-col>
-                          <v-text-field
-                            v-model="time"
-                            label="Uhrzeit"
-                            outlined
-                            class="datetime-field"
-                            type="time"
-                          ></v-text-field>
-                        </v-col>
-                      </div>
+                                  <v-row class="pb-1 align-center">
+                                      <v-col
+                                      class="pl-0">
+                                          <v-text-field
+                                          label="Datum"
+                                          type="date"
+                                          v-model="date"
+                                          variant="solo-filled"
+                                          :rules="[dateRule]"
+                                          ></v-text-field>
+                                      </v-col>
+                                      <v-col
+                                      class="pr-0">
+                                          <v-text-field
+                                          label="Uhrzeit"
+                                          type="time"
+                                          v-model="time"
+                                          variant="solo-filled"
+                                          :rules="[timeRule]"
+                                          ></v-text-field>
+                                      </v-col>
+                                  </v-row>
 
-                  <!-- Row 4: Sitzplätze und Bestätigen (Button zusammen mit den Sitzplätzen) -->
-                  <div class="row">
-                    <v-col cols="6">
-                      <div class="seats-and-submit">
-                        <v-text-field
-                          v-model="freeSeats"
-                          label="Freie Plätze"
-                          outlined
-                          class="seats-field"
-                          type="number"
-                        ></v-text-field>
-                      </div>
-                    </v-col>
-                    </div>
-                  </v-col>
 
-                <div class="col">
-                      <div id="map" class="independent-map"></div> <!-- Karte -->
-                </div>
-
+                                  <v-row class="pb-3">
+                                      <v-col
+                                      cols="6 pl-0">
+                                          <v-select
+                                          label="Sitzplätze"
+                                          variant="solo-filled"
+                                          v-model="neededSeats"
+                                          :items="seats"
+                                          :rules="[seatRule]"
+                                          ></v-select>
+                                      </v-col>
+                                      <v-col
+                                      cols="6 pr-0">
+                                          <v-btn
+                                          color="#009260"
+                                          @click="getRidesFromDatabase"
+                                          size="x-large"
+                                          class="rounded submit-button"
+                                          block
+                                          :disabled="!isFormValid">
+                                          OK
+                                          </v-btn>
+                                      </v-col>
+                                  </v-row>
+                                </v-form> 
+                                  
+                              </v-col>
+                              <v-col
+                              class="map-column v-col-sm-6 v-col-12 ml-6">
+                                <div id="map" class="independent-map"></div>
+                              </v-col>
+                          </v-row>
+                      </v-container>
               </v-row>
             </div>  
-              
       </v-stepper-window>
           </div>
 
@@ -123,8 +155,6 @@
             <v-card class="overflow-y-auto"
             max-height="600px">
         <v-list lines="two">
-          
-
           <v-list-item
             v-for="(person, n) in rideOffers"
             :key="n"
@@ -269,9 +299,11 @@
         </v-stepper-items>
 
         <v-stepper-actions
+        :disabled="disabled"
           @click:prev="setStep(this.step-1)"
-          @click:next="setStep(this.step+1)"
-        ></v-stepper-actions>
+          @click:next="setNextStep()"
+        >
+      </v-stepper-actions>
       </v-stepper>
     </v-container>
 
@@ -321,8 +353,7 @@
 
 
 <script setup>
-import { ref } from 'vue'
-
+import { ref } from 'vue';
 const dialog = ref(false) //dient dem Öffnen und Schließen des Popup-Dialogs
 const overlay = ref(false)  //dient dem Overlay für den Popup-Dialog
 </script>
@@ -334,15 +365,27 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import MapComponent from './MapComponent.vue';
 import NavigationBar from './NavigationBar.vue';
+import { supabase } from '../lib/supabaseClient';
 
 export default {
  
   data() {
     return {
-      drawer: false,
-      group: null,
+    map: null,
+    startLocation: '',
+    endLocation: '',
+    date: '',
+    time: '',
+    neededSeats: '',
+    seats: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    orte: [],
+
       step: 0,
-      selected: 0,
+      completeStep1: false,
+      completeStep2: false,
+      selected: null,
+      dialog: false,
+      overlay: false,
 
       rideOffers: [
       {
@@ -423,67 +466,219 @@ export default {
         rideid: "4"
       }
       ],
-
-      map: null,
-      startLocation: '',
-      endLocation: '',
-      date: '',
-      time: '',
-      freeSeats: '',
-      dateRule: value => {
-        const today = new Date();
-        const maxDate = new Date();
-        maxDate.setDate(today.getDate() + 28); // das datum muss in den näschten 4 wochen liegen
-        const selectedDate = new Date(value);
-        return selectedDate >= today && selectedDate <= maxDate || 'Datum muss innerhalb der nächsten 4 Wochen liegen';
-      },
-      freeSeatsRule: value => {
-        const number = parseInt(value, 10);
-        return number >= 1 && number <= 9 || 'Freie Plätze müssen eine ganze Zahl zwischen 1 und 9 sein';
-      },
     };
   },
-  
+
+  computed: {
+    requiredRule() {
+        return v => !!v || 'Dieses Feld ist erforderlich';
+      },
+      startLocationRule() {
+        return v => {
+          if (v === this.endLocation) return 'Start- und Zielort dürfen nicht gleich sein';
+          return !!v || 'Startort ist erforderlich';
+        };
+      },
+      endLocationRule() {
+        return v => {
+          if (v === this.startLocation) return 'Start- und Zielort dürfen nicht gleich sein';
+          return !!v || 'Zielort ist erforderlich';
+        };
+      },
+      dateRule() {
+        return v => {
+          if (!v) return 'Datum ist erforderlich';
+          const today = this.getBerlinNow();
+          today.setHours(0,0,0,0);
+          const maxDate = new Date(today);
+          maxDate.setDate(today.getDate() + 28);
+          const selectedDate = new Date(v);
+          selectedDate.setHours(0,0,0,0);
+          return (selectedDate >= today && selectedDate <= maxDate)
+            || 'Datum muss in den nächsten 4 Wochen liegen';
+        };
+      },
+      timeRule() {
+        return v => {
+          if (!v) return 'Uhrzeit ist erforderlich';
+          const now = this.getBerlinNow();
+          const selectedDate = new Date(this.date);
+          if (selectedDate.toDateString() === now.toDateString()) {
+            const [hours, minutes] = v.split(':');
+            const chosenTime = this.getBerlinNow();
+            chosenTime.setHours(hours, minutes);
+            if (chosenTime <= now) {
+              return 'Uhrzeit muss in der Zukunft liegen';
+            }
+          }
+          return true;
+        };
+      },
+      seatRule() {
+        return v => {
+          if (!v) return 'Sitzplätze sind erforderlich';
+          return (v >= 1 && v <= 9) || 'Sitzplätze müssen zwischen 1 und 9 sein';
+        };
+      },
+      isFormValid() {
+        return (
+          this.requiredRule &&
+          this.startLocation &&
+          this.endLocation &&
+          this.dateRule(this.date) === true &&
+          this.timeRule(this.time) === true &&
+          this.seatRule(this.neededSeatsSeats) === true
+        );
+      },
+      disabled() {
+        return this.step === 0
+          ? 'prev'
+        : this.step === 1 && !this.completeStep2 || !this.isFormValid
+          ? 'next'
+        : undefined
+      },
+
+    },
+
+    watch: {
+      startLocation() {
+        this.$refs.endLocInput && this.$refs.endLocInput.validate();
+      },
+      endLocation() {
+        this.$refs.startLocInput && this.$refs.startLocInput.validate();
+      },
+      selected(){
+        if(this.selected === null){
+        this.completeStep2 = false;
+        }
+        else{
+          this.completeStep2 = true;
+        }
+      }
+    },
 
   methods: {
-    setStep(a) { this.step = a; },
-    initMap() {
-      const uniBayreuthCoords = [49.928809, 11.585835];
-      this.map = L.map("map").setView(uniBayreuthCoords, 15);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
-      }).addTo(this.map);
-
-      const defaultIcon = L.icon({
-        iconUrl: markerIcon,
-        shadowUrl: markerShadow,
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41],
-      });
-      L.Marker.prototype.options.icon = defaultIcon;
-
-      L.marker(uniBayreuthCoords).addTo(this.map);
+    setNextStep() { 
+      if(!this.isFormValid &&this.step === 0){
+        this.step = 0
+      } else{this.step++}
     },
-    swapLocations() {
+
+      setStep(a) { this.step = a; },
+
+      getBerlinNow() {
+        return new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
+      },
+      initMap() {
+        const uniBayreuthCoords = [49.928809, 11.585835];
+        this.map = L.map("map").setView(uniBayreuthCoords, 15);
+  
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "© OpenStreetMap contributors",
+        }).addTo(this.map);
+  
+        const defaultIcon = L.icon({
+          iconUrl: markerIcon,
+          shadowUrl: markerShadow,
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41],
+        });
+        L.Marker.prototype.options.icon = defaultIcon;
+  
+        L.marker(uniBayreuthCoords).addTo(this.map);
+      },
+
+      swapLocations() {
       const temp = this.startLocation;
       this.startLocation = this.endLocation;
       this.endLocation = temp;
-    }
+    },
 
+      async getLocations() {
+        const { data: locations, error } = await supabase
+          .from('Ort')
+          .select('Adresse');
+  
+        if (error) {
+          console.error('Error fetching data from Supabase:', error);
+          return;
+        }
+
+        locations.forEach((ort) => {
+        
+          this.orte.push(ort.Adresse);
+        });
+      },
+      
+
+
+    async getDriver(email){
+      const { data: driver, error } = await supabase
+          .from('Person')
+          .select('Vorname, Nachname, E_Mail_Adresse')
+          .eq('E_Mail_Adresse', email)
+
+        if (error) {
+          console.error('Error fetching data from Supabase:', error);
+          return;
+        }
+        return (driver.Vorname , driver.Nachname).toString()
+    },
+
+    async getRole(email){
+      const { data: driRole, error } = await supabase
+          .from('Person')
+          .select('Rolle, E_Mail_Adresse')
+          .eq('E_Mail_Adresse', email)
+
+        if (error) {
+          console.error('Error fetching data from Supabase:', error);
+          return;
+        }
+        return (driRole.Rolle).toString()
+    },
+
+    
+      async getRidesFromDatabase() {
+        this.errorMessage = '';
+        if (!this.isFormValid) {
+          this.errorMessage = 'Bitte füllen Sie alle Felder korrekt aus';
+          return;
+        }
+        try {
+          const { data: rides, error } = await supabase
+            .from('Fahrt')
+            .select('Fahrt_ID, Fahrer, Abfahrtszeit, Datum, Startort, Zielort, Sitzplaetze')
+            .eq('Startort', this.startLocation, 'Zielort', this.endLocation, 'Datum', this.date)
+            .lte('Sitzplaetze', this.seats)
+            .gte('Abfahrtszeit', this.time )
+            .order('Abfahrtszeit', { ascending: true });
+
+          if (error) {
+            console.error('Error fetching data from Supabase:', error);
+            return;
+          }
+
+          rides.forEach((ride) => {
+            const addRide = {name: ride.Fahrer, role: ride.Fahrer, time: ride.Abfahrtszeit, seats: ride.Sitzplaetze}
+            this.rideOffers.push(addRide);
+          });
+        }catch (error) {
+          this.errorMessage = 'Fehler beim Suchen einer Fahrt';
+        }
   },
-  mounted() {
-    this.initMap();
-  }
-};
+},
+async mounted() {
+      this.initMap();
+      await this.getLocations();
+    }
+}
+
 </script>
 
 <style scoped>
-
-
-
 
 .v-sheet.v-theme-light--v-stepper {
   height: 100vh !important;       /* Mit !important erzwingt man die Anwendung der Regel */
@@ -497,13 +692,37 @@ export default {
   box-sizing: border-box;
 }
 
-
-
 .bookride {
   position: relative;
   width: 100%;
   height: 100%;
   z-index: 1; /* Ensure it does not cover other components */
+}
+
+.map-column {
+  justify-content: center;
+}
+
+/* Karte: Quadratisch und responsiv */
+/* Karte quadratisch machen */
+.independent-map {
+    width: 100%;
+    max-width: 700px; /* Increase the max width */
+    max-height: 700px; /* Increase the max height */
+    aspect-ratio: 1 / 1; /* Hält die Karte quadratisch */
+    background-color: #ccc; /* Platzhalterfarbe für die Karte */
+    border-radius: 15px; 
+}
+
+.independent-map > * {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.rounded{
+  border-radius: 10px;
 }
 
 .row {
@@ -528,105 +747,12 @@ export default {
   position: absolute;
 }
 
-.map-container {
-  display: flex;
-  justify-content: flex-end;
-  align-items: start;
-  height: calc(100vh - 64px); /* damit man nicht scrollen kann */
-  padding-right: 100px;
-}
-.independent-map {
-  width: 600px;
-  height: 600px;
-  border-radius: 15px;
-  z-index: 500;
-}
-
-.v-text-field input {
-  font-size: 1.4em;
-  font-weight: 100;
-  text-transform: capitalize;
-}
-
-.v-text-field label {
-  font-size: 1.1em;
-  font-weight: 100;
-}
-
-.Startlocation {
-  position: absolute;
-  top: 240px;
-  left: 100px;
-  width: 700px;
-  height: 150px;
+.SwapButton{
   z-index: 1000;
-  font-family: 'Minion Pro Italic';
-  font-size: 30px;
-}
-
-.Endlocation {
-  position: absolute;
-  top: 390px;
-  left: 100px;
-  width: 700px;
-  height: 150px;
-  z-index: 1000;
-  font-family: 'Minion Pro Italic';
-  font-size: 30px;
-}
-
-.Date {
-  position: absolute;
-  top: 540px;
-  left: 100px;
-  width: 275px;
-  height: 150px;
-  z-index: 1000;
-  font-family: 'Minion Pro Italic';
-  font-size: 30px;
-}
-
-.Time {
-  position: absolute;
-  top: 540px;
-  left: 525px;
-  width: 275px;
-  height: 150px;
-  z-index: 1000;
-  font-family: 'Minion Pro Italic';
-  font-size: 30px;
-}
-
-.Freeseats {
-  position: absolute;
-  top: 690px;
-  left: 100px;
-  width: 250px;
-  height: 150px;
-  z-index: 1000;
-  font-family: 'Minion Pro Italic';
-  font-size: 30px;
-}
-
-.Submitbutton {
-  position: absolute;
-  top: 690px;
-  left: 500px;
-  width: 300px;
-  height: 100px;
-  z-index: 1000;
-  font-family: 'Minion Pro Italic';
-  font-size: 20px;
-  color: #48535A;
-}
-
-.SwapButton {
-  position: absolute;
-  top: 320px;
-  left: 650px;
-  z-index: 1000;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
+  color: "#26874E";
+  
 }
 
 .icon-container {
@@ -665,3 +791,74 @@ export default {
 }
 
 </style>
+
+//async getRidesFromDatabase() {
+  const { data: rides, error } = await supabase
+      .from('Fahrt')
+      .select('Fahrt_ID, Fahrer, Abfahrtszeit, Datum, Startort, Zielort, Sitzplaetze')
+      .eq('Startort', this.startLocation, 'Zielort', this.endLocation, 'Datum', this.date)
+      .lte('Sitzplaetze', this.seats)
+      .gte('Abfahrtszeit', this.time )
+      .order('Abfahrtszeit', { ascending: true })
+
+    if (error) {
+      console.error('Error fetching data from Supabase:', error);
+      return;
+    }
+
+    rides.forEach((ride) => {
+      const addRide = {name: ride.Fahrer, role: ride.Fahrer, time: ride.Abfahrtszeit, seats: ride.Sitzplaetze}
+      this.rideOffers.push(addRide);
+    });
+  },
+
+async getDriver(email){
+  const { data: driver, error } = await supabase
+      .from('Person')
+      .select('Vorname, Nachname, E_Mail_Adresse')
+      .eq('E_Mail_Adresse', email)
+
+    if (error) {
+      console.error('Error fetching data from Supabase:', error);
+      return;
+    }
+
+    const { Vorname} = driver;
+    return Vorname
+},
+
+async getRole(email){
+  const { data: driRole, error } = await supabase
+      .from('Person')
+      .select('Rolle, E_Mail_Adresse')
+      .eq('E_Mail_Adresse', email)
+
+    if (error) {
+      console.error('Error fetching data from Supabase:', error);
+      return;
+    }
+    const { Rolle} = driRole;
+    return Rolle
+}
+},
+async mounted() {
+await this.getDriver();
+  await this.getRole();
+  await this.getRidesFromDatabase();
+}
+
+isFormValid() {
+  if(
+    this.requiredRule &&
+    this.startLocation &&
+    this.endLocation &&
+    this.dateRule(this.date) === true &&
+    this.timeRule(this.time) === true &&
+    this.seatRule(this.neededSeats) === true){
+      this.completeStep1 = true;
+      return true;
+    } else{
+      this.completeStep1 = false;
+      return false;
+    }
+}
