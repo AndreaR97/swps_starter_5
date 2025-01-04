@@ -29,6 +29,7 @@
           <v-stepper-item
             title="Details zur Fahrt"
             value="3"
+            editable
             @click="setStep(2)"
           ></v-stepper-item>
 
@@ -250,9 +251,33 @@
   
                   </v-col>
                   <v-col cols="6" class="right-column">
-                    <div style="display: flex; justify-content: center; height: 100%; position: relative;">
-                      <div style="border-left: 3px solid black; height: 100%; position: relative;">
-                        <div style="position: absolute; top: 0; left: -6px; width: 10px; height: 10px; background-color: black; border-radius: 50%;"></div>
+                    <v-card class="mx-auto" max-width="500" max-height="490px">
+                        <v-toolbar color="#009260">
+                           <v-toolbar-title class="text-h6" text="Verlauf der Fahrt"></v-toolbar-title>
+                          </v-toolbar>
+                              <v-card-text>
+                                <div class="font-weight-bold ms-1 mb-2">Today</div>
+                                   <v-timeline align="start" density="compact">
+                                      <v-timeline-item
+                                        v-for="halt in fahrtverlauf"
+                                        :key="halt.location"
+                                        :dot-color="halt.color"
+                                        size="x-small"
+                                      >
+                                        <div class="mb-10">
+                                          <div class="font-weight-normal" style="font-size: 20px">
+                                            <strong>{{ halt.location }}</strong>
+                                          </div>
+                                        <div style="font-size:15px">um {{ halt.time}}</div>
+                                          </div>
+                                      </v-timeline-item>
+                                   </v-timeline>
+                                </v-card-text>
+                      </v-card>
+
+
+                        <!---
+                       <div style="position: absolute; top: 0; left: -6px; width: 10px; height: 10px; background-color: black; border-radius: 50%;"></div>
                         <span style="position: absolute; top: -15px; left: -70px; font-family: Arial; color: #7F8990; font-size: 25px;">Start</span>
                         <span style="position: absolute; top: -15px; left: 20px; font-family: Arial; color: #7F8990; font-size: 25px;">10:32</span>
                         <span style="position: absolute; top: 10px; left: 20px; font-family: Arial; color: #7F8990; font-size: 25px;">Bayreuth</span>
@@ -268,8 +293,7 @@
                         <span style="position: absolute; top: 96%; left: -60px; font-family: Arial; color: #7F8990; font-size: 25px;">Ziel</span>
                         <span style="position: absolute; top: 96%; left: 20px; font-family: Arial; color: #7F8990; font-size: 25px;">14:00</span>
                         <span style="position: absolute; top: 101%; left: 20px; font-family: Arial; color: #7F8990; font-size: 25px;">Köln</span>
-                      </div>
-                    </div>
+                      -->               
                   </v-col>
                 </v-row>
               </v-container>
@@ -379,7 +403,7 @@ export default {
     neededSeats: '',
     seats: [1, 2, 3, 4, 5, 6, 7, 8, 9],
     orte: [],
-
+    
       step: 0,
       completeStep1: false,
       completeStep2: false,
@@ -466,6 +490,26 @@ export default {
         rideid: "4"
       }
       ],
+      fahrtverlauf: [
+        {
+          location: 'Wittelsbacherring 10',
+          message: `Sure, I'll see you later.`,
+          time: '10:42am',
+          color: 'deep-purple-lighten-1',
+        },
+        {
+          location: 'Campus Kulmbach',
+          message: 'Yeah, sure. Does 1:00pm work?',
+          time: '10:37am',
+          color: 'green',
+        },
+        {
+          location: 'Campus Bayreuth (Mensa)',
+          message: 'Did you still want to grab lunch today?',
+          time: '9:47am',
+          color: 'deep-purple-lighten-1',
+        },
+      ],
     };
   },
 
@@ -527,7 +571,7 @@ export default {
           this.endLocation &&
           this.dateRule(this.date) === true &&
           this.timeRule(this.time) === true &&
-          this.seatRule(this.neededSeatsSeats) === true
+          this.seatRule(this.neededSeats) === true
         );
       },
       disabled() {
@@ -547,6 +591,7 @@ export default {
       endLocation() {
         this.$refs.startLocInput && this.$refs.startLocInput.validate();
       },
+      
       selected(){
         if(this.selected === null){
         this.completeStep2 = false;
@@ -563,7 +608,6 @@ export default {
         this.step = 0
       } else{this.step++}
     },
-
       setStep(a) { this.step = a; },
 
       getBerlinNow() {
