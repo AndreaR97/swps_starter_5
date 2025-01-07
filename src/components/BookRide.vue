@@ -29,7 +29,6 @@
           <v-stepper-item
             title="Details zur Fahrt"
             value="3"
-            editable
             @click="setStep(2)"
           ></v-stepper-item>
 
@@ -121,25 +120,14 @@
                                           :rules="[seatRule]"
                                           ></v-select>
                                       </v-col>
-                                      <v-col
-                                      cols="6 pr-0">
-                                          <v-btn
-                                          color="#009260"
-                                          @click="getRidesFromDatabase"
-                                          size="x-large"
-                                          class="rounded submit-button"
-                                          block
-                                          :disabled="!isFormValid">
-                                          OK
-                                          </v-btn>
-                                      </v-col>
+                                      
                                   </v-row>
                                 </v-form> 
                                   
                               </v-col>
                               <v-col
                               class="map-column v-col-sm-6 v-col-12 ml-6">
-                                <div id="map" class="independent-map"></div>
+                                <Map_Component></Map_Component>
                               </v-col>
                           </v-row>
                       </v-container>
@@ -191,9 +179,10 @@
         </v-list>
       </v-card>
       </v-col>
-      <v-col>
-        <MapComponent></MapComponent>
-      </v-col>
+      <v-col
+        class="map-column v-col-sm-5 v-col-12 ml-6">
+          <Map_Component></Map_Component>
+        </v-col>
     </v-row>
     </v-container>
       </v-stepper-content>
@@ -383,11 +372,8 @@ const overlay = ref(false)  //dient dem Overlay für den Popup-Dialog
 </script>
 
 <script>
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import MapComponent from './MapComponent.vue';
+import Map_Component from './Map_Component.vue';
 import NavigationBar from './NavigationBar.vue';
 import { supabase } from '../lib/supabaseClient';
 
@@ -395,7 +381,6 @@ export default {
  
   data() {
     return {
-    map: null,
     startLocation: '',
     endLocation: '',
     date: '',
@@ -491,7 +476,7 @@ export default {
       }
       ],
       fahrtverlauf: [
-        {
+      {
           location: 'Wittelsbacherring 10',
           message: `Sure, I'll see you later.`,
           time: '10:42am',
@@ -502,12 +487,6 @@ export default {
           message: 'Yeah, sure. Does 1:00pm work?',
           time: '10:37am',
           color: 'green',
-        },
-        {
-          location: 'Campus Bayreuth (Mensa)',
-          message: 'Did you still want to grab lunch today?',
-          time: '9:47am',
-          color: 'deep-purple-lighten-1',
         },
       ],
     };
@@ -613,26 +592,6 @@ export default {
       getBerlinNow() {
         return new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
       },
-      initMap() {
-        const uniBayreuthCoords = [49.928809, 11.585835];
-        this.map = L.map("map").setView(uniBayreuthCoords, 15);
-  
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "© OpenStreetMap contributors",
-        }).addTo(this.map);
-  
-        const defaultIcon = L.icon({
-          iconUrl: markerIcon,
-          shadowUrl: markerShadow,
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
-        });
-        L.Marker.prototype.options.icon = defaultIcon;
-  
-        L.marker(uniBayreuthCoords).addTo(this.map);
-      },
 
       swapLocations() {
       const temp = this.startLocation;
@@ -651,12 +610,26 @@ export default {
         }
 
         locations.forEach((ort) => {
-        
           this.orte.push(ort.Adresse);
         });
       },
-      
 
+    async fillFahrtverlauf(){
+      const fahrtid = 31;
+      const { data: strecke, error } = await supabase
+          .from('Fahrt')
+          .select('*')
+          .eq('Fahrt_ID', fahrtid)
+  
+        if (error) {
+          console.error('Error fetching data from Supabase:', error);
+          return;
+        }
+          const ortsdatenS = {location: strecke.Startort, time: strecke.Abfahrtszeit, color:"success"}
+          this.orte.push(ortsdatenS);
+          const ortsdatenZ = {location: strecke.Zielort, time: (strecke.Abfahrtszeit+20), color:"purple"}
+          this.orte.push(ortsdatenZ);
+    },
 
     async getDriver(email){
       const { data: driver, error } = await supabase
@@ -695,9 +668,11 @@ export default {
           const { data: rides, error } = await supabase
             .from('Fahrt')
             .select('Fahrt_ID, Fahrer, Abfahrtszeit, Datum, Startort, Zielort, Sitzplaetze')
-            .eq('Startort', this.startLocation, 'Zielort', this.endLocation, 'Datum', this.date)
+            .eq('Startort', this.startLocation)
+            .eq('Zielort', this.endLocation)
+            .eq('Datum', this.date)
             .lte('Sitzplaetze', this.seats)
-            .gte('Abfahrtszeit', this.time )
+            .gte('Abfahrtszeit', this.time)
             .order('Abfahrtszeit', { ascending: true });
 
           if (error) {
@@ -710,12 +685,13 @@ export default {
             this.rideOffers.push(addRide);
           });
         }catch (error) {
+          console.error('Fehler beim Suchen einer Fahrt:', error);
           this.errorMessage = 'Fehler beim Suchen einer Fahrt';
         }
   },
 },
 async mounted() {
-      this.initMap();
+
       await this.getLocations();
     }
 }
@@ -749,14 +725,7 @@ async mounted() {
 
 /* Karte: Quadratisch und responsiv */
 /* Karte quadratisch machen */
-.independent-map {
-    width: 100%;
-    max-width: 700px; /* Increase the max width */
-    max-height: 700px; /* Increase the max height */
-    aspect-ratio: 1 / 1; /* Hält die Karte quadratisch */
-    background-color: #ccc; /* Platzhalterfarbe für die Karte */
-    border-radius: 15px; 
-}
+
 
 .independent-map > * {
   position: relative;
