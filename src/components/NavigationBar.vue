@@ -7,7 +7,7 @@
         location="bottom"
       >Zurück zur Startseite</v-tooltip>
     </v-btn>
-    <v-toolbar-title>Title</v-toolbar-title>
+    <v-toolbar-title>CampusConnect</v-toolbar-title>
     <v-spacer></v-spacer>
 
     <v-btn icon>
@@ -57,3 +57,9 @@ export default {
 
 };
 </script>
+
+<style scoped>
+.navbar .v-toolbar-title {
+  font-size: 1.5rem;
+}
+</style>
