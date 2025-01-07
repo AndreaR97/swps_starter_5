@@ -35,32 +35,39 @@
               >
             </div>
             <v-list lines="two">
-              <v-item-group>
-                <v-list-item
-                  v-for="ride in plannedRides"
-                  :key="ride.Fahrt_ID"
-                  link
-                >
-                  <template v-slot:title>
-                    <div>
-                      <span
-                        :style="{
-                          fontSize: '20px',
-                          fontWeight: 'bold'
-                        }"
-                        >{{ ride.Fahrt.Startort }} - {{ ride.Fahrt.Zielort }}</span
-                      >
-                      <br />
-                      <span
-                        :style="{
-                          fontSize: '16px'
-                        }"
-                        >{{ ride.Fahrt.Datum }} um {{ ride.Fahrt.Abfahrtszeit }}</span
-                      >
-                    </div>
-                  </template>
-                </v-list-item>
-              </v-item-group>
+              <template v-if="plannedRides.length === 0">
+                <div style="padding: 1rem; font-style: italic;">
+                  Noch keine Fahrten geplant :/
+                </div>
+              </template>
+              <template v-else>
+                <v-item-group>
+                  <v-list-item
+                    v-for="ride in plannedRides"
+                    :key="ride.Fahrt_ID"
+                    link
+                  >
+                    <template v-slot:title>
+                      <div>
+                        <span
+                          :style="{
+                            fontSize: '20px',
+                            fontWeight: 'bold'
+                          }"
+                          >{{ ride.Fahrt.Startort }} - {{ ride.Fahrt.Zielort }}</span
+                        >
+                        <br />
+                        <span
+                          :style="{
+                            fontSize: '16px'
+                          }"
+                          >{{ ride.Fahrt.Datum }} um {{ ride.Fahrt.Abfahrtszeit }}</span
+                        >
+                      </div>
+                    </template>
+                  </v-list-item>
+                </v-item-group>
+              </template>
             </v-list>
           </v-card>
         </v-col>
@@ -73,32 +80,39 @@
               >
             </div>
             <v-list lines="two">
-              <v-item-group>
-                <v-list-item
-                  v-for="(ride, index) in driverRides"
-                  :key="index"
-                  link
-                >
-                  <template v-slot:title>
-                    <div>
-                      <span
-                        :style="{
-                          fontSize: '20px',
-                          fontWeight: 'bold'
-                        }"
-                        >{{ ride.Startort }} - {{ ride.Zielort }}</span
-                      >
-                      <br />
-                      <span
-                        :style="{
-                          fontSize: '16px'
-                        }"
-                        >{{ ride.Datum }} um {{ ride.Abfahrtszeit }}</span
-                      >
-                    </div>
-                  </template>
-                </v-list-item>
-              </v-item-group>
+              <template v-if="driverRides.length === 0">
+                <div style="padding: 1rem; font-style: italic;">
+                  Noch keine Fahrten geplant :/
+                </div>
+              </template>
+              <template v-else>
+                <v-item-group>
+                  <v-list-item
+                    v-for="(ride, index) in driverRides"
+                    :key="index"
+                    link
+                  >
+                    <template v-slot:title>
+                      <div>
+                        <span
+                          :style="{
+                            fontSize: '20px',
+                            fontWeight: 'bold'
+                          }"
+                          >{{ ride.Startort }} - {{ ride.Zielort }}</span
+                        >
+                        <br />
+                        <span
+                          :style="{
+                            fontSize: '16px'
+                          }"
+                          >{{ ride.Datum }} um {{ ride.Abfahrtszeit }}</span
+                        >
+                      </div>
+                    </template>
+                  </v-list-item>
+                </v-item-group>
+              </template>
             </v-list>
           </v-card>
         </v-col>
