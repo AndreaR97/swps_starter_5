@@ -22,6 +22,12 @@
                   ></v-autocomplete>
               </v-row>
 
+              <v-row class="justify-end mt-n13 mb-n4">
+                <v-btn icon @click="swapLocations" class="SwapButton">
+                  <v-icon>mdi-swap-horizontal</v-icon>
+                </v-btn>
+              </v-row>
+
               <v-row class="align-center" style="margin-bottom: 20px;">
                 <v-autocomplete
                   ref="endLocInput"
@@ -292,6 +298,11 @@
           console.error('Unexpected error:', error);
           this.errorMessage = 'Fehler beim Erstellen eines Fahrtangebots';
         }
+      },
+      swapLocations() {
+        const temp = this.startLocation;
+        this.startLocation = this.endLocation;
+        this.endLocation = temp;
       }
     },
     async mounted() {
@@ -347,6 +358,13 @@
     transform: scale(1);
     opacity: 1;
   }
+}
+
+.SwapButton {
+  z-index: 1000;
+  width: 60px;
+  height: 60px;
+  color: "#26874E";
 }
 
   </style>

@@ -35,32 +35,39 @@
               >
             </div>
             <v-list lines="two">
-              <v-item-group>
-                <v-list-item
-                  v-for="(ride, index) in passengerRides"
-                  :key="index"
-                  link
-                >
-                  <template v-slot:title>
-                    <div>
-                      <span
-                        :style="{
-                          fontSize: '20px',
-                          fontWeight: 'bold'
-                        }"
-                        >{{ ride.from }} - {{ ride.to }}</span
-                      >
-                      <br />
-                      <span
-                        :style="{
-                          fontSize: '16px'
-                        }"
-                        >{{ ride.date }} um {{ ride.time }}</span
-                      >
-                    </div>
-                  </template>
-                </v-list-item>
-              </v-item-group>
+              <template v-if="plannedRides.length === 0">
+                <div style="padding: 1rem; font-style: italic;">
+                  Noch keine Fahrten geplant :/
+                </div>
+              </template>
+              <template v-else>
+                <v-item-group>
+                  <v-list-item
+                    v-for="ride in plannedRides"
+                    :key="ride.Fahrt_ID"
+                    link
+                  >
+                    <template v-slot:title>
+                      <div>
+                        <span
+                          :style="{
+                            fontSize: '20px',
+                            fontWeight: 'bold'
+                          }"
+                          >{{ ride.Fahrt.Startort }} - {{ ride.Fahrt.Zielort }}</span
+                        >
+                        <br />
+                        <span
+                          :style="{
+                            fontSize: '16px'
+                          }"
+                          >{{ ride.Fahrt.Datum }} um {{ ride.Fahrt.Abfahrtszeit }}</span
+                        >
+                      </div>
+                    </template>
+                  </v-list-item>
+                </v-item-group>
+              </template>
             </v-list>
           </v-card>
         </v-col>
@@ -73,32 +80,39 @@
               >
             </div>
             <v-list lines="two">
-              <v-item-group>
-                <v-list-item
-                  v-for="(ride, index) in driverRides"
-                  :key="index"
-                  link
-                >
-                  <template v-slot:title>
-                    <div>
-                      <span
-                        :style="{
-                          fontSize: '20px',
-                          fontWeight: 'bold'
-                        }"
-                        >{{ ride.from }} - {{ ride.to }}</span
-                      >
-                      <br />
-                      <span
-                        :style="{
-                          fontSize: '16px'
-                        }"
-                        >{{ ride.date }} um {{ ride.time }}</span
-                      >
-                    </div>
-                  </template>
-                </v-list-item>
-              </v-item-group>
+              <template v-if="driverRides.length === 0">
+                <div style="padding: 1rem; font-style: italic;">
+                  Noch keine Fahrten geplant :/
+                </div>
+              </template>
+              <template v-else>
+                <v-item-group>
+                  <v-list-item
+                    v-for="(ride, index) in driverRides"
+                    :key="index"
+                    link
+                  >
+                    <template v-slot:title>
+                      <div>
+                        <span
+                          :style="{
+                            fontSize: '20px',
+                            fontWeight: 'bold'
+                          }"
+                          >{{ ride.Startort }} - {{ ride.Zielort }}</span
+                        >
+                        <br />
+                        <span
+                          :style="{
+                            fontSize: '16px'
+                          }"
+                          >{{ ride.Datum }} um {{ ride.Abfahrtszeit }}</span
+                        >
+                      </div>
+                    </template>
+                  </v-list-item>
+                </v-item-group>
+              </template>
             </v-list>
           </v-card>
         </v-col>
@@ -132,17 +146,39 @@ export default {
       { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
 
     ],
-    driverRides: [
-      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
-      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
-      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
-      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
-      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
-      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
-      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
-      { from: 'Berlin', to: 'Hamburg', date: '2023-10-18', time: '09:00' },
-    ]
+    driverRides: [],
+    plannedRides: []
   }),
+  methods: {
+    async getPlannedRides() {
+      try {
+        const userEmail = localStorage.getItem('userEmail');
+        const { data, error } = await supabase
+          .from('ist_mitfahrer')
+          .select('Fahrt_ID, Fahrt:Fahrt_ID(Startort, Zielort, Datum, Abfahrtszeit)')
+          .eq('Person', userEmail);
+        if (!error && data) {
+          this.plannedRides = data;
+        }
+      } catch (error) {
+        console.error('Fehler beim Laden der geplanten Fahrten:', error);
+      }
+    },
+    async getDriverRides() {
+      try {
+        const userEmail = localStorage.getItem('userEmail');
+        const { data, error } = await supabase
+          .from('Fahrt')
+          .select('Fahrt_ID, Startort, Zielort, Datum, Abfahrtszeit')
+          .eq('Fahrer', userEmail);
+        if (!error && data) {
+          this.driverRides = data;
+        }
+      } catch (error) {
+        console.error('Fehler beim Laden der Fahrten als Fahrer:', error);
+      }
+    }
+  },
   async mounted() {
     if (this.email) {
       const { data: user } = await supabase
@@ -156,6 +192,8 @@ export default {
         this.role = user.Rolle;
       }
     }
+    await this.getPlannedRides();
+    await this.getDriverRides();
   },
 };
 </script>
