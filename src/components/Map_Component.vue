@@ -7,6 +7,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import { supabase } from '../lib/supabaseClient';
 
 export default {
   data() {
@@ -34,9 +35,32 @@ export default {
   
         L.marker(uniBayreuthCoords).addTo(this.map2);
 
-
   },
   methods: {
+    async markersForMap(){
+      const { data: locations, error } = await supabase
+          .from('Ort')
+          .select('Adresse, Koordinate_X, Koordinate_Y')
+          .eq('Adresse', this.startLocation)
+          .eq('Adresse', this.endLocation);
+  
+        // Check for errors
+        if (error) {
+          console.error('Error fetching data from Supabase:', error);
+          return;
+        }
+
+        locations.forEach((loc) => {
+          const { Adresse, Koordinate_X, Koordinate_Y } = loc;
+  
+          // Ensure coordinates are valid before placing markers
+          if (Koordinate_X, Koordinate_Y) {
+            L.marker([Koordinate_X, Koordinate_Y]).addTo(this.map2);
+          } else {
+            console.warn(`Invalid coordinates for ${Adresse}`);
+          }
+        });
+    }
       }
     }
 </script>

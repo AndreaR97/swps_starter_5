@@ -143,6 +143,13 @@
           <v-col cols="6">
             <v-card class="overflow-y-auto"
             max-height="600px">
+              <!--falls es keine passenden Fahrtangebote gibt, also rideOffers leer ist (für Schritt 2)-->
+              <div v-if="rideOffers.length === 0"> 
+              <h2 class="headline font-weight-bold mb-5"> 
+                Für die ausgewählten Daten gibt es leider kein Fahrtangebot. 
+                </h2>
+              <!--regulärer Fall (für Schritt 2)--> 
+              </div> <div v-else>  
         <v-list lines="two">
           <v-list-item
             v-for="(person, n) in rideOffers"
@@ -175,8 +182,8 @@
                 </div>
             </v-card>
         </v-list-item>
-
         </v-list>
+        </div>
       </v-card>
       </v-col>
       <v-col
@@ -299,7 +306,7 @@
                 <v-card-actions>
                   <v-row align="center" justify="center">
                     <v-col cols="auto">
-                      <v-btn variant="tonal" rounded="sm" density="default" size="large" color="#008557" @click="dialog = !dialog; overlay = !overlay" block>Ja</v-btn>
+                      <v-btn variant="tonal" rounded="sm" density="default" size="large" color="#008557" @click="dialog = !dialog; overlay = !overlay; ; $router.push('/profilepage') " block>Ja</v-btn>
                     </v-col>
                     <v-col cols="auto">
                       <v-btn rounded="sm" density="default" size="large" color="#008557" @click="$router.push('/homepage')" block>Abbrechen</v-btn>
@@ -585,113 +592,141 @@ export default {
     setNextStep() { 
       if(!this.isFormValid &&this.step === 0){
         this.step = 0
+      } else if(this.isFormValid && this.step === 0){
+        this.getRidesFromDatabase();
+        this.step++;
       } else{this.step++}
     },
       setStep(a) { this.step = a; },
+
+      // Methode zum Eintragen der Strecke in die Map (Schritt 2) -> in MapComponent markersForMap()
 
       getBerlinNow() {
         return new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
       },
 
+      //Methode zum Tauschen der Orte in Schritt 1
       swapLocations() {
       const temp = this.startLocation;
       this.startLocation = this.endLocation;
       this.endLocation = temp;
     },
 
+      //Zum Befüllen des Arrays Ort, zur Auswahl von Start- und Zielort (Schritt 1) funktioniert (wie in OfferRide)
       async getLocations() {
         const { data: locations, error } = await supabase
           .from('Ort')
           .select('Adresse');
-  
         if (error) {
           console.error('Error fetching data from Supabase:', error);
           return;
         }
-
         locations.forEach((ort) => {
           this.orte.push(ort.Adresse);
         });
       },
 
-    async fillFahrtverlauf(){
-      const fahrtid = 31;
-      const { data: strecke, error } = await supabase
-          .from('Fahrt')
-          .select('*')
-          .eq('Fahrt_ID', fahrtid)
-  
-        if (error) {
-          console.error('Error fetching data from Supabase:', error);
-          return;
-        }
-          const ortsdatenS = {location: strecke.Startort, time: strecke.Abfahrtszeit, color:"success"}
-          this.orte.push(ortsdatenS);
-          const ortsdatenZ = {location: strecke.Zielort, time: (strecke.Abfahrtszeit+20), color:"purple"}
-          this.orte.push(ortsdatenZ);
-    },
-
-    async getDriver(email){
-      const { data: driver, error } = await supabase
-          .from('Person')
-          .select('Vorname, Nachname, E_Mail_Adresse')
-          .eq('E_Mail_Adresse', email)
-
-        if (error) {
-          console.error('Error fetching data from Supabase:', error);
-          return;
-        }
-        return (driver.Vorname , driver.Nachname).toString()
-    },
-
-    async getRole(email){
-      const { data: driRole, error } = await supabase
-          .from('Person')
-          .select('Rolle, E_Mail_Adresse')
-          .eq('E_Mail_Adresse', email)
-
-        if (error) {
-          console.error('Error fetching data from Supabase:', error);
-          return;
-        }
-        return (driRole.Rolle).toString()
-    },
-
-    
+      /* Methode zum Suchen von Fahrtangeboten (Fahrtdetails in Datenbank abfragen; prüfen und aussortieren,
+      falls es für eine Fahrt_ID bereits Sitzplätze === ist_mitfahrer gibt) (Schritt 1)*/
       async getRidesFromDatabase() {
-        this.errorMessage = '';
-        if (!this.isFormValid) {
-          this.errorMessage = 'Bitte füllen Sie alle Felder korrekt aus';
-          return;
-        }
         try {
           const { data: rides, error } = await supabase
             .from('Fahrt')
-            .select('Fahrt_ID, Fahrer, Abfahrtszeit, Datum, Startort, Zielort, Sitzplaetze')
+            .select('Fahrt_ID, Fahrer, Abfahrtszeit, Datum, Startort, Zielort, Sitzplaetze, (SELECT COUNT(*) FROM ist_mitfahrer WHERE ist_mitfahrer.Fahrt_ID = Fahrt.Fahrt_ID) as mitfahrer_count')
             .eq('Startort', this.startLocation)
             .eq('Zielort', this.endLocation)
             .eq('Datum', this.date)
             .lte('Sitzplaetze', this.seats)
             .gte('Abfahrtszeit', this.time)
-            .order('Abfahrtszeit', { ascending: true });
+            .order('Abfahrtszeit', { ascending: true })
+            .filter('mitfahrer_count', '<=', 'Sitzplaetze');
 
-          if (error) {
+            if (error) {
             console.error('Error fetching data from Supabase:', error);
             return;
           }
-
+          //über das Eintragen in das Array rideOffers werden die passenden Fahrtangebote in die Liste (in Schritt 2) angezeigt/eingetragen
           rides.forEach((ride) => {
-            const addRide = {name: ride.Fahrer, role: ride.Fahrer, time: ride.Abfahrtszeit, seats: ride.Sitzplaetze}
+            const addRide = {name: ride.Fahrer, role: ride.Fahrer, time: ride.Abfahrtszeit, seats: ride.Sitzplaetze, rideid: ride.Fahrt_ID}
             this.rideOffers.push(addRide);
           });
         }catch (error) {
           console.error('Fehler beim Suchen einer Fahrt:', error);
           this.errorMessage = 'Fehler beim Suchen einer Fahrt';
         }
-  },
-},
-async mounted() {
+      },
 
+      // Methode zum Eintragen der Strecke in die Fahrtverlaufanzeige (Schritt 3)
+       async fillFahrtverlauf(){
+        const fahrtid = this.selected[0].rideid;
+        const { data: strecke, error } = await supabase
+            .from('Fahrt')
+            .select('*')
+            .eq('Fahrt_ID', fahrtid)
+    
+          if (error) {
+            console.error('Error fetching data from Supabase:', error);
+            return;
+          }
+            const ortsdatenS = {location: strecke.Startort, time: strecke.Abfahrtszeit, color:"success"}
+            this.fahrtverlauf.push(ortsdatenS);
+            const ortsdatenZ = {location: strecke.Zielort, time: (strecke.Abfahrtszeit+20), color:"purple"}
+            this.fahrtverlauf.push(ortsdatenZ);
+        },
+
+      // Methode zum Anzeigen der Mitfahrer und Fahrtdetails (Fahrtdetails und Mitfahrer aus Datenbank abfragen und eintragen) (Schritt 3)
+       async getDriver(email){
+          const { data: driver, error } = await supabase
+              .from('Person')
+              .select('Vorname, Nachname, E_Mail_Adresse')
+              .eq('E_Mail_Adresse', email)
+
+            if (error) {
+              console.error('Error fetching data from Supabase:', error);
+              return;
+            }
+            return (driver.Vorname , driver.Nachname).toString()
+        },
+
+      async getRole(email){
+        const { data: driRole, error } = await supabase
+            .from('Person')
+            .select('Rolle, E_Mail_Adresse')
+            .eq('E_Mail_Adresse', email)
+
+          if (error) {
+            console.error('Error fetching data from Supabase:', error);
+            return;
+          }
+          return (driRole.Rolle).toString()
+      },
+          // Methode zur Annahme eines Fahrtangebotes (Eintragen in Datenbank als ist_mitfahrer) (in Schritt)
+          async bookRide(){
+            try {
+              const userEmail = localStorage.getItem('userEmail');
+              const fahrtid = this.selected[0].rideid
+              if (!userEmail) {
+                console.error('No user email found in localStorage.');
+                return;
+              }
+              const { error } = await supabase
+                .from('ist_mitfahrer')
+                .insert([{
+                  Fahrt_ID: fahrtid,
+                  Person: userEmail,
+                }]);
+              if (error) {
+                console.error('Error inserting data:', error);
+                this.errorMessage = 'Fehler bei der Buchung';
+              } 
+            } catch (error) {
+              console.error('Unexpected error:', error);
+              this.errorMessage = 'Fehler bei der Buchung';
+            }
+          },
+    },
+
+async mounted() {
       await this.getLocations();
     }
 }
