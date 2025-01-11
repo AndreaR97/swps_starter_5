@@ -136,6 +136,13 @@
                 <v-row dense>
                   <v-col cols="6">
                     <v-card class="overflow-y-auto" max-height="600px">
+                       <!--falls es keine passenden Fahrtangebote gibt, also rideOffers leer ist (für Schritt 2)-->
+                        <div v-if="rideOffers.length === 0"> 
+                        <h2 class="headline font-weight-bold mb-5"> 
+                          Für die ausgewählten Daten gibt es leider kein Fahrtangebot. 
+                          </h2>
+                        <!--regulärer Fall (für Schritt 2)--> 
+                        </div> <div v-else>  
                       <v-list lines="two">
                         <v-list-item
                           v-for="(person, n) in rideOffers"
@@ -176,6 +183,7 @@
                           </v-card>
                         </v-list-item>
                       </v-list>
+                      </div>
                     </v-card>
                   </v-col>
 
@@ -564,11 +572,14 @@ export default {
 
   methods: {
     async setNextStep() {
-      if (this.step === 0 && this.isFormValid) {
+        if (this.step === 0 && this.isFormValid) {
         await this.getRidesFromDatabase();
       } else if (this.step === 1 && this.selected) {
         await this.fetchRideDetails();
         this.step++;
+        return;
+      } else if(this.step === 0 && !this.isFormValid){
+        this.step = 0;
         return;
       }
       this.step++;
@@ -856,75 +867,3 @@ export default {
   padding: 50px;
 }
 </style>
-
-//async getRidesFromDatabase() {
-  const { data: rides, error } = await supabase
-      .from('Fahrt')
-      .select('Fahrt_ID, Fahrer, Abfahrtszeit, Datum, Startort, Zielort, Sitzplaetze')
-      .eq('Startort', this.startLocation, 'Zielort', this.endLocation, 'Datum', this.date)
-      .lte('Sitzplaetze', this.seats)
-      .gte('Abfahrtszeit', this.time )
-      .order('Abfahrtszeit', { ascending: true })
-
-    if (error) {
-      console.error('Error fetching data from Supabase:', error);
-      return;
-    }
-
-    rides.forEach((ride) => {
-      const addRide = {name: ride.Fahrer, role: ride.Fahrer, time: ride.Abfahrtszeit, seats: ride.Sitzplaetze}
-      this.rideOffers.push(addRide);
-    });
-  },
-
-async getDriver(email){
-  const { data: driver, error } = await supabase
-      .from('Person')
-      .select('Vorname, Nachname, E_Mail_Adresse')
-      .eq('E_Mail_Adresse', email)
-
-    if (error) {
-      console.error('Error fetching data from Supabase:', error);
-      return;
-    }
-
-    const { Vorname} = driver;
-    return Vorname
-},
-
-async getRole(email){
-  const { data: driRole, error } = await supabase
-      .from('Person')
-      .select('Rolle, E_Mail_Adresse')
-      .eq('E_Mail_Adresse', email)
-
-    if (error) {
-      console.error('Error fetching data from Supabase:', error);
-      return;
-    }
-    const { Rolle} = driRole;
-    return Rolle
-}
-},
-async mounted() {
-  await this.getDriver();
-  await this.getRole();
-  await this.getRidesFromDatabase();
-}
-
-isFormValid() {
-  if(
-    this.requiredRule &&
-    this.startLocation &&
-    this.endLocation &&
-    this.dateRule(this.date) === true &&
-    this.timeRule(this.time) === true &&
-    this.seatRule(this.neededSeats) === true
-  ) {
-    this.completeStep1 = true;
-    return true;
-  } else {
-    this.completeStep1 = false;
-    return false;
-  }
-}
