@@ -15,7 +15,29 @@ export default {
       map2: null,
     };
   },
-  async mounted() {
+  
+  methods: {
+    async markersForMap(){
+      const { data: locations, error } = await supabase
+          .from('Ort')
+          .select('Adresse, Koordinate_X, Koordinate_Y');
+
+        // Check for errors
+        if (error) {
+          console.error('Error fetching data from Supabase:', error);
+          return;
+        }
+        
+        locations.forEach((loc) => {
+          if (loc.Koordinate_Y, loc.Koordinate_X) {
+            L.marker([loc.Koordinate_X, loc.Koordinate_Y]).addTo(this.map2);
+          } else {
+            console.warn(`Invalid coordinates for ${loc.Adresse}`);
+          }
+        });
+        }
+      },
+      async mounted() {
     const uniBayreuthCoords = [49.928809, 11.585835];
     this.map2 = L.map('map2').setView(uniBayreuthCoords, 15);
 
@@ -34,34 +56,9 @@ export default {
         L.Marker.prototype.options.icon = defaultIcon;
   
         L.marker(uniBayreuthCoords).addTo(this.map2);
+        await this.markersForMap();
 
   },
-  methods: {
-    async markersForMap(){
-      const { data: locations, error } = await supabase
-          .from('Ort')
-          .select('Adresse, Koordinate_X, Koordinate_Y')
-          .eq('Adresse', this.startLocation)
-          .eq('Adresse', this.endLocation);
-  
-        // Check for errors
-        if (error) {
-          console.error('Error fetching data from Supabase:', error);
-          return;
-        }
-
-        locations.forEach((loc) => {
-          const { Adresse, Koordinate_X, Koordinate_Y } = loc;
-  
-          // Ensure coordinates are valid before placing markers
-          if (Koordinate_X, Koordinate_Y) {
-            L.marker([Koordinate_X, Koordinate_Y]).addTo(this.map2);
-          } else {
-            console.warn(`Invalid coordinates for ${Adresse}`);
-          }
-        });
-    }
-      }
     }
 </script>
   <style scoped>

@@ -401,7 +401,7 @@
                   color="medium-emphasis"
                   min-width="92"
                   variant="outlined"
-                  @click="$router.push('/profilepage') "
+                  @click="insertBook(selected[0].id); $router.push('/profilepage') "
                 >
                   OK
                 </v-btn>
@@ -609,46 +609,7 @@ export default {
         this.orte.push(ort.Adresse);
       });
     },
-    async fillFahrtverlauf(){
-      const fahrtid = 31;
-      const { data: strecke, error } = await supabase
-        .from('Fahrt')
-        .select('*')
-        .eq('Fahrt_ID', fahrtid);
 
-      if (error) {
-        console.error('Error fetching data from Supabase:', error);
-        return;
-      }
-      const ortsdatenS = { location: strecke.Startort, time: strecke.Abfahrtszeit, color:"success" };
-      this.orte.push(ortsdatenS);
-      const ortsdatenZ = { location: strecke.Zielort, time: (strecke.Abfahrtszeit+20), color:"purple" };
-      this.orte.push(ortsdatenZ);
-    },
-    async getDriver(email){
-      const { data: driver, error } = await supabase
-        .from('Person')
-        .select('Vorname, Nachname, E_Mail_Adresse')
-        .eq('E_Mail_Adresse', email);
-
-      if (error) {
-        console.error('Error fetching data from Supabase:', error);
-        return;
-      }
-      return (driver.Vorname , driver.Nachname).toString();
-    },
-    async getRole(email){
-      const { data: driRole, error } = await supabase
-        .from('Person')
-        .select('Rolle, E_Mail_Adresse')
-        .eq('E_Mail_Adresse', email);
-
-      if (error) {
-        console.error('Error fetching data from Supabase:', error);
-        return;
-      }
-      return (driRole.Rolle).toString();
-    },
     async getRidesFromDatabase() {
       try {
         const { data: rides, error } = await supabase
@@ -661,20 +622,40 @@ export default {
           .gte('Abfahrtszeit', this.time)
           .order('Abfahrtszeit', { ascending: true });
 
+            
+        const { data: passengerData } = await supabase
+          .from('ist_mitfahrer')
+          .select('*');
+
+        const passengerCount = {};
+          passengerData.forEach(row => {
+            passengerCount[row.Fahrt_ID] = (passengerCount[row.Fahrt_ID] || 0) + 1;
+          });
+          console.log('Passenger counts:', passengerCount);
+
+  
+        const filteredRides = rides.filter(ride => {
+          const matchedCount = passengerCount[ride.Fahrt_ID] || 0;
+          return matchedCount <= ride.Sitzplaetze && (matchedCount + this.neededSeats) <= ride.Sitzplaetze;
+        });
+        console.log('Filtered rides:', filteredRides);
+
         if (error) {
           console.error('Error fetching rides:', error);
           return;
-        }
-        this.rideOffers = rides.map(ride => ({
-          id: ride.Fahrt_ID,
-          name: ride.Fahrer,
-          role: ride.Fahrer,
-          time: ride.Abfahrtszeit,
-          seats: ride.Sitzplaetze
+        } 
+
+        this.rideOffers = filteredRides.map(r => ({
+          id: r.Fahrt_ID,
+          name: r.Fahrer,
+          role: r.Fahrer,
+          time: r.Abfahrtszeit,
+          seats: r.Sitzplaetze
         }));
       } catch (err) {
         console.error('Error:', err);
       }
+      
     },
     async fetchRideDetails() {
       try {
@@ -760,7 +741,27 @@ export default {
         console.error('Error fetching fahrtverlauf:', err);
       }
     },
-  },
+    //Methode, um die Buchung in die Datenbank zu übertragen
+    async insertBook(fahrtId){
+      try {
+          const userEmail = localStorage.getItem('userEmail');
+          if (!userEmail) {
+            console.error('No user email found in localStorage.');
+            return;
+          }
+      const { error } = await supabase
+        .from('ist_mitfahrer')
+        .insert([
+          { Fahrt_ID: fahrtId, Person: userEmail }
+    ]);
+     if (error) {
+        console.error('Error inserting booking:', error);
+      }
+  } catch (err) {
+          console.error('Unexpected error:', err);
+          this.errorMessage = 'Fehler beim Erstellen eines Fahrtangebots';
+  }
+}},
 
   async mounted() {
     await this.getLocations();
