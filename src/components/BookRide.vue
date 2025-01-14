@@ -294,7 +294,7 @@
                         </v-toolbar-title>
                       </v-toolbar>
                       <v-card-text>
-                        <div class="font-weight-bold ms-1 mb-2">Today</div>
+                        <div class="font-weight-bold ms-1 mb-2">Abfahrt</div>
                         <v-timeline align="start" density="compact">
                           <v-timeline-item
                             v-for="halt in fahrtverlauf"
@@ -445,41 +445,8 @@ export default {
       overlay: false,
 
       rideOffers: [],
-
-      ride: [
-        {
-          name: 'Allison',
-          surname: 'Peters',
-          role: 'Student',
-          rideid: "4"
-        },
-        {
-          name: 'Thomas',
-          surname: 'Meyer',
-          role: 'Student',
-          rideid: "4"
-        },
-        {
-          name: 'Maria',
-          surname: 'Bauer',
-          role: 'Student',
-          rideid: "4"
-        }
-      ],
-      fahrtverlauf: [
-        {
-          location: 'Wittelsbacherring 10',
-          message: `Sure, I'll see you later.`,
-          time: '10:42am',
-          color: 'deep-purple-lighten-1',
-        },
-        {
-          location: 'Campus Kulmbach',
-          message: 'Yeah, sure. Does 1:00pm work?',
-          time: '10:37am',
-          color: 'green',
-        },
-      ],
+      ride: [],
+      fahrtverlauf: [],
     };
   },
 
@@ -632,7 +599,6 @@ export default {
             passengerCount[row.Fahrt_ID] = (passengerCount[row.Fahrt_ID] || 0) + 1;
           });
           console.log('Passenger counts:', passengerCount);
-
   
         const filteredRides = rides.filter(ride => {
           const matchedCount = passengerCount[ride.Fahrt_ID] || 0;
@@ -663,6 +629,24 @@ export default {
         console.log('Selected ride ID:', selectedRideId); // debug log
 
         if (!selectedRideId) return;
+
+        await this.fetchFahrtverlauf(selectedRideId);
+        console.log('Fahrtverlauf', this.fahrtverlauf);
+
+        const {data: driverData } = await supabase
+          .from('Person')
+          .select('Vorname, Nachname, Rolle, E_Mail_Adresse')
+          .eq('E_Mail_Adresse', this.selected[0].name)
+          .single();
+
+          const driverRole = driverData.Rolle;
+
+        this.selected[0].role = driverData.Rolle;
+        console.log('Driver data:', driverData);
+        console.log('Rolle des Fahrers', driverRole);
+        console.log(this.selected[0]);
+
+
         const { data: passengers, error } = await supabase
           .from('ist_mitfahrer')
           .select('*')
@@ -692,9 +676,10 @@ export default {
             });
           }
         }
+
         console.log('newRide data:', newRide); // debug log
         this.ride = newRide;
-        await this.fetchFahrtverlauf(selectedRideId);
+        
       } catch (err) {
         console.error('Error fetching ride details:', err);
       }
@@ -703,9 +688,10 @@ export default {
       try {
         const { data: fahrtData } = await supabase
           .from('Fahrt')
-          .select('Startort, Zielort, Abfahrtszeit')
+          .select('Startort, Zielort, Abfahrtszeit, Fahrt_ID')
           .eq('Fahrt_ID', fahrtId)
           .single();
+          console.log('Fahrt data:', fahrtData);
 
         if (!fahrtData) return;
     
@@ -716,7 +702,7 @@ export default {
         }];
 
         // KORREKTUR: hier wird Ankunfszeit (ohne extra "t") verwendet
-        const { data: stops } = await supabase
+        /*const { data: stops } = await supabase
           .from('hält_in')
           .select('Adresse, Ankunfszeit')
           .eq('Fahrt_ID', fahrtId)
@@ -728,7 +714,8 @@ export default {
             time: stop.Ankunfszeit,
             color: 'blue',
           });
-        });
+        }); */
+        
 
         newVerlauf.push({
           location: fahrtData.Zielort,
@@ -741,6 +728,7 @@ export default {
         console.error('Error fetching fahrtverlauf:', err);
       }
     },
+
     //Methode, um die Buchung in die Datenbank zu übertragen
     async insertBook(fahrtId){
       try {
