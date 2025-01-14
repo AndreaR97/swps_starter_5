@@ -1,10 +1,6 @@
 <template>
   <div class="bookride">
     <NavigationBar></NavigationBar>
-
-    <!--<img src="/assets/profilpage.png" alt="ProfilePageBackground" class="profilebackground" />-->
-
-    <!--Stepper für den Buchungsprozess-->
     <v-container fluid>
       <v-stepper fluid v-model="step">
         <v-stepper-header>
@@ -14,198 +10,168 @@
             editable
             @click="setStep(0)"
           ></v-stepper-item>
-
           <v-divider></v-divider>
-
           <v-stepper-item
             title="Wähle eine Fahrt aus"
             value="2"
             @click="setStep(1)"
           ></v-stepper-item>
-
           <v-divider></v-divider>
-
           <v-stepper-item
             title="Details zur Fahrt"
             value="3"
             @click="setStep(2)"
           ></v-stepper-item>
-
           <v-divider></v-divider>
-
           <v-stepper-item
             title="Fertig"
             value="4"
           ></v-stepper-item>
         </v-stepper-header>
-
-        <!--Inhalt der einzelnen Steps-->
         <v-stepper-items>         
           <div v-if="step === 0">
             <v-stepper-window>
               <div>
                 <v-row>
-                  <v-container
-                      class="mt-2">
-                          <v-row
-                          class=" align-center">
-                            <v-col>
-                              <v-form>
-                                <v-row class="pb-6 align-center">
-                                  <v-autocomplete
-                                    ref="startLocInput"
-                                    label="Start der Route"
-                                    clearable
-                                    type="email"
-                                    v-model="startLocation"
-                                    variant="solo-filled"
-                                    :items="orte"
-                                    :rules="[startLocationRule, requiredRule]"
-                                  ></v-autocomplete>
-                                </v-row>
-
-                                <v-row class="justify-end mt-n13 mb-n4">
-                                  <v-btn icon @click="swapLocations" class="SwapButton">
-                                    <v-icon>mdi-swap-horizontal</v-icon>
-                                  </v-btn>
-                                </v-row>
-
-                                <v-row class="pb-4 align-center">
-                                  <v-autocomplete
-                                    ref="endLocInput"
-                                    label="Ziel der Route"
-                                    clearable
-                                    type="email"
-                                    v-model="endLocation"
-                                    variant="solo-filled"
-                                    :items="orte"
-                                    :rules="[endLocationRule, requiredRule]"
-                                  ></v-autocomplete>
-                                </v-row>
-
-                                <v-row class="pb-1 align-center">
-                                  <v-col class="pl-0">
-                                    <v-text-field
-                                      label="Datum"
-                                      type="date"
-                                      v-model="date"
-                                      variant="solo-filled"
-                                      :rules="[dateRule]"
-                                    ></v-text-field>
-                                  </v-col>
-                                  <v-col class="pr-0">
-                                    <v-text-field
-                                      label="Uhrzeit"
-                                      type="time"
-                                      v-model="time"
-                                      variant="solo-filled"
-                                      :rules="[timeRule]"
-                                    ></v-text-field>
-                                  </v-col>
-                                </v-row>
-
-                                <v-row class="pb-3">
-                                  <v-col cols="6 pl-0">
-                                    <v-select
-                                      label="Sitzplätze"
-                                      variant="solo-filled"
-                                      v-model="neededSeats"
-                                      :items="seats"
-                                      :rules="[seatRule]"
-                                    ></v-select>
-                                  </v-col>
-                                </v-row>
-                              </v-form> 
+                  <v-container class="mt-2">
+                    <v-row class=" align-center">
+                      <v-col>
+                        <v-form>
+                          <v-row class="pb-6 align-center">
+                            <v-autocomplete
+                              ref="startLocInput"
+                              label="Start der Route"
+                              clearable
+                              type="email"
+                              v-model="startLocation"
+                              variant="solo-filled"
+                              :items="orte"
+                              :rules="[startLocationRule, requiredRule]"
+                            ></v-autocomplete>
+                          </v-row>
+                          <v-row class="justify-end mt-n13 mb-n4">
+                            <v-btn icon @click="swapLocations" class="SwapButton">
+                              <v-icon>mdi-swap-horizontal</v-icon>
+                            </v-btn>
+                          </v-row>
+                          <v-row class="pb-4 align-center">
+                            <v-autocomplete
+                              ref="endLocInput"
+                              label="Ziel der Route"
+                              clearable
+                              type="email"
+                              v-model="endLocation"
+                              variant="solo-filled"
+                              :items="orte"
+                              :rules="[endLocationRule, requiredRule]"
+                            ></v-autocomplete>
+                          </v-row>
+                          <v-row class="pb-1 align-center">
+                            <v-col class="pl-0">
+                              <v-text-field
+                                label="Datum"
+                                type="date"
+                                v-model="date"
+                                variant="solo-filled"
+                                :rules="[dateRule]"
+                              ></v-text-field>
                             </v-col>
-
-                            <v-col
-                              class="map-column v-col-sm-6 v-col-12 ml-6"
-                            >
-                              <Map_Component></Map_Component>
+                            <v-col class="pr-0">
+                              <v-text-field
+                                label="Uhrzeit"
+                                type="time"
+                                v-model="time"
+                                variant="solo-filled"
+                                :rules="[timeRule]"
+                              ></v-text-field>
                             </v-col>
                           </v-row>
-                      </v-container>
+                          <v-row class="pb-3">
+                            <v-col cols="6 pl-0">
+                              <v-select
+                                label="Sitzplätze"
+                                variant="solo-filled"
+                                v-model="neededSeats"
+                                :items="seats"
+                                :rules="[seatRule]"
+                              ></v-select>
+                            </v-col>
+                          </v-row>
+                        </v-form> 
+                      </v-col>
+                      <v-col class="map-column v-col-sm-6 v-col-12 ml-6">
+                        <Map_Component></Map_Component>
+                      </v-col>
+                    </v-row>
+                  </v-container>
                 </v-row>
               </div>  
             </v-stepper-window>
           </div>
-
           <div v-if="step === 1"> 
             <v-stepper-content step="2">
               <v-container fluid>
                 <v-row dense>
                   <v-col cols="6">
                     <v-card class="overflow-y-auto" max-height="600px">
-                       <!--falls es keine passenden Fahrtangebote gibt, also rideOffers leer ist (für Schritt 2)-->
-                        <div v-if="rideOffers.length === 0"> 
+                      <div v-if="rideOffers.length === 0"> 
                         <h2 class="headline font-weight-bold mb-5"> 
                           Für die ausgewählten Daten gibt es leider kein Fahrtangebot. 
-                          </h2>
-                        <!--regulärer Fall (für Schritt 2)--> 
-                        </div> <div v-else>  
-                      <v-list lines="two">
-                        <v-list-item
-                          v-for="(person, n) in rideOffers"
-                          :key="n"
-                          :title="person.name"
-                          :value="n"
-                          color="#26874E"
-                          link
-                        >
-                          <v-divider class="mb-2"></v-divider>
-
-                          <template v-slot:prepend>
-                            <v-avatar color="info">
-                              <v-icon icon="mdi-account-circle"></v-icon>
-                            </v-avatar>
-                          </template>
-
-                          <template v-slot:append>
-                            <v-list-item-action>
-                              <v-btn @click="selected = rideOffers.slice(n, n+1)">
-                                Auswählen
-                              </v-btn>
-                            </v-list-item-action>
-                          </template>
-
-                          <v-card> 
-                            <div class="ma-1">
-                              <v-row no-gutters>
-                                <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded>
-                                  {{ person.time}}
-                                </v-sheet>
-
-                                <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded>
-                                  {{ person.price}}
-                                </v-sheet>
-                              </v-row>
-                            </div>
-                          </v-card>
-                        </v-list-item>
-                      </v-list>
+                        </h2>
+                      </div> 
+                      <div v-else>  
+                        <v-list lines="two">
+                          <v-list-item
+                            v-for="(person, n) in rideOffers"
+                            :key="n"
+                            :title="person.name"
+                            :value="n"
+                            color="#26874E"
+                            link
+                          >
+                            <v-divider class="mb-2"></v-divider>
+                            <template v-slot:prepend>
+                              <v-avatar color="info">
+                                <v-icon icon="mdi-account-circle"></v-icon>
+                              </v-avatar>
+                            </template>
+                            <template v-slot:append>
+                              <v-list-item-action>
+                                <v-btn @click="selected = rideOffers.slice(n, n+1)">
+                                  Auswählen
+                                </v-btn>
+                              </v-list-item-action>
+                            </template>
+                            <v-card> 
+                              <div class="ma-1">
+                                <v-row no-gutters>
+                                  <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded>
+                                    {{ person.time}}
+                                  </v-sheet>
+                                  <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded>
+                                    {{ person.price}}
+                                  </v-sheet>
+                                </v-row>
+                              </div>
+                            </v-card>
+                          </v-list-item>
+                        </v-list>
                       </div>
                     </v-card>
                   </v-col>
-
-                  <v-col
-                    class="map-column v-col-sm-5 v-col-12 ml-6"
-                  >
+                  <v-col class="map-column v-col-sm-5 v-col-12 ml-6">
                     <Map_Component></Map_Component>
                   </v-col>
                 </v-row>
               </v-container>
             </v-stepper-content>
           </div>
-
-          <!--Defines step 2-->
           <div v-if="step === 2">
             <v-stepper-content step="3">
               <v-container fluid>
                 <v-row>
-                  <!--Left column showing "Mitfahrer"-->
                   <v-col cols="6" class="left-column">
                     <v-card class="overflow-y-auto" max-height="490px">
-                      <!--design properties for the head section: Fahrer-->
                       <span
                         style="font-family: 'Arial'; font-weight: bold; font-size: 30px; color: #009260; padding:10px"
                       >
@@ -233,15 +199,12 @@
                           </span>
                         </div>
                       </div>
-                  
-                      <!--section two: list of "Mitfahrer"-->
                       <v-divider class="my-4"></v-divider>
                       <span
                         style="font-family: 'Arial'; font-weight: bold; font-size: 30px; color: #009260; padding:10px;"
                       >
                         Mitfahrer:
                       </span>
-
                       <v-list lines="two">
                         <v-item-group>
                           <v-list-item
@@ -263,7 +226,6 @@
                                 <br>
                               </div>
                             </template>
-
                             <template v-slot:prepend>
                               <img
                                 src="/assets/Profilbild.png"
@@ -271,7 +233,6 @@
                                 style="width: 100px; height: 100px; border-radius: 50%; margin-right: 25px;"
                               >
                             </template>
-
                             <div>
                               <span
                                 style="font-family: 'Minion Pro Regular'; font-size: 20px;"
@@ -281,12 +242,10 @@
                               <br>
                             </div>
                           </v-list-item>
-                          <!-- <v-divider class="mb-4"></v-divider> -->
                         </v-item-group>
                       </v-list>
                     </v-card>
                   </v-col>
-
                   <v-col cols="6" class="right-column">
                     <v-card class="mx-auto" max-width="500" max-height="490px">
                       <v-toolbar color="#009260">
@@ -319,14 +278,12 @@
               </v-container>
             </v-stepper-content>
           </div>
-
           <div v-if="step === 3">
             <v-stepper-content step="4">
               <v-stepper-window>
                 <v-container align="center" justify="center">
                   <h2>Diese Fahrt jetzt buchen?</h2>
                 </v-container>
-
                 <v-card-actions>
                   <v-row align="center" justify="center">
                     <v-col cols="auto">
@@ -360,7 +317,6 @@
             </v-stepper-content>
           </div>
         </v-stepper-items>
-
         <v-stepper-actions
           :disabled="disabled"
           @click:prev="setStep(this.step-1)"
@@ -369,7 +325,6 @@
         </v-stepper-actions>
       </v-stepper>
     </v-container>
-
     <v-fade-transition hide-on-leave>
       <v-overlay v-model="overlay">
         <div class="centered-container">
@@ -386,15 +341,12 @@
                   icon="mdi-check-circle-outline"
                   size="128"
                 ></v-icon>
-
                 <div>
                   <h3>Deine Fahrt wurde gebucht!</h3>
                   <p>Du wirst nun weitergeleitet.</p>
                 </div>
               </div>
-
               <v-divider></v-divider>
-
               <div class="pa-4 text-end">
                 <v-btn
                   class="text-none"
@@ -416,8 +368,8 @@
 
 <script setup>
 import { ref } from 'vue';
-const dialog = ref(false); //dient dem Öffnen und Schließen des Popup-Dialogs
-const overlay = ref(false);  //dient dem Overlay für den Popup-Dialog
+const dialog = ref(false);
+const overlay = ref(false);
 </script>
 
 <script>
@@ -436,16 +388,13 @@ export default {
       neededSeats: '',
       seats: [1, 2, 3, 4, 5, 6, 7, 8, 9],
       orte: [],
-
       step: 0,
       completeStep1: false,
       completeStep2: false,
       selected: null,
       dialog: false,
       overlay: false,
-
       rideOffers: [],
-
       ride: [
         {
           name: 'Allison',
@@ -466,23 +415,8 @@ export default {
           rideid: "4"
         }
       ],
-      fahrtverlauf: [
-        {
-          location: 'Wittelsbacherring 10',
-          message: `Sure, I'll see you later.`,
-          time: '10:42am',
-          color: 'deep-purple-lighten-1',
-        },
-        {
-          location: 'Campus Kulmbach',
-          message: 'Yeah, sure. Does 1:00pm work?',
-          time: '10:37am',
-          color: 'green',
-        },
-      ],
     };
   },
-
   computed: {
     requiredRule() {
       return v => !!v || 'Dieses Feld ist erforderlich';
@@ -552,7 +486,6 @@ export default {
           : undefined;
     },
   },
-
   watch: {
     startLocation() {
       this.$refs.endLocInput && this.$refs.endLocInput.validate();
@@ -569,7 +502,6 @@ export default {
       }
     }
   },
-
   methods: {
     async setNextStep() {
         if (this.step === 0 && this.isFormValid) {
@@ -609,7 +541,6 @@ export default {
         this.orte.push(ort.Adresse);
       });
     },
-
     async getRidesFromDatabase() {
       try {
         const { data: rides, error } = await supabase
@@ -622,6 +553,7 @@ export default {
           .gte('Abfahrtszeit', this.time)
           .order('Abfahrtszeit', { ascending: true });
 
+        console.log('Fetched rides:', rides);
             
         const { data: passengerData } = await supabase
           .from('ist_mitfahrer')
@@ -633,7 +565,6 @@ export default {
           });
           console.log('Passenger counts:', passengerCount);
 
-  
         const filteredRides = rides.filter(ride => {
           const matchedCount = passengerCount[ride.Fahrt_ID] || 0;
           return matchedCount <= ride.Sitzplaetze && (matchedCount + this.neededSeats) <= ride.Sitzplaetze;
@@ -660,7 +591,7 @@ export default {
     async fetchRideDetails() {
       try {
         const selectedRideId = this.selected[0]?.id;
-        console.log('Selected ride ID:', selectedRideId); // debug log
+        console.log('Selected ride ID:', selectedRideId);
 
         if (!selectedRideId) return;
         const { data: passengers, error } = await supabase
@@ -673,7 +604,7 @@ export default {
           return;
         }
         if (!passengers || passengers.length === 0) {
-          console.warn('No passengers found for this Fahrt_ID'); // debug log
+          console.warn('No passengers found for this Fahrt_ID');
           this.ride = [];
           return;
         }
@@ -692,7 +623,7 @@ export default {
             });
           }
         }
-        console.log('newRide data:', newRide); // debug log
+        console.log('newRide data:', newRide);
         this.ride = newRide;
         await this.fetchFahrtverlauf(selectedRideId);
       } catch (err) {
@@ -706,6 +637,7 @@ export default {
           .select('Startort, Zielort, Abfahrtszeit')
           .eq('Fahrt_ID', fahrtId)
           .single();
+        console.log('Fahrt data:', fahrtData);
 
         if (!fahrtData) return;
     
@@ -715,13 +647,13 @@ export default {
           color: 'green',
         }];
 
-        // KORREKTUR: hier wird Ankunfszeit (ohne extra "t") verwendet
         const { data: stops } = await supabase
           .from('hält_in')
           .select('Adresse, Ankunfszeit')
           .eq('Fahrt_ID', fahrtId)
           .order('Ankunfszeit', { ascending: true });
 
+        console.log('Stops data:', stops);
         stops?.forEach(stop => {
           newVerlauf.push({
             location: stop.Adresse,
@@ -736,12 +668,12 @@ export default {
           color: 'purple',
         });
 
+        console.log('newVerlauf:', newVerlauf);
         this.fahrtverlauf = newVerlauf;
       } catch (err) {
         console.error('Error fetching fahrtverlauf:', err);
       }
     },
-    //Methode, um die Buchung in die Datenbank zu übertragen
     async insertBook(fahrtId){
       try {
           const userEmail = localStorage.getItem('userEmail');
@@ -761,10 +693,35 @@ export default {
           console.error('Unexpected error:', err);
           this.errorMessage = 'Fehler beim Erstellen eines Fahrtangebots';
   }
-}},
-
+},
+    async replaceStartEndForFahrt1() {
+      try {
+        const { data: ride1 } = await supabase
+          .from('Fahrt')
+          .select('Startort, Zielort, Abfahrtszeit')
+          .eq('Fahrt_ID', 1)
+          .single();
+        if (!ride1) return;
+        this.fahrtverlauf = [
+          {
+            location: ride1.Startort,
+            time: ride1.Abfahrtszeit,
+            color: 'green'
+          },
+          {
+            location: ride1.Zielort,
+            time: ride1.Abfahrtszeit,
+            color: 'purple'
+          }
+        ];
+      } catch (err) {
+        console.error('Error fetching ride1 data:', err);
+      }
+    },
+  },
   async mounted() {
     await this.getLocations();
+    await this.replaceStartEndForFahrt1();
   },
 };
 </script>
@@ -786,7 +743,7 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
-  z-index: 1; /* Ensure it does not cover other components */
+  z-index: 1;
 }
 
 .map-column {
@@ -807,7 +764,7 @@ export default {
 .row {
   display: flex;
   width: 100%;
-  height: 25%; /* Jede Row nimmt 25% der Containerhöhe ein */
+  height: 25%;
 }
 
 .col {
@@ -837,7 +794,6 @@ export default {
   animation: fadeIn 0.4s;
 }
 
-/*Icon animation */
 @keyframes fadeIn {
   0% {
     transform: translateX(0) scale(0);
