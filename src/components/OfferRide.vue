@@ -308,6 +308,10 @@
     async mounted() {
       this.initMap();
       await this.getLocations();
+      this.startLocation = this.$route.query.startLocation || this.startLocation;
+      this.endLocation = this.$route.query.endLocation || this.endLocation;
+      this.date = this.$route.query.date || this.date;
+      this.time = this.$route.query.time || this.time;
     }
   };
   

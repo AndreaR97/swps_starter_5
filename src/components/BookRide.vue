@@ -114,10 +114,18 @@
                 <v-row dense>
                   <v-col cols="6">
                     <v-card class="overflow-y-auto" max-height="600px">
-                      <div v-if="rideOffers.length === 0"> 
+                      <div v-if="rideOffers.length === 0" class="no-offer-container text-centered"> 
                         <h2 class="headline font-weight-bold mb-5"> 
                           Für die ausgewählten Daten gibt es leider kein Fahrtangebot. 
                         </h2>
+                        <v-btn
+                          class="offer-ride-button"
+                          color="#008557"
+                          size="x-large"
+                          @click="navigateToOfferRide"
+                        >
+                          Eine Fahrt anbieten
+                        </v-btn>
                       </div> 
                       <div v-else>  
                         <v-list lines="two">
@@ -720,6 +728,19 @@ export default {
         console.error('Error fetching ride1 data:', err);
       }
     },
+    navigateToOfferRide() {
+      console.log('Navigating to Offer Ride');
+      this.$router.push({
+        path: '/offerRide',
+        query: {
+          startLocation: this.startLocation,
+          endLocation: this.endLocation,
+          date: this.date,
+          time: this.time,
+          seats: this.neededSeats
+        }
+      });
+    }
   },
   async mounted() {
     await this.getLocations();
@@ -824,5 +845,22 @@ export default {
 
 .right-column {
   padding: 50px;
+}
+
+.no-offer-container {
+  position: relative;
+  width: 100%;
+  height: 150px; 
+}
+.offer-ride-button {
+  position: absolute;
+  z-index: 9999;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.text-centered {
+  text-align: center;
 }
 </style>
