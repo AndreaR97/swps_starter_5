@@ -661,7 +661,7 @@ export default {
             time: stop.Ankunfszeit,
             color: 'blue',
           });
-        }); */
+        });
         
 
         newVerlauf.push({
