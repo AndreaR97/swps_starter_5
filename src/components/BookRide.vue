@@ -562,6 +562,17 @@ export default {
         });
         console.log('Filtered rides:', filteredRides);
 
+        for (const ride of rides) {
+          const { data: driverData, error: driverError } = await supabase
+            .from('Person')
+            .select('Vorname, Nachname')
+            .eq('E_Mail_Adresse', ride.Fahrer)
+            .single();
+          ride.driverFullName = (!driverError && driverData)
+            ? (driverData.Vorname + ' ' + driverData.Nachname)
+            : ride.Fahrer;
+        }
+
         if (error) {
           console.error('Error fetching rides:', error);
           return;
@@ -569,7 +580,8 @@ export default {
 
         this.rideOffers = filteredRides.map(r => ({
           id: r.Fahrt_ID,
-          name: r.Fahrer,
+          driverEmail: r.Fahrer,
+          name: r.driverFullName,
           role: r.Fahrer,
           time: r.Abfahrtszeit,
           seats: r.Sitzplaetze
@@ -592,14 +604,15 @@ export default {
         const {data: driverData } = await supabase
           .from('Person')
           .select('Vorname, Nachname, Rolle, E_Mail_Adresse')
-          .eq('E_Mail_Adresse', this.selected[0].name)
+          .eq('E_Mail_Adresse', this.selected[0]?.driverEmail)
           .single();
 
-          const driverRole = driverData.Rolle;
+        if (driverData) {
+          this.selected[0].name = driverData.Vorname + ' ' + driverData.Nachname;
+          this.selected[0].role = driverData.Rolle;
+        }
 
-        this.selected[0].role = driverData.Rolle;
         console.log('Driver data:', driverData);
-        console.log('Rolle des Fahrers', driverRole);
         console.log(this.selected[0]);
 
 
