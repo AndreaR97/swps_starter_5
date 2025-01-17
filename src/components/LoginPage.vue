@@ -65,8 +65,9 @@ export default {
           localStorage.setItem('authToken', token);
           localStorage.setItem('userEmail', user.E_Mail_Adresse);
 
-          const redirectRoute = this.$route.query.redirectTo;
+          const redirectRoute = this.$route.query.redirectTo || localStorage.getItem('redirectTo');
           if (redirectRoute) {
+            localStorage.removeItem('redirectTo');
             this.$router.push(redirectRoute);
           } else {
             this.$router.push('/profilepage');
@@ -79,7 +80,11 @@ export default {
       }
     },
     goToRegistration() {
-      this.$router.push('/registrationpage');
+      const redirectParam = this.$route.query.redirectTo || localStorage.getItem('redirectTo');
+      this.$router.push({
+        path: '/registrationpage',
+        query: { redirectTo: redirectParam }
+      });
     }
   }
 };

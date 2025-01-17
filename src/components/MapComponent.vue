@@ -41,6 +41,18 @@
         type: String,
         required: true, // The user name is required
       },
+      routeCoords: {
+        type: Array,
+        default: () => []
+      }
+    },
+    watch: {
+      routeCoords(newVal) {
+        if (newVal && newVal.length > 1 && this.map) {
+          const bounds = L.latLngBounds(newVal);
+          this.map.fitBounds(bounds);
+        }
+      }
     },
     data() {
       return {

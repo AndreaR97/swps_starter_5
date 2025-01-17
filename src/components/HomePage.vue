@@ -74,7 +74,8 @@ export default {
       if (localStorage.getItem('authToken')) {
         this.$router.push(route);
       } else {
-        this.$router.push({ path: '/loginpage', query: { redirectTo: route } });
+        localStorage.setItem('redirectTo', route);
+        this.$router.push('/loginpage');
       }
     }
   },

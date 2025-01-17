@@ -158,7 +158,10 @@
               Nachname: this.lastName,
               Rolle: this.role
             }]);
-          this.$router.push('/loginpage');
+          this.$router.push({ 
+            path: '/loginpage', 
+            query: { redirectTo: this.$route.query.redirectTo } 
+          });
         } catch (error) {
           this.errorMessage = 'Fehler beim Erstellen des Kontos';
         }
