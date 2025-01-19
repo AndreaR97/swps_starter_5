@@ -46,8 +46,13 @@ export default {
     },
 
     logout() {
+      if (window.location.pathname === '/') { 
+        localStorage.removeItem('authToken'); 
+        window.location.reload(true); 
+      }else{
       localStorage.removeItem('authToken'); 
-      this.$router.push('/'); 
+      this.$router.push('/');
+      } 
     },
 
     navigate(value) { 
