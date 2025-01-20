@@ -154,7 +154,7 @@
                               <div class="ma-1">
                                 <v-row no-gutters>
                                   <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded>
-                                    {{ person.time}}
+                                    Abfahrtszeit: {{ person.time }} Uhr
                                   </v-sheet>
                                   <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded>
                                     {{ person.price}}
@@ -274,7 +274,7 @@
                                 <strong>{{ halt.location }}</strong>
                               </div>
                               <div style="font-size:15px">
-                                um {{ halt.time }}
+                                um {{ halt.time }} Uhr
                               </div>
                             </div>
                           </v-timeline-item>
@@ -583,7 +583,7 @@ export default {
           driverEmail: r.Fahrer,
           name: r.driverFullName,
           role: r.Fahrer,
-          time: r.Abfahrtszeit,
+          time: this.formatTime(r.Abfahrtszeit),
           seats: r.Sitzplaetze
         }));
       } catch (err) {
@@ -665,7 +665,7 @@ export default {
     
         const newVerlauf = [{
           location: fahrtData.Startort,
-          time: fahrtData.Abfahrtszeit,
+          time: this.formatTime(fahrtData.Abfahrtszeit),
           color: 'green',
         }];
 
@@ -679,7 +679,7 @@ export default {
         stops?.forEach(stop => {
           newVerlauf.push({
             location: stop.Adresse,
-            time: stop.Ankunfszeit,
+            time: this.formatTime(stop.Ankunfszeit),
             color: 'blue',
           });
         });
@@ -687,7 +687,7 @@ export default {
 
         newVerlauf.push({
           location: fahrtData.Zielort,
-          time: fahrtData.Abfahrtszeit,
+          time: this.formatTime(fahrtData.Abfahrtszeit),
           color: 'purple',
         });
 
@@ -753,6 +753,10 @@ export default {
           seats: this.neededSeats
         }
       });
+    },
+    formatTime(timeString) {
+      const [hours, minutes] = timeString.split(':');
+      return `${hours}:${minutes}`;
     }
   },
   async mounted() {
