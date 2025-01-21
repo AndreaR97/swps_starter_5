@@ -108,6 +108,7 @@
                 class="mx-1"
                 :ref="`digit${index}`"
                 @input="handleDigitInput(index)"
+                @keydown="handleDigitBackspace(index, $event)"
               ></v-text-field>
             </v-col>
           </v-row>
@@ -132,6 +133,7 @@
 </template>
 
 <script>
+import emailjs from 'emailjs-com';
 import NavigationBar from './NavigationBar.vue';
 import { supabase } from '../lib/supabaseClient';
 
@@ -160,6 +162,7 @@ export default {
       showVerificationDialog: false,
       codeDigits: ['', '', '', '', '', ''],
       canCreateAccount: false,
+      serverCode: ''
     };
   },
   computed: {
@@ -187,6 +190,9 @@ export default {
     }
   },
   methods: {
+    generateRandomCode() {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    },
     async validateForm() {
       this.errorMessage = '';
       if (!this.isFormValid) {
@@ -205,6 +211,22 @@ export default {
           return;
         }
         this.canCreateAccount = true;
+        this.serverCode = this.generateRandomCode();
+        try {
+          await emailjs.send(
+            'service_dafafbr',
+            'template_7hofqxd',
+            {
+              to_name: this.firstName,
+              from_name: 'campusconnect',
+              message: this.serverCode
+            },
+            'O-8oRDyiDSI8iVivd'
+          );
+        } catch (mailError) {
+          this.errorMessage = 'Fehler beim Senden der E-Mail: ' + mailError;
+          return;
+        }
         this.showVerificationDialog = true;
       } catch (error) {
         this.errorMessage = 'Fehler beim Überprüfen der E-Mail-Adresse';
@@ -213,8 +235,13 @@ export default {
     async confirmVerification() {
       const fullCode = this.codeDigits.join('');
       console.log('Eingegebener Code:', fullCode);
+
       if (fullCode.length !== 6) {
-        this.errorMessage = 'Der code ist falsch';
+        this.errorMessage = 'Der code ist nicht vollständig (6 Ziffern)!';
+        return;
+      }
+      if (fullCode !== this.serverCode) {
+        this.errorMessage = 'Der Code stimmt nicht überein.';
         return;
       }
       if (!this.canCreateAccount) {
@@ -239,8 +266,27 @@ export default {
         this.errorMessage = 'Fehler beim Erstellen des Kontos';
       }
     },
-    resendCode() {
+    async resendCode() {
       console.log('Code erneut senden');
+      if (!this.canCreateAccount) {
+        this.errorMessage = 'E-Mail nicht geprüft. Bitte Formular erneut ausfüllen.';
+        return;
+      }
+      this.serverCode = this.generateRandomCode();
+      try {
+        await emailjs.send(
+          'service_dafafbr',
+          'template_7hofqxd',
+          {
+            to_name: this.firstName,
+            from_name: 'campusconnect',
+            message: this.serverCode
+          },
+          'O-8oRDyiDSI8iVivd'
+        );
+      } catch (mailError) {
+        this.errorMessage = 'Fehler beim erneuten Senden: ' + mailError;
+      }
     },
     changeEmail() {
       console.log('E-Mail-Adresse ändern');
@@ -254,6 +300,18 @@ export default {
             nextRef[0].focus();
           } else if (nextRef && typeof nextRef.focus === 'function') {
             nextRef.focus();
+          }
+        });
+      }
+    },
+    handleDigitBackspace(index, event) {
+      if (event.key === 'Backspace' && !this.codeDigits[index] && index > 0) {
+        this.$nextTick(() => {
+          const prevRef = this.$refs[`digit${index - 1}`];
+          if (Array.isArray(prevRef) && prevRef[0]) {
+            prevRef[0].focus();
+          } else if (prevRef && typeof prevRef.focus === 'function') {
+            prevRef.focus();
           }
         });
       }
