@@ -200,7 +200,7 @@
                           </span>
                           <br>
                           <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">
-                            Rolle: {{ selected[0] ? selected[0].role: selected.role}}
+                             {{ selected[0] ? selected[0].role: selected.role}}
                           </span>
                           <br>
                           <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">
@@ -246,7 +246,7 @@
                               <span
                                 style="font-family: 'Minion Pro Regular'; font-size: 20px;"
                               >
-                                Rolle: {{ person.role}}
+                                 {{ person.role}}
                               </span>
                               <br>
                             </div>
