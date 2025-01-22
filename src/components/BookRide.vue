@@ -168,7 +168,8 @@
                     </v-card>
                   </v-col>
                   <v-col class="map-column v-col-sm-5 v-col-12 ml-6">
-                    <Map_Component></Map_Component>
+                    <Map_Component :start-location="startLocation" :end-location="endLocation"
+                      />
                   </v-col>
                 </v-row>
               </v-container>
@@ -387,6 +388,10 @@ import NavigationBar from './NavigationBar.vue';
 import { supabase } from '../lib/supabaseClient';
 
 export default {
+  component:{
+    Map_Component,
+    NavigationBar
+  },
   data() {
     return {
       startLocation: '',
@@ -491,6 +496,12 @@ export default {
         this.completeStep2 = true;
       }
     }
+  },
+  provide() {
+    return {
+      getStartLocation: () => this.startLocation,
+      getEndLocation: () => this.endLocation
+    };
   },
   methods: {
     async setNextStep() {

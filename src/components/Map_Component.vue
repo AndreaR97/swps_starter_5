@@ -7,36 +7,110 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
+import 'leaflet-routing-machine';
 import { supabase } from '../lib/supabaseClient';
 
+
 export default {
+  inject: ['getStartLocation', 'getEndLocation',],
+  props: {
+    startLocation: {
+      type: String,
+      required: true
+    },
+    endLocation: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
       map2: null,
+      coordArray: [],
     };
+  },
+  watch: {
+    startLocation: {
+      handler(newVal) {
+        if (newVal && this.endLocation) {
+          this.getStartandEnd();
+        }
+      }
+    },
+    endLocation: {
+      handler(newVal) {
+        if (newVal && this.startLocation) {
+          this.getStartandEnd();
+        }
+      }
+    }
   },
   
   methods: {
-    async markersForMap(){
-      const { data: locations, error } = await supabase
+    
+        async getStartandEnd(){
+          const startLocation = this.getStartLocation();
+          const { data: data, error } = await supabase
           .from('Ort')
-          .select('Adresse, Koordinate_X, Koordinate_Y');
+          .select('Koordinate_X, Koordinate_Y')
+          .eq('Adresse', startLocation)
 
-        // Check for errors
         if (error) {
-          console.error('Error fetching data from Supabase:', error);
+          console.error('Error fetching coordinates:', error);
           return;
         }
-        
-        locations.forEach((loc) => {
-          if (loc.Koordinate_Y, loc.Koordinate_X) {
-            L.marker([loc.Koordinate_X, loc.Koordinate_Y]).addTo(this.map2);
-          } else {
-            console.warn(`Invalid coordinates for ${loc.Adresse}`);
-          }
-        });
+        if (!data || data.length === 0) {
+          console.warn('No coordinates found');
+          return;
         }
-      },
+        for (const d of data) {
+          this.coordArray.push([d.Koordinate_X, d.Koordinate_Y]);
+          }
+        
+          const endLocation = this.getEndLocation();
+          const { data: data2 } = await supabase
+          .from('Ort')
+          .select('Koordinate_X, Koordinate_Y')
+          .eq('Adresse', endLocation)
+          
+          if (!data2 || data.length === 0) {
+          console.warn('No coordinates found');
+          return;
+        }
+        for (const d of data2) {
+          this.coordArray.push([d.Koordinate_X, d.Koordinate_Y]);
+          }
+
+        console.log('Coordinates', this.coordArray);
+        console.log('Start:', this.coordArray[0][0]);
+        console.log('Ende:', this.coordArray[1][0])
+
+        await this.initializeRoutingControl();
+        },
+        
+       async initializeRoutingControl() {
+        if(this.coordArray.length > 1){
+      const routingControl = L.Routing.control({
+        waypoints: [
+          L.latLng(this.coordArray[0][0], this.coordArray[0][1]),
+          L.latLng(this.coordArray[1][0], this.coordArray[1][1])
+        ],
+        routeWhileDragging: false,
+        show: false,
+        showAlternatives: true,
+        addWaypoints: false,
+        fitSelectedRoutes: true,
+        lineOptions: {
+          styles: [{ color: "#f23549", weight: 3 }]
+        },
+      });     
+
+      routingControl.addTo(this.map2);
+    }
+  }
+  },
+
       async mounted() {
     const uniBayreuthCoords = [49.928809, 11.585835];
     this.map2 = L.map('map2').setView(uniBayreuthCoords, 15);
@@ -56,10 +130,14 @@ export default {
         L.Marker.prototype.options.icon = defaultIcon;
   
         L.marker(uniBayreuthCoords).addTo(this.map2);
-        await this.markersForMap();
 
+        if(this.startLocation && this.endLocation){
+          this.getStartandEnd();
+          console.log('coordinates:', this.coordArray);
+        }
   },
     }
+    
 </script>
   <style scoped>
   /* Adjust map container height */
