@@ -28,6 +28,8 @@ export default {
     return {
       map2: null,
       coordArray: [],
+      tdistance: 0,
+      ttime: 0
     };
   },
   watch: {
@@ -42,6 +44,20 @@ export default {
       handler(newVal) {
         if (newVal && this.startLocation) {
           this.getStartandEnd();
+        }
+      }
+    },
+    tdistance: {
+      handler(newVal) {
+        if(newVal && this.tdistance !== 0){
+        this.changeDistance();
+        }
+      }
+    },
+      ttime: {
+        handler(newVal){
+          if(newVal && this.ttime !== 0){
+            this.changeTime();
         }
       }
     }
@@ -88,10 +104,20 @@ export default {
 
         await this.initializeRoutingControl();
         },
-        
+
+        changeDistance() {
+          this.$emit('distance-changed', this.tdistance); // Emit the event with tdistance
+          console.log('Distance3:', this.tdistance);
+        },
+
+        changeTime() {
+          this.$emit('ttime-changed', this.ttime); // Emit the event with ttime
+          console.log('TTime', this.ttime);
+        },
+            
        async initializeRoutingControl() {
         if(this.coordArray.length > 1){
-      const routingControl = L.Routing.control({
+      const routingControl = L.Routing.control({ 
         waypoints: [
           L.latLng(this.coordArray[0][0], this.coordArray[0][1]),
           L.latLng(this.coordArray[1][0], this.coordArray[1][1])
@@ -105,7 +131,17 @@ export default {
           styles: [{ color: "#f23549", weight: 3 }]
         },
       });     
-
+      routingControl.on('routesfound', (e)  =>{
+      var routes = e.routes;
+      var summary = routes[0].summary;
+      // distance and time in km and minutes
+      var kdistance = summary.totalDistance / 1000;
+      this.ttime = Math.round(summary.totalTime % 3600 / 60);
+      this.tdistance = kdistance;
+      console.log('Distance:', this.tdistance);
+      console.log('Distance1:', kdistance);
+      this.changeDistance();
+   });
       routingControl.addTo(this.map2);
     }
   }

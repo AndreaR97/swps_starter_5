@@ -156,8 +156,13 @@
                                   <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded>
                                     Abfahrtszeit: {{ person.time }} Uhr
                                   </v-sheet>
-                                  <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded>
+                                  <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded stacked>
                                     {{ person.price}}
+                                    <v-icon></v-icon>
+                                    <v-badge color="dark grey" content="?" inline><v-tooltip
+                                      activator="parent"
+                                      location="end"
+                                    >Preis, den dich die Fahrt voraussichtlich kostet.</v-tooltip></v-badge>
                                   </v-sheet>
                                 </v-row>
                               </div>
@@ -168,10 +173,39 @@
                     </v-card>
                   </v-col>
                   <v-col class="map-column v-col-sm-5 v-col-12 ml-6">
-                    <Map_Component :start-location="startLocation" :end-location="endLocation"
+                    <Map_Component :start-location="startLocation" :end-location="endLocation" @distance-changed="handleDistanceChange" @ttime-changed="handleTimeChange"
                       />
                   </v-col>
+                  <v-col>
+                    <v-btn
+                        color="#009260"
+                        rounded
+                        class="ms-4"
+                        size="40"
+                        absolute
+                        app
+                        appear
+                        @click="sheet = !sheet"
+                      ><v-icon icon="mdi-help"></v-icon>
+                      <v-tooltip
+                          activator="parent"
+                          location="bottom"
+                        >Mehr Informationen zum Preis</v-tooltip>
+                    </v-btn>
+                  </v-col>
                 </v-row>
+                <v-bottom-sheet v-model="sheet">
+                <v-card class="text-center" height="200">
+                  <v-card-text>
+                    <v-btn variant="text" @click="sheet = !sheet"> Preisinformation schließen </v-btn>
+                    <br />
+                    <div>
+                      Der Preis berechnet sich aus einem Durchschnittsverbrauch von 7,7l/100km, multipliziert mit einem am derzeitigen Literpreis orientierten Wert von 1,78€ und wird auf die Fahrtteilnehmer aufgeteilt. Pro Person (außer für den Fahrer) wird eine Nutzungspauschale von 0,90€ für den Fahrzeugsteller berechnet.
+                      Wenn du mehr als einen Sitzplatz buchst, wird dir in der Liste der Preis für beide Sitzplätze zusammen angezeigt. 
+                    </div>
+                  </v-card-text>
+                </v-card>
+        </v-bottom-sheet>
               </v-container>
             </v-stepper-content>
           </div>
@@ -257,7 +291,7 @@
                   </v-col>
                   <v-col cols="6" class="right-column">
                     <v-card class="mx-auto" max-width="500" max-height="490px">
-                      <v-toolbar color="#009260">
+                      <v-toolbar color="00926#0">
                         <v-toolbar-title class="text-h6" text="Verlauf der Fahrt">
                         </v-toolbar-title>
                       </v-toolbar>
@@ -379,6 +413,7 @@
 import { ref } from 'vue';
 const dialog = ref(false);
 const overlay = ref(false);
+const sheet = ref(false);
 </script>
 
 <script>
@@ -407,9 +442,13 @@ export default {
       selected: null,
       dialog: false,
       overlay: false,
+      sheet: false,
       rideOffers: [],
       ride: [],
       fahrtverlauf: [],
+      passengerCountArray: {},
+      tdistance: 0,
+      ttime: 0
     };
   },
   computed: {
@@ -528,6 +567,17 @@ export default {
       this.startLocation = this.endLocation;
       this.endLocation = temp;
     },
+    handleDistanceChange(distance) {
+      this.tdistance = distance;
+      console.log('Distance in bookride' + this.tdistance);
+      this.rideOffers.forEach(ride => {
+        ride.price = parseFloat(((this.tdistance*(7.7/100)*1.78)/((this.passengerCountArray[ride.id] || 0 ) + this.neededSeats + 1))*this.neededSeats+0.90*this.neededSeats).toFixed(2) + '€';
+      });
+    },
+    handleTimeChange(time) {
+      this.ttime = time;
+      console.log('TTime in bookride' + this.ttime);
+    },
     async getLocations() {
       const { data: locations, error } = await supabase
         .from('Ort')
@@ -562,10 +612,10 @@ export default {
 
         const passengerCount = {};
           passengerData.forEach(row => {
-            passengerCount[row.Fahrt_ID] = (passengerCount[row.Fahrt_ID] || 0) + 1;
+            passengerCount[row.Fahrt_ID] = (passengerCount[row.Fahrt_ID] || 0) + 1 + row.anzahl_weitere_platzbuchungen;
           });
-          console.log('Passenger counts:', passengerCount);
-
+          this.passengerCountArray = passengerCount;
+          console.log('Passenger counts as array:', this.passengerCountArray);
   
         const filteredRides = rides.filter(ride => {
           const matchedCount = passengerCount[ride.Fahrt_ID] || 0;
@@ -595,11 +645,13 @@ export default {
           name: r.driverFullName,
           role: r.Fahrer,
           time: this.formatTime(r.Abfahrtszeit),
+          price: '0.00€',
           seats: r.Sitzplaetze
         }));
       } catch (err) {
         console.error('Error:', err);
       }
+      console.log('Ride offers:', this.rideOffers);
       
     },
     async fetchRideDetails() {
@@ -682,23 +734,22 @@ export default {
 
         const { data: stops } = await supabase
           .from('hält_in')
-          .select('Adresse, Ankunfszeit')
+          .select('Adresse, Ankunftszeit')
           .eq('Fahrt_ID', fahrtId)
-          .order('Ankunfszeit', { ascending: true });
+          .order('Ankunftszeit', { ascending: true });
 
         console.log('Stops data:', stops);
         stops?.forEach(stop => {
           newVerlauf.push({
             location: stop.Adresse,
-            time: this.formatTime(stop.Ankunfszeit),
+            time: this.formatTime(stop.Ankunftszeit),
             color: 'blue',
           });
         });
-        
 
         newVerlauf.push({
           location: fahrtData.Zielort,
-          time: this.formatTime(fahrtData.Abfahrtszeit),
+          time: this.addMinutesToTime(fahrtData.Abfahrtszeit, this.ttime),
           color: 'purple',
         });
 
@@ -718,7 +769,7 @@ export default {
       const { error } = await supabase
         .from('ist_mitfahrer')
         .insert([
-          { Fahrt_ID: fahrtId, Person: userEmail }
+          { Fahrt_ID: fahrtId, Person: userEmail, anzahl_weitere_platzbuchungen: this.neededSeats - 1 }
     ]);
      if (error) {
         console.error('Error inserting booking:', error);
@@ -768,12 +819,27 @@ export default {
     formatTime(timeString) {
       const [hours, minutes] = timeString.split(':');
       return `${hours}:${minutes}`;
+    },
+
+    addMinutesToTime(timeString, timeToAdd) {
+      // Parse the initial time string
+      const [hours, minutes] = timeString.split(':').map(Number);
+
+      const date = new Date();
+      date.setHours(hours, minutes);
+      date.setMinutes(date.getMinutes() + timeToAdd);
+
+      // Format the new time back to a string
+      const newHours = String(date.getHours()).padStart(2, '0');
+      const newMinutes = String(date.getMinutes()).padStart(2, '0');
+      return `${newHours}:${newMinutes}`;
     }
+  
   },
   async mounted() {
     await this.getLocations();
     await this.replaceStartEndForFahrt1();
-  },
+  }
 };
 </script>
 
