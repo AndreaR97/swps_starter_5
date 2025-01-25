@@ -220,6 +220,7 @@ export default {
             'template_7hofqxd',
             {
               to_name: this.firstName,
+              to_email: this.email,
               from_name: 'campusconnect',
               message: this.serverCode
             },
@@ -281,6 +282,7 @@ export default {
           'template_7hofqxd',
           {
             to_name: this.firstName,
+            to_email: this.email,
             from_name: 'campusconnect',
             message: this.serverCode
           },
