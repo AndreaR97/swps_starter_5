@@ -63,6 +63,12 @@
                           }"
                           >{{ ride.Fahrt.Datum }} um {{ ride.Fahrt.Abfahrtszeit }}</span
                         >
+                              <v-btn     
+                                icon=mdi-trash-can-outline 
+                                variant="plain"
+                                density="compact"
+                                @click="this.idDelete = ride.Fahrt_ID; dialog2 = !dialog2">
+                                </v-btn>
                       </div>
                     </template>
                   </v-list-item>
@@ -108,8 +114,14 @@
                           }"
                           >{{ ride.Datum }} um {{ ride.Abfahrtszeit }}</span
                         >
+                        <v-btn     
+                                  icon=mdi-trash-can-outline 
+                                  variant="plain"
+                                  density="compact"
+                                  @click="this.idDelete = ride.Fahrt_ID; dialog = !dialog">
+                                </v-btn>
                       </div>
-                    </template>
+                    </template>                   
                   </v-list-item>
                 </v-item-group>
               </template>
@@ -119,12 +131,100 @@
       </v-row>
 
       <v-row style="height: 50px;"></v-row>
-      <v-row justify="center"> 
-        <v-btn class="big-button" color="#009260" @click="$router.push('/')">
-          Weitere Fahrten planen
-        </v-btn> 
-      </v-row>
+        <v-row justify="center"> 
+          <v-btn class="big-button" color="#009260" @click="$router.push('/')">
+            Weitere Fahrten planen
+          </v-btn> 
+        </v-row>
     </v-container>
+
+    <div class="centered-container">
+          <v-dialog
+            v-model="dialog"
+            max-width="600"
+            persistent
+          >
+            <v-card color="white">
+              <div class="py-12 text-center">
+                <div>
+                  <h2>Möchtest du die Fahrt wirklich löschen?</h2>
+                </div>
+              </div>
+              <v-divider></v-divider>
+              <v-row align="center" justify="center">
+                <v-col cols="auto">
+              <div class="pa-4 text-end">
+                <v-btn
+                  class="text-none"
+                  color="medium-emphasis"
+                  min-width="92"
+                  variant="outlined"
+                  @click="deleteRide(this.idDelete); dialog = false; reloadPage();"
+                >
+                  Ja
+                </v-btn>
+              </div>
+              </v-col>
+              <v-col cols="auto">
+                <v-btn
+                  class="text-none"
+                  color="medium-emphasis"
+                  min-width="92"
+                  variant="outlined"
+                  @click="dialog = false"
+                >
+                  Nein
+                </v-btn>
+              </v-col>
+            </v-row>
+            </v-card>
+          </v-dialog>
+        </div>
+
+        <div class="centered-container">
+          <v-dialog
+            v-model="dialog2"
+            max-width="600"
+            persistent
+          >
+            <v-card color="white">
+              <div class="py-12 text-center">
+                <div>
+                  <h2>Möchtest du wirklich deinen Mitfahrerplatz/ deine Mitfahrerplätze aufgeben?</h2>
+                </div>
+              </div>
+              <v-divider></v-divider>
+              <v-row align="center" justify="center">
+                <v-col cols="auto">
+              <div class="pa-4 text-end">
+                <v-btn
+                  class="text-none"
+                  color="medium-emphasis"
+                  min-width="92"
+                  variant="outlined"
+                  @click="deletePassenger(this.idDelete); dialog2 = false; reloadPage();"
+                >
+                  Ja
+                </v-btn>
+              </div>
+              </v-col>
+              <v-col cols="auto">
+                <v-btn
+                  class="text-none"
+                  color="medium-emphasis"
+                  min-width="92"
+                  variant="outlined"
+                  @click="dialog2 = false"
+                >
+                  Nein
+                </v-btn>
+              </v-col>
+            </v-row>
+            </v-card>
+          </v-dialog>
+        </div>
+
+
   </div>
 </template>
 
@@ -142,6 +242,9 @@ export default {
     vorname: '',
     nachname: '',
     role: '',
+    dialog: false,
+    dialog2: false,
+    idDelete: null,
     passengerRides: [
       { from: 'Bayreuth', to: 'Nürnberg', date: '2023-10-15', time: '10:30' },
 
@@ -177,6 +280,40 @@ export default {
       } catch (error) {
         console.error('Fehler beim Laden der Fahrten als Fahrer:', error);
       }
+    },
+    async deleteRide(rideId) {
+      try { 
+          const response = await supabase
+            .from('Fahrt')
+            .delete()
+            .eq('Fahrt_ID', rideId);
+        if(response){
+          console.log('Fahrt erfolgreich gelöscht', response);
+          return response; 
+        }
+      } catch (error) {
+      console.log('Fahrt löschen fehlgeschlagen', error);
+      }
+    },
+
+    async deletePassenger(rideId) {
+      try { 
+          const response = await supabase
+            .from('ist_mitfahrer')
+            .delete()
+            .eq('Fahrt_ID', rideId,)
+            .eq('Person', this.email);
+        if(response){
+          console.log('Fahrt erfolgreich gelöscht', response);
+          return response; 
+        }
+      } catch (error) {
+      console.log('Fahrt löschen fehlgeschlagen', error);
+      }
+    },
+
+    reloadPage() {
+      window.location.reload();
     }
   },
   async mounted() {
@@ -199,11 +336,21 @@ export default {
 </script>
 
 <style scoped>
+
+html, body {
+  height: 100%;
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
 .profilepage {
   position: relative;
   width: 100%;
   height: calc(100vh - 48px);
-  overflow: hidden;
   z-index: 1;
   font-family: 'Arial', sans-serif; 
 }
@@ -232,6 +379,7 @@ export default {
 
 .rides-overview {
   margin-top: 150px;
+  max-width: 1200px;
 }
 
 .v-card {
