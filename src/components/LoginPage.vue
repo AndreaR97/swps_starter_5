@@ -53,10 +53,11 @@ export default {
     async login() {
       this.errorMessage = '';
       try {
+        const emailLower = this.email.toLocaleLowerCase();
         const { data: user } = await supabase
           .from('Person')
           .select('E_Mail_Adresse, Passwort')
-          .eq('E_Mail_Adresse', this.email)
+          .ilike('E_Mail_Adresse', emailLower)
           .eq('Passwort', this.password)
           .single();
 
