@@ -173,7 +173,8 @@ export default {
       return v => /.+@uni-bayreuth\.de$/.test(v) || 'E-Mail muss im Format Vorname.Nachname@uni-bayreuth.de sein';
     },
     confirmEmailRule() {
-      return v => v === this.email || 'E-Mail Bestätigung muss mit der E-Mail übereinstimmen';
+      return v => v.toLocaleLowerCase() === this.email.toLocaleLowerCase() 
+        || 'E-Mail Bestätigung muss mit der E-Mail übereinstimmen';
     },
     passwordRule() {
       return v => /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\S]{8,30}$/.test(v) || 'Passwort muss 8-30 Zeichen lang sein und Buchstaben, Zahlen und Sonderzeichen enthalten';
@@ -200,10 +201,11 @@ export default {
         return;
       }
       try {
+        const emailLower = this.email.toLocaleLowerCase();
         const { data: existingUser } = await supabase
           .from('Person')
           .select('E_Mail_Adresse')
-          .eq('E_Mail_Adresse', this.email)
+          .eq('E_Mail_Adresse', emailLower)
           .single();
         
         if (existingUser) {
@@ -252,7 +254,7 @@ export default {
         await supabase
           .from('Person')
           .insert([{
-            E_Mail_Adresse: this.email,
+            E_Mail_Adresse: this.email.toLocaleLowerCase(),
             Passwort: this.password,
             Vorname: this.firstName,
             Nachname: this.lastName,
