@@ -133,8 +133,13 @@
       <v-row style="height: 50px;"></v-row>
         <v-row justify="center"> 
           <v-btn class="big-button" color="#009260" @click="$router.push('/')">
-            Weitere Fahrten planen
-          </v-btn> 
+          <template v-if="driverRides.length === 0 && plannedRides.length === 0">
+                  Jetzt Fahrten planen
+          </template>
+          <template v-else>
+                  Weitere Fahrten planen
+          </template>
+        </v-btn>  
         </v-row>
     </v-container>
 

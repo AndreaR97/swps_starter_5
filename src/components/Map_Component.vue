@@ -124,8 +124,9 @@ export default {
         ],
         routeWhileDragging: false,
         show: false,
-        showAlternatives: true,
+        showAlternatives: false,
         addWaypoints: false,
+        draggableWaypoints: false,
         fitSelectedRoutes: true,
         lineOptions: {
           styles: [{ color: "#f23549", weight: 3 }]
