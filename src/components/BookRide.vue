@@ -248,7 +248,12 @@
                       >
                         Mitfahrer:
                       </span>
-                      <v-list lines="two">
+                      <div v-if="ride.length === 0">
+                        <div class="ma-4" style="font-size: 24px; font-weight: bold;">
+                          Du bist bisher der einzige Mitfahrer.
+                        </div>
+                      </div>
+                      <v-list lines="two" v-else>
                         <v-item-group>
                           <v-list-item
                             v-for="(person, n) in ride"
