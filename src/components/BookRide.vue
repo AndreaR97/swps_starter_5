@@ -202,6 +202,7 @@
                     <div>
                       Der Preis berechnet sich aus einem Durchschnittsverbrauch von 7,7l/100km, multipliziert mit einem am derzeitigen Literpreis orientierten Wert von 1,78€ und wird auf die Fahrtteilnehmer aufgeteilt. Pro Person (außer für den Fahrer) wird eine Nutzungspauschale von 0,90€ für den Fahrzeugsteller berechnet.
                       Wenn du mehr als einen Sitzplatz buchst, wird dir in der Liste der Preis für beide Sitzplätze zusammen angezeigt. 
+                      Der Benzinpreis wird am 15. Tag eines jeden Monats aktualisiert.
                     </div>
                   </v-card-text>
                 </v-card>
@@ -774,7 +775,7 @@ export default {
       const { error } = await supabase
         .from('ist_mitfahrer')
         .insert([
-          { Fahrt_ID: fahrtId, Person: userEmail, anzahl_weitere_platzbuchungen: this.neededSeats - 1 }
+          { Fahrt_ID: fahrtId, Person: userEmail, anzahl_weitere_platzbuchungen: this.neededSeats - 1, Preis: parseFloat(this.selected[0].price) }
     ]);
      if (error) {
         console.error('Error inserting booking:', error);
