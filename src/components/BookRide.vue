@@ -577,7 +577,7 @@ export default {
       this.tdistance = distance;
       console.log('Distance in bookride' + this.tdistance);
       this.rideOffers.forEach(ride => {
-        ride.price = parseFloat(((this.tdistance*(7.7/100)*1.78)/((this.passengerCountArray[ride.id] || 0 ) + this.neededSeats + 1))*this.neededSeats+0.90*this.neededSeats).toFixed(2) + '€';
+        ride.price = parseFloat(((this.tdistance*(7.7/100)*1.78)/((this.passengerCountArray[ride.id] || 0 ) + this.neededSeats+1))*this.neededSeats+0.90*this.neededSeats).toFixed(2) + '€';
       });
     },
     handleTimeChange(time) {
@@ -618,7 +618,7 @@ export default {
 
         const passengerCount = {};
           passengerData.forEach(row => {
-            passengerCount[row.Fahrt_ID] = (passengerCount[row.Fahrt_ID] || 0) + 1 + row.anzahl_weitere_platzbuchungen;
+            passengerCount[row.Fahrt_ID] = (passengerCount[row.Fahrt_ID] || 1) + row.anzahl_weitere_platzbuchungen;
           });
           this.passengerCountArray = passengerCount;
           console.log('Passenger counts as array:', this.passengerCountArray);
@@ -766,25 +766,58 @@ export default {
       }
     },
     async insertBook(fahrtId){
-      try {
           const userEmail = localStorage.getItem('userEmail');
           if (!userEmail) {
             console.error('No user email found in localStorage.');
             return;
           }
-      const { error } = await supabase
+      const {  error } = await supabase
         .from('ist_mitfahrer')
         .insert([
           { Fahrt_ID: fahrtId, Person: userEmail, anzahl_weitere_platzbuchungen: this.neededSeats - 1, Preis: parseFloat(this.selected[0].price) }
-    ]);
-     if (error) {
-        console.error('Error inserting booking:', error);
-      }
-  } catch (err) {
-          console.error('Unexpected error:', err);
-          this.errorMessage = 'Fehler beim Erstellen eines Fahrtangebots';
+    ])
+    if(error) {
+          console.error('Unexpected error:', error);
+          this.errorMessage = 'Fehler beim Buchen der Fahrt';
   }
+  this.updatePrices(fahrtId);
 },
+    async updatePrices(fahrtId){
+      try {
+        const { data, err } = await supabase
+          .from('ist_mitfahrer')
+          .select('Fahrt_ID, Person, anzahl_weitere_platzbuchungen, Preis')
+          .eq('Fahrt_ID', fahrtId)
+          console.log('Daten der Mitfahrer mit Preis', data);
+        
+          if(err){
+            console.error('Fehler beim Abrufen der Mitfahrer: ', err);
+          } 
+
+        const mitfahrer = (this.passengerCountArray[fahrtId] || 0 )
+        console.log('Mitfahrer: ', mitfahrer)
+        const gesamtpreis = parseFloat(((this.tdistance*(7.7/100)*1.78)/(1+mitfahrer+this.neededSeats)));
+        console.log('Gesamtpreis: ', gesamtpreis);
+          
+        for (const passenger of data) {
+            console.log('Aktueller Passagier:', passenger);
+          const neuerPreis = parseFloat((gesamtpreis+0.90) * (passenger.anzahl_weitere_platzbuchungen + 1));
+            console.log('neuerpreis: ', neuerPreis);
+          const {error: updateError} = await supabase
+            .from('ist_mitfahrer')
+            .update({ Preis: neuerPreis})
+            .eq('Fahrt_ID', fahrtId)
+            .eq('Person', passenger.Person);
+            if(updateError){
+              console.error('Fehler beim Anpassen der Preise: ', updateError);
+            }
+        }
+      }catch (err) {
+        console.error('Fehler beim Anpassen der Preise: ', err);
+      }
+      console.log('Preise wurden angepasst');
+      },
+
     async replaceStartEndForFahrt1() {
       try {
         const { data: ride1 } = await supabase
