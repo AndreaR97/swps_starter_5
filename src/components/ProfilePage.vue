@@ -64,6 +64,7 @@
                           >{{ ride.Fahrt.Datum }} um {{ ride.Fahrt.Abfahrtszeit }}</span
                         >
                               <v-btn     
+                                v-if="checkIfDeletable(ride.Fahrt.Datum, ride.Fahrt.Abfahrtszeit)"
                                 icon=mdi-trash-can-outline 
                                 variant="plain"
                                 density="compact"
@@ -115,6 +116,7 @@
                           >{{ ride.Datum }} um {{ ride.Abfahrtszeit }}</span
                         >
                         <v-btn     
+                                  v-if="checkIfDeletable(ride.Datum, ride.Abfahrtszeit)"
                                   icon=mdi-trash-can-outline 
                                   variant="plain"
                                   density="compact"
@@ -258,6 +260,14 @@ export default {
     plannedRides: []
   }),
   methods: {
+    isFutureRide(dateStr) {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      const rideDate = new Date(year, month - 1, day);
+      rideDate.setHours(0, 0, 0, 0);
+      const nowDate = new Date();
+      nowDate.setHours(0, 0, 0, 0);
+      return rideDate.getTime() >= nowDate.getTime();
+    },
     async getPlannedRides() {
       try {
         const userEmail = localStorage.getItem('userEmail');
@@ -266,7 +276,9 @@ export default {
           .select('Fahrt_ID, Fahrt:Fahrt_ID(Startort, Zielort, Datum, Abfahrtszeit)')
           .eq('Person', userEmail);
         if (!error && data) {
-          this.plannedRides = data;
+          this.plannedRides = data.filter((ride) =>
+            this.isFutureRide(ride.Fahrt.Datum)
+          );
         }
       } catch (error) {
         console.error('Fehler beim Laden der geplanten Fahrten:', error);
@@ -280,7 +292,9 @@ export default {
           .select('Fahrt_ID, Startort, Zielort, Datum, Abfahrtszeit')
           .eq('Fahrer', userEmail);
         if (!error && data) {
-          this.driverRides = data;
+          this.driverRides = data.filter((ride) =>
+            this.isFutureRide(ride.Datum)
+          );
         }
       } catch (error) {
         console.error('Fehler beim Laden der Fahrten als Fahrer:', error);
@@ -315,6 +329,13 @@ export default {
       } catch (error) {
       console.log('Fahrt löschen fehlgeschlagen', error);
       }
+    },
+
+    checkIfDeletable(dateStr, timeStr) {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      const [hour, minute] = timeStr.split(':').map(Number);
+      const rideDate = new Date(year, month - 1, day, hour, minute);
+      return (rideDate - new Date()) > 6 * 60 * 60 * 1000;
     },
 
     reloadPage() {
