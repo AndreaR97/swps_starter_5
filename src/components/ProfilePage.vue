@@ -63,13 +63,17 @@
                           }"
                           >{{ ride.Fahrt.Datum }} um {{ ride.Fahrt.Abfahrtszeit }}</span
                         >
-                              <v-btn     
-                                v-if="checkIfDeletable(ride.Fahrt.Datum, ride.Fahrt.Abfahrtszeit)"
-                                icon=mdi-trash-can-outline 
-                                variant="plain"
-                                density="compact"
-                                @click="this.idDelete = ride.Fahrt_ID; dialog2 = !dialog2">
-                                </v-btn>
+                        <template v-if="checkIfDeletable(ride.Fahrt.Datum, ride.Fahrt.Abfahrtszeit)">
+                          <v-btn     
+                            icon=mdi-trash-can-outline 
+                            variant="plain"
+                            density="compact"
+                            @click="this.idDelete = ride.Fahrt_ID; dialog2 = !dialog2">
+                          </v-btn>
+                        </template>
+                        <template v-else>
+                          <span style="color: red;">  Kann nicht mehr abgesagt werden </span>
+                        </template>
                       </div>
                     </template>
                   </v-list-item>
@@ -115,13 +119,17 @@
                           }"
                           >{{ ride.Datum }} um {{ ride.Abfahrtszeit }}</span
                         >
-                        <v-btn     
-                                  v-if="checkIfDeletable(ride.Datum, ride.Abfahrtszeit)"
-                                  icon=mdi-trash-can-outline 
-                                  variant="plain"
-                                  density="compact"
-                                  @click="this.idDelete = ride.Fahrt_ID; dialog = !dialog">
-                                </v-btn>
+                        <template v-if="checkIfDeletable(ride.Datum, ride.Abfahrtszeit)">
+                          <v-btn     
+                            icon=mdi-trash-can-outline 
+                            variant="plain"
+                            density="compact"
+                            @click="this.idDelete = ride.Fahrt_ID; dialog = !dialog">
+                          </v-btn>
+                        </template>
+                        <template v-else>
+                          <span style="color: red;">  Kann nicht mehr abgesagt werden </span>
+                        </template>
                       </div>
                     </template>                   
                   </v-list-item>
@@ -155,6 +163,9 @@
               <div class="py-12 text-center">
                 <div>
                   <h2>Möchtest du die Fahrt wirklich löschen?</h2>
+                  <p style="margin-top: 1rem;">
+                    Du kannst deine Fahrt bis zu 6 Stunden vor Beginn absagen.
+                  </p>
                 </div>
               </div>
               <v-divider></v-divider>
@@ -198,6 +209,9 @@
               <div class="py-12 text-center">
                 <div>
                   <h2>Möchtest du wirklich deinen Mitfahrerplatz/ deine Mitfahrerplätze aufgeben?</h2>
+                  <p style="margin-top: 1rem;">
+                    Du kannst deine Fahrt bis zu 6 Stunden vor Beginn absagen.
+                  </p>
                 </div>
               </div>
               <v-divider></v-divider>
