@@ -63,12 +63,17 @@
                           }"
                           >{{ ride.Fahrt.Datum }} um {{ ride.Fahrt.Abfahrtszeit }}</span
                         >
-                              <v-btn     
-                                icon=mdi-trash-can-outline 
-                                variant="plain"
-                                density="compact"
-                                @click="this.idDelete = ride.Fahrt_ID; dialog2 = !dialog2">
-                                </v-btn>
+                        <template v-if="checkIfDeletable(ride.Fahrt.Datum, ride.Fahrt.Abfahrtszeit)">
+                          <v-btn     
+                            icon=mdi-trash-can-outline 
+                            variant="plain"
+                            density="compact"
+                            @click="this.idDelete = ride.Fahrt_ID; dialog2 = !dialog2">
+                          </v-btn>
+                        </template>
+                        <template v-else>
+                          <span style="color: red;">  Kann nicht mehr abgesagt werden </span>
+                        </template>
                       </div>
                     </template>
                   </v-list-item>
@@ -114,12 +119,17 @@
                           }"
                           >{{ ride.Datum }} um {{ ride.Abfahrtszeit }}</span
                         >
-                        <v-btn     
-                                  icon=mdi-trash-can-outline 
-                                  variant="plain"
-                                  density="compact"
-                                  @click="this.idDelete = ride.Fahrt_ID; dialog = !dialog">
-                                </v-btn>
+                        <template v-if="checkIfDeletable(ride.Datum, ride.Abfahrtszeit)">
+                          <v-btn     
+                            icon=mdi-trash-can-outline 
+                            variant="plain"
+                            density="compact"
+                            @click="this.idDelete = ride.Fahrt_ID; dialog = !dialog">
+                          </v-btn>
+                        </template>
+                        <template v-else>
+                          <span style="color: red;">  Kann nicht mehr abgesagt werden </span>
+                        </template>
                       </div>
                     </template>                   
                   </v-list-item>
@@ -153,6 +163,9 @@
               <div class="py-12 text-center">
                 <div>
                   <h2>Möchtest du die Fahrt wirklich löschen?</h2>
+                  <p style="margin-top: 1rem;">
+                    Du kannst deine Fahrt bis zu 6 Stunden vor Beginn absagen.
+                  </p>
                 </div>
               </div>
               <v-divider></v-divider>
@@ -196,6 +209,9 @@
               <div class="py-12 text-center">
                 <div>
                   <h2>Möchtest du wirklich deinen Mitfahrerplatz/ deine Mitfahrerplätze aufgeben?</h2>
+                  <p style="margin-top: 1rem;">
+                    Du kannst deine Fahrt bis zu 6 Stunden vor Beginn absagen.
+                  </p>
                 </div>
               </div>
               <v-divider></v-divider>
@@ -258,6 +274,14 @@ export default {
     plannedRides: []
   }),
   methods: {
+    isFutureRide(dateStr) {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      const rideDate = new Date(year, month - 1, day);
+      rideDate.setHours(0, 0, 0, 0);
+      const nowDate = new Date();
+      nowDate.setHours(0, 0, 0, 0);
+      return rideDate.getTime() >= nowDate.getTime();
+    },
     async getPlannedRides() {
       try {
         const userEmail = localStorage.getItem('userEmail');
@@ -266,7 +290,9 @@ export default {
           .select('Fahrt_ID, Fahrt:Fahrt_ID(Startort, Zielort, Datum, Abfahrtszeit)')
           .eq('Person', userEmail);
         if (!error && data) {
-          this.plannedRides = data;
+          this.plannedRides = data.filter((ride) =>
+            this.isFutureRide(ride.Fahrt.Datum)
+          );
         }
       } catch (error) {
         console.error('Fehler beim Laden der geplanten Fahrten:', error);
@@ -280,7 +306,9 @@ export default {
           .select('Fahrt_ID, Startort, Zielort, Datum, Abfahrtszeit')
           .eq('Fahrer', userEmail);
         if (!error && data) {
-          this.driverRides = data;
+          this.driverRides = data.filter((ride) =>
+            this.isFutureRide(ride.Datum)
+          );
         }
       } catch (error) {
         console.error('Fehler beim Laden der Fahrten als Fahrer:', error);
@@ -315,6 +343,13 @@ export default {
       } catch (error) {
       console.log('Fahrt löschen fehlgeschlagen', error);
       }
+    },
+
+    checkIfDeletable(dateStr, timeStr) {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      const [hour, minute] = timeStr.split(':').map(Number);
+      const rideDate = new Date(year, month - 1, day, hour, minute);
+      return (rideDate - new Date()) > 6 * 60 * 60 * 1000;
     },
 
     reloadPage() {

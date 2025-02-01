@@ -92,7 +92,7 @@
           Code eingeben
         </v-card-title>
         <v-card-text class="d-flex flex-column align-center" style="text-align: center;">
-          <div>Geben Sie den 6-stelligen Sicherheitscode ein.</div>
+          <div>Gib den Code ein der an deine E-mail geschickt wurde.</div>
           <v-row class="mt-4" justify="center" align="center">
             <v-col
               cols="2"
