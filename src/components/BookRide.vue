@@ -134,7 +134,7 @@
                             :key="n"
                             :title="person.name"
                             :value="n"
-                            color="#26874E"
+                            color="#008557"
                             link
                           >
                             <v-divider class="mb-2"></v-divider>
@@ -215,11 +215,11 @@
               <v-container fluid>
                 <v-row>
                   <v-col cols="6" class="left-column">
-                    <v-card class="overflow-y-auto" max-height="490px">
+                    <v-card class="overflow-y-auto" max-height="490px" style="font-family: 'Arial'">
                       <span
-                        style="font-family: 'Arial'; font-weight: bold; font-size: 30px; color: #009260; padding:10px"
+                        style="font-weight: bold; font-size: 30px; color: #009260; padding:10px"
                       >
-                        Fahrer:
+                        Fahrer
                       </span>
                       <div style="display: flex; align-items: center; margin-top: 10px;">
                         <img
@@ -229,28 +229,28 @@
                         >
                         <div>
                           <span
-                            style="font-family: 'Minion Pro Regular'; font-weight: bold; font-size: 30px;"
+                            style="font-weight: bold; font-size: 28px;"
                           >
                             {{ selected[0] ? selected[0].name: selected.name}}
                           </span>
                           <br>
-                          <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">
+                          <span style="font-size: 18px;">
                              {{ selected[0] ? selected[0].role: selected.role}}
                           </span>
                           <br>
-                          <span style="font-family: 'Minion Pro Regular'; font-size: 20px;">
+                          <span style="font-size: 18px;">
                             Freie Plätze: {{selected[0] ? selected[0].seats: selected.seats}}
                           </span>
                         </div>
                       </div>
                       <v-divider class="my-4"></v-divider>
                       <span
-                        style="font-family: 'Arial'; font-weight: bold; font-size: 30px; color: #009260; padding:10px;"
+                        style="font-family: Arial; font-weight: bold; font-size: 30px; color: #009260; padding:10px;"
                       >
-                        Mitfahrer:
+                        Mitfahrer
                       </span>
                       <div v-if="ride.length === 0">
-                        <div class="ma-4" style="font-size: 24px; font-weight: bold;">
+                        <div class="ma-4" style="font-size: 20px; font-weight: 500;">
                           Du bist bisher der einzige Mitfahrer.
                         </div>
                       </div>
@@ -265,7 +265,7 @@
                               <div>
                                 <span
                                   :style="{
-                                    fontFamily: 'Minion Pro Regular',
+                                    fontFamily: 'Arial',
                                     fontSize: '20px',
                                     fontWeight: 'bold'
                                   }"
@@ -284,7 +284,7 @@
                             </template>
                             <div>
                               <span
-                                style="font-family: 'Minion Pro Regular'; font-size: 20px;"
+                                style="font-family: 'Arial'; font-size: 20px;"
                               >
                                  {{ person.role}}
                               </span>
@@ -297,7 +297,7 @@
                   </v-col>
                   <v-col cols="6" class="right-column">
                     <v-card class="mx-auto" max-width="500" max-height="490px">
-                      <v-toolbar color="00926#0">
+                      <v-toolbar color="#E5E1E1">
                         <v-toolbar-title class="text-h6" text="Verlauf der Fahrt">
                         </v-toolbar-title>
                       </v-toolbar>
@@ -311,7 +311,7 @@
                             size="x-small"
                           >
                             <div class="mb-10">
-                              <div class="font-weight-normal" style="font-size: 20px">
+                              <div style="font-weight: normal; font-size: 20px">
                                 <strong>{{ halt.location }}</strong>
                               </div>
                               <div style="font-size:15px">
@@ -735,7 +735,7 @@ export default {
         const newVerlauf = [{
           location: fahrtData.Startort,
           time: this.formatTime(fahrtData.Abfahrtszeit),
-          color: 'green',
+          color: '#03B276',
         }];
 
         const { data: stops } = await supabase
@@ -755,8 +755,8 @@ export default {
 
         newVerlauf.push({
           location: fahrtData.Zielort,
-          time: this.addMinutesToTime(fahrtData.Abfahrtszeit, this.ttime),
-          color: 'purple',
+          time: this.addToTime(fahrtData.Abfahrtszeit, this.ttime),
+          color: 'info',
         });
 
         console.log('newVerlauf:', newVerlauf);
@@ -830,12 +830,12 @@ export default {
           {
             location: ride1.Startort,
             time: ride1.Abfahrtszeit,
-            color: 'green'
+            color: '#03B276'
           },
           {
             location: ride1.Zielort,
             time: ride1.Abfahrtszeit,
-            color: 'purple'
+            color: 'info'
           }
         ];
       } catch (err) {
@@ -860,17 +860,19 @@ export default {
       return `${hours}:${minutes}`;
     },
 
-    addMinutesToTime(timeString, timeToAdd) {
-      // Parse the initial time string
+    addToTime(timeString, timeToAdd) {
       const [hours, minutes] = timeString.split(':').map(Number);
+      const [hoursA, minutesA] = timeToAdd.split(':').map(Number);
 
-      const date = new Date();
-      date.setHours(hours, minutes);
-      date.setMinutes(date.getMinutes() + timeToAdd);
+      const depart = new Date();
+      const arrive = new Date();
+      depart.setHours(hours, minutes);
+      arrive.setHours(depart.getHours() + hoursA);
+      arrive.setMinutes(depart.getMinutes() + minutesA);
 
       // Format the new time back to a string
-      const newHours = String(date.getHours()).padStart(2, '0');
-      const newMinutes = String(date.getMinutes()).padStart(2, '0');
+      const newHours = String(arrive.getHours()).padStart(2, '0');
+      const newMinutes = String(arrive.getMinutes()).padStart(2, '0');
       return `${newHours}:${newMinutes}`;
     }
   

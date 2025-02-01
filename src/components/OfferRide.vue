@@ -65,7 +65,7 @@
               </v-row>
 
 
-              <v-row class="align-center" style="margin-bottom: 20px;">
+              <v-row class="align-center" align="stretch" style="margin-bottom: 20px;">
                   <v-col
                   class="pl-0">
                       <v-select
@@ -323,7 +323,6 @@
   justify-content: center;
 }
 
-/* Karte: Quadratisch und responsiv */
 /* Karte quadratisch machen */
 .independent-map {
     width: 100%;

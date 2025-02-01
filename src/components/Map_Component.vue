@@ -105,6 +105,12 @@ export default {
         await this.initializeRoutingControl();
         },
 
+        setTimeString(time){
+          const hours = Math.round(time / 3600);
+          const minutes = Math.round(time % 3600 / 60);
+          return `${hours}:${minutes}`;
+        },
+
         changeDistance() {
           this.$emit('distance-changed', this.tdistance); // Emit the event with tdistance
           console.log('Distance3:', this.tdistance);
@@ -137,10 +143,11 @@ export default {
       var summary = routes[0].summary;
       // distance and time in km and minutes
       var kdistance = summary.totalDistance / 1000;
-      this.ttime = Math.round(summary.totalTime % 3600 / 60);
+      this.ttime = this.setTimeString(summary.totalTime);
       this.tdistance = kdistance;
       console.log('Distance:', this.tdistance);
       console.log('Distance1:', kdistance);
+      console.log('Time:', this.ttime);
       this.changeDistance();
    });
       routingControl.addTo(this.map2);

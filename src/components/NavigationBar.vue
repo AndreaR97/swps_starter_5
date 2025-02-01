@@ -66,5 +66,6 @@ export default {
 <style scoped>
 .navbar .v-toolbar-title {
   font-size: 1.5rem;
+  font-family: Arial, sans-serif;
 }
 </style>

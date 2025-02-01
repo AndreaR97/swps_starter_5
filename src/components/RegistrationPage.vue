@@ -74,7 +74,7 @@
       <v-row class="d-flex justify-center">
         <v-btn 
           variant="tonal" 
-          style="font-size: 1em; width: 200px; height: 60px; background-color: #009260; font-weight: bold;" 
+          style="font-size: 1em; font-family: 'Arial', sans-serif; width: 200px; color: #ffffff; height: 60px; background-color: #009260; font-weight: bold;" 
           @click="validateForm"
           :disabled="!isFormValid"
         >
