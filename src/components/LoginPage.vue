@@ -44,12 +44,17 @@ export default {
   name: "LoginPage",
   data() {
     return {
+      // Stores the user's email input for login
       email: '',
+      // Stores the user's password input for login
       password: '',
+      // Holds any error message displayed to the user upon a failed login
       errorMessage: ''
     };
   },
   methods: {
+    // This method is called when the user clicks the "Anmelden" button
+    // It checks credentials in the 'Person' table and handles routing upon success or error
     async login() {
       this.errorMessage = '';
       try {
@@ -80,6 +85,7 @@ export default {
         this.errorMessage = 'Fehler beim Anmelden';
       }
     },
+    // This method navigates the user to the registration page if they don't have an account
     goToRegistration() {
       const redirectParam = this.$route.query.redirectTo || localStorage.getItem('redirectTo');
       this.$router.push({

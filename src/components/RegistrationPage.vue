@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Adds and renders the navigation bar -->
     <NavigationBar></NavigationBar>
     <v-alert v-if="errorMessage" type="error" dismissible>{{ errorMessage }}</v-alert>
     <v-container
@@ -8,6 +9,7 @@
     >
       <v-row class="mb-1">
         <v-col>
+          <!-- Input field for first name -->
           <v-text-field 
             label="Vorname" 
             variant="outlined" 
@@ -17,6 +19,7 @@
           ></v-text-field>
         </v-col>
         <v-col>
+          <!-- Input field for last name -->
           <v-text-field 
             label="Nachname" 
             variant="outlined" 
@@ -28,6 +31,7 @@
       </v-row>
       <v-row class="mb-1">
         <v-col>
+          <!-- Select field for role -->
           <v-select
             label="Rolle"
             variant="outlined"
@@ -40,6 +44,7 @@
       </v-row>
       <v-row class="mb-1">
         <v-col>
+          <!-- Input field for email -->
           <v-text-field 
             label="Mail" 
             variant="outlined" 
@@ -51,6 +56,7 @@
       </v-row>
       <v-row class="mb-1">
         <v-col>
+          <!-- Input field for confirming email -->
           <v-text-field 
             label="Mail bestätigen" 
             variant="outlined" 
@@ -62,6 +68,7 @@
       </v-row>
       <v-row class="mb-1">
         <v-col>
+          <!-- Input field for password -->
           <v-text-field 
             label="Passwort" 
             variant="outlined" 
@@ -72,6 +79,7 @@
         </v-col>
       </v-row>
       <v-row class="d-flex justify-center">
+        <!-- Button to create account -->
         <v-btn 
           variant="tonal" 
           style="font-size: 1em; font-family: 'Arial', sans-serif; width: 200px; color: #ffffff; height: 60px; background-color: #009260; font-weight: bold;" 
@@ -82,6 +90,7 @@
         </v-btn>
       </v-row>
     </v-container>
+    <!-- Dialog for entering verification code -->
     <v-dialog
       v-model="showVerificationDialog"
       persistent
@@ -100,6 +109,7 @@
               v-for="(digit, index) in codeDigits"
               :key="index"
             >
+              <!-- Input fields for each digit of the verification code -->
               <v-text-field
                 variant="outlined"
                 v-model="codeDigits[index]"
@@ -143,6 +153,7 @@ export default {
   },
   data() {
     return {
+      // Holds role options for the user (e.g. Student, Professor, etc.)
       roles: [
         'Student',
         'Doktorand',
@@ -152,6 +163,7 @@ export default {
         'Gast',
         'Alumni'
       ],
+      // Stores user's first name input
       firstName: '',
       lastName: '',
       role: '',
@@ -162,6 +174,7 @@ export default {
       showVerificationDialog: false,
       codeDigits: ['', '', '', '', '', ''],
       canCreateAccount: false,
+      // Holds the randomly generated verification code
       serverCode: ''
     };
   },
@@ -191,9 +204,11 @@ export default {
     }
   },
   methods: {
+    // Generates a random 6-digit verification code
     generateRandomCode() {
       return Math.floor(100000 + Math.random() * 900000).toString();
     },
+    // Validates form inputs, checks for existing user, and sends a verification code via email
     async validateForm() {
       this.errorMessage = '';
       if (!this.isFormValid) {
@@ -235,6 +250,7 @@ export default {
         this.errorMessage = 'Fehler beim Überprüfen der E-Mail-Adresse';
       }
     },
+    // Confirms the entered code and, if correct, creates the user's account
     async confirmVerification() {
       const fullCode = this.codeDigits.join('');
       console.log('Eingegebener Code:', fullCode);

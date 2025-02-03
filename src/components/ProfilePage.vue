@@ -1,5 +1,6 @@
 <template>
   <div class="profilepage">
+    <!-- Adds and renders the navigation bar -->
     <NavigationBar />
     <v-container fluid class="pa-5 main-container">
       <div style="height: 100px;"></div>
@@ -7,6 +8,7 @@
         <v-col cols="12" md="6">
           <div class="left-area">
             <div style="text-align: center;">
+              <!-- Displays the profile picture -->
               <img
                 src="/assets/profilbild.png"
                 alt="ProfilePicture"
@@ -18,6 +20,7 @@
         <v-col cols="12" md="6">
           <div class="right-area">
             <div style="text-align: left; font-size: 22px;"> 
+              <!-- Displays the user's role, name, and email -->
               <p style="margin-top: 5px;">Rolle: {{ role }}</p>
               <p style="font-weight: bold;">Name: {{ vorname }} {{ nachname }}</p>
               <p style="font-weight: bold;">Email: {{ email }}</p>
@@ -29,6 +32,7 @@
         <v-col cols="12" md="6">
           <v-card class="overflow-y-auto" max-height="300px">
             <div class="fixed-title">
+              <!-- Title for planned rides as a passenger -->
               <span
                 style="font-weight: bold; font-size: 24px; color: #009260; padding:10px;"
                 >Geplante Fahrten als Mitfahrer:</span
@@ -36,6 +40,7 @@
             </div>
             <v-list lines="two">
               <template v-if="plannedRides.length === 0">
+                <!-- Message when no planned rides are available -->
                 <div style="padding: 1rem; font-style: italic;">
                   Noch keine Fahrten geplant :/
                 </div>
@@ -49,6 +54,7 @@
                   >
                     <template v-slot:title>
                       <div>
+                        <!-- Displays ride details -->
                         <span
                           :style="{
                             fontSize: '20px',
@@ -64,6 +70,7 @@
                           >{{ ride.Fahrt.Datum }} um {{ ride.Fahrt.Abfahrtszeit }}</span
                         >
                         <template v-if="checkIfDeletable(ride.Fahrt.Datum, ride.Fahrt.Abfahrtszeit)">
+                          <!-- Button to delete the ride if it is deletable -->
                           <v-btn     
                             icon=mdi-trash-can-outline 
                             variant="plain"
@@ -72,6 +79,7 @@
                           </v-btn>
                         </template>
                         <template v-else>
+                          <!-- Message when the ride cannot be deleted -->
                           <span style="color: red;">  Kann nicht mehr abgesagt werden </span>
                         </template>
                       </div>
@@ -85,6 +93,7 @@
         <v-col cols="12" md="6">
           <v-card class="overflow-y-auto" max-height="300px">
             <div class="fixed-title">
+              <!-- Title for planned rides as a driver -->
               <span
                 style="font-weight: bold; font-size: 24px; color: #009260; padding:10px;"
                 >Geplante Fahrten als Fahrer:</span
@@ -92,6 +101,7 @@
             </div>
             <v-list lines="two">
               <template v-if="driverRides.length === 0">
+                <!-- Message when no planned rides are available -->
                 <div style="padding: 1rem; font-style: italic;">
                   Noch keine Fahrten geplant :/
                 </div>
@@ -105,6 +115,7 @@
                   >
                     <template v-slot:title>
                       <div>
+                        <!-- Displays ride details -->
                         <span
                           :style="{
                             fontSize: '20px',
@@ -120,6 +131,7 @@
                           >{{ ride.Datum }} um {{ ride.Abfahrtszeit }}</span
                         >
                         <template v-if="checkIfDeletable(ride.Datum, ride.Abfahrtszeit)">
+                          <!-- Button to delete the ride if it is deletable -->
                           <v-btn     
                             icon=mdi-trash-can-outline 
                             variant="plain"
@@ -128,6 +140,7 @@
                           </v-btn>
                         </template>
                         <template v-else>
+                          <!-- Message when the ride cannot be deleted -->
                           <span style="color: red;">  Kann nicht mehr abgesagt werden </span>
                         </template>
                       </div>
@@ -142,6 +155,7 @@
 
       <v-row style="height: 50px;"></v-row>
         <v-row justify="center"> 
+          <!-- Button to plan more rides -->
           <v-btn class="big-button" color="#009260" @click="$router.push('/')">
           <template v-if="driverRides.length === 0 && plannedRides.length === 0">
                   Jetzt Fahrten planen
@@ -153,6 +167,7 @@
         </v-row>
     </v-container>
 
+    <!-- Dialog for confirming ride deletion as a driver -->
     <div class="centered-container">
           <v-dialog
             v-model="dialog"
@@ -199,6 +214,7 @@
           </v-dialog>
         </div>
 
+        <!-- Dialog for confirming ride deletion as a passenger -->
         <div class="centered-container">
           <v-dialog
             v-model="dialog2"
@@ -259,6 +275,7 @@ export default {
     NavigationBar
   },
   data: () => ({
+    // Retrieves user email from local storage
     email: localStorage.getItem('userEmail'),
     vorname: '',
     nachname: '',
@@ -274,6 +291,7 @@ export default {
     plannedRides: []
   }),
   methods: {
+    // Checks if the ride date is in the future
     isFutureRide(dateStr) {
       const [year, month, day] = dateStr.split('-').map(Number);
       const rideDate = new Date(year, month - 1, day);
@@ -282,6 +300,7 @@ export default {
       nowDate.setHours(0, 0, 0, 0);
       return rideDate.getTime() >= nowDate.getTime();
     },
+    // Fetches planned rides as a passenger from the database
     async getPlannedRides() {
       try {
         const userEmail = localStorage.getItem('userEmail');
@@ -298,6 +317,7 @@ export default {
         console.error('Fehler beim Laden der geplanten Fahrten:', error);
       }
     },
+    // Fetches planned rides as a driver from the database
     async getDriverRides() {
       try {
         const userEmail = localStorage.getItem('userEmail');
@@ -314,6 +334,7 @@ export default {
         console.error('Fehler beim Laden der Fahrten als Fahrer:', error);
       }
     },
+    // Deletes a ride as a driver
     async deleteRide(rideId) {
       try { 
           const response = await supabase
@@ -328,7 +349,7 @@ export default {
       console.log('Fahrt löschen fehlgeschlagen', error);
       }
     },
-
+    // Deletes a ride as a passenger
     async deletePassenger(rideId) {
       try { 
         console.log('Ride_ID: ', rideId)
@@ -346,19 +367,20 @@ export default {
       console.log('Fahrt Löschen fehlgeschlagen', error);
       }
     },
-
+    // Checks if the ride can be deleted (more than 6 hours before departure)
     checkIfDeletable(dateStr, timeStr) {
       const [year, month, day] = dateStr.split('-').map(Number);
       const [hour, minute] = timeStr.split(':').map(Number);
       const rideDate = new Date(year, month - 1, day, hour, minute);
       return (rideDate - new Date()) > 6 * 60 * 60 * 1000;
     },
-
+    // Reloads the page
     reloadPage() {
       window.location.reload();
     }
   },
   async mounted() {
+    // Fetches user details and planned rides on component mount
     if (this.email) {
       const { data: user } = await supabase
         .from('Person')
