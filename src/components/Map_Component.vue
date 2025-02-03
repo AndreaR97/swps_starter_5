@@ -10,9 +10,12 @@ import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import 'leaflet-routing-machine';
 import { supabase } from '../lib/supabaseClient';
-
+//Import of all APIs and properties needed from leaflet
+//Import of supabase client to access the database
 
 export default {
+  /*Injection of startLocation and endLocation from parent component BookRide to receive the
+  corresponding values the user has entered to be able to add the route to the map*/
   inject: ['getStartLocation', 'getEndLocation',],
   props: {
     startLocation: {
@@ -26,13 +29,14 @@ export default {
   },
   data() {
     return {
-      map2: null,
-      coordArray: [],
-      tdistance: 0,
-      ttime: 0
+      map2: null,           //map object
+      coordArray: [],       //holds the coordinates of the start and end location
+      tdistance: 0,         //is given the distance between start and end location
+      ttime: 0              //is given the driving time from start to end location
     };
   },
   watch: {
+    //Observes changes in startLocation and endLocation and requests the new values from BookRide component
     startLocation: {
       handler(newVal) {
         if (newVal && this.endLocation) {
@@ -47,6 +51,7 @@ export default {
         }
       }
     },
+    //when tdistance and ttime are changed the new values are sent out to the subscribing BookRide component
     tdistance: {
       handler(newVal) {
         if(newVal && this.tdistance !== 0){
@@ -64,7 +69,7 @@ export default {
   },
   
   methods: {
-    
+        //Requests the coordinates of the start location a user entered from the database
         async getStartandEnd(){
           const startLocation = this.getStartLocation();
           const { data: data, error } = await supabase
@@ -80,12 +85,15 @@ export default {
           console.warn('No coordinates found');
           return;
         }
+
+        //Enters the coordinates of the start location into the coordArray
         for (const d of data) {
           this.coordArray.push([d.Koordinate_X, d.Koordinate_Y]);
           }
         
-          const endLocation = this.getEndLocation();
-          const { data: data2 } = await supabase
+        //Requests the coordinates of the start and end location a user entered from the database
+        const endLocation = this.getEndLocation();
+        const { data: data2 } = await supabase
           .from('Ort')
           .select('Koordinate_X, Koordinate_Y')
           .eq('Adresse', endLocation)
@@ -93,7 +101,9 @@ export default {
           if (!data2 || data.length === 0) {
           console.warn('No coordinates found');
           return;
-        }
+          }
+         
+        //Enters the coordinates of the end location into the coordArray
         for (const d of data2) {
           this.coordArray.push([d.Koordinate_X, d.Koordinate_Y]);
           }
@@ -120,7 +130,9 @@ export default {
           this.$emit('ttime-changed', this.ttime); // Emit the event with ttime
           console.log('TTime', this.ttime);
         },
-            
+       
+        //Is being called by getStartandEnd() as soon as the needed coordinates are retrieved.
+        //Draws the route from the start to the end location into the map.
        async initializeRoutingControl() {
         if(this.coordArray.length > 1){
       const routingControl = L.Routing.control({ 
@@ -128,6 +140,9 @@ export default {
           L.latLng(this.coordArray[0][0], this.coordArray[0][1]),
           L.latLng(this.coordArray[1][0], this.coordArray[1][1])
         ],
+        
+        //Disables several options so the user can't add waypoints or drag waypoints to change or alter the route.
+        //No alternative routes are shown to avoid confusion
         routeWhileDragging: false,
         show: false,
         showAlternatives: false,
@@ -146,7 +161,7 @@ export default {
       this.ttime = this.setTimeString(summary.totalTime);
       this.tdistance = kdistance;
       console.log('Distance:', this.tdistance);
-      console.log('Distance1:', kdistance);
+      console.log('Distance_:', kdistance);
       console.log('Time:', this.ttime);
       this.changeDistance();
    });
@@ -154,15 +169,18 @@ export default {
     }
   }
   },
-
+      //sets up the map with its initial properties
       async mounted() {
+      //The coordinates of the Campus Universität Bayreuth 
     const uniBayreuthCoords = [49.928809, 11.585835];
+    //sets the initial view of the map to the Campus Universität Bayreuth
     this.map2 = L.map('map2').setView(uniBayreuthCoords, 15);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
     }).addTo(this.map2);
 
+    //Specification of the marker icon
     const defaultIcon = L.icon({
           iconUrl: markerIcon,
           shadowUrl: markerShadow,
@@ -172,9 +190,12 @@ export default {
           shadowSize: [41, 41],
         });
         L.Marker.prototype.options.icon = defaultIcon;
-  
+        
+        //adds a blue marker at the coordinates of the Campus Universität Bayreuth 
         L.marker(uniBayreuthCoords).addTo(this.map2);
 
+        /*Checks whether start and end location have been entered and calls the method to 
+        draw the route if true*/
         if(this.startLocation && this.endLocation){
           this.getStartandEnd();
           console.log('coordinates:', this.coordArray);
