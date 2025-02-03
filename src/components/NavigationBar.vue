@@ -5,7 +5,6 @@
       <v-icon>mdi-home</v-icon>
       <!--Tooltip holding information when hovered on-->
       <v-tooltip
-      <v-tooltip
         activator="parent"
         location="bottom"
       >Zurück zur Startseite</v-tooltip>
