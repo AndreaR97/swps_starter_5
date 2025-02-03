@@ -4,6 +4,41 @@ This is an example project that shows how Vue + Vuetify + Supabase + Leaflet can
 
 You need to install [NodeJS](https://nodejs.org/en/download) first to use `npm`.
 
+## Voraussetzungen
+
+Bitte stellen Sie sicher, dass folgende Software installiert ist:
+- [NodeJS (LTS empfohlen)](https://nodejs.org/en/download)
+- npm oder yarn als Paketmanager
+
+## Explizite Installation der Abhängigkeiten
+
+Das Projekt verwendet folgende Hauptpakete. Führen Sie zur Kontrolle und individuellen Installation (falls nötig) die folgenden Befehle aus:
+
+```bash
+# Installiert Vue und Vue Router
+npm install vue vue-router
+
+# Installiert Vuetify und zugehörige Tools
+npm install vuetify vue-cli-plugin-vuetify webpack-plugin-vuetify
+
+# Installiert Supabase Client
+npm install @supabase/supabase-js
+
+# Installiert Leaflet und Zusatzmodule
+npm install leaflet leaflet-css leaflet-routing-machine react-leaflet
+
+# Installiert EmailJS Pakete
+npm install emailjs emailjs-com
+
+# Weitere Abhängigkeiten
+npm install @mdi/font core-js node-fetch roboto-fontface webfontloader
+```
+
+Alternativ kann ein einfacher Befehl alle Abhängigkeiten aus der package.json installieren:
+```bash
+npm install
+```
+
 ## How to Run the Code
 
 ### Setup
