@@ -1,8 +1,14 @@
 <template>
   <div class="bookride">
+    <!--Adds and renders the navigation bar-->
     <NavigationBar></NavigationBar>
     <v-container fluid>
+
+      <!--This is the v-stepper component that builds the frame for visualizing and 
+      dividing the process of booking a ride into 4 steps-->
       <v-stepper fluid v-model="step">
+        <!--Builds the header section of the stepper and shows the 4 steps 
+        (stepper-items) in a line-->
         <v-stepper-header>
           <v-stepper-item
             title="Suche eine Fahrt"
@@ -28,14 +34,20 @@
             value="4"
           ></v-stepper-item>
         </v-stepper-header>
-        <v-stepper-items>         
+
+        <!--This section specifies the content of each step in the stepper-->
+        <v-stepper-items>
+          <!--The first step-->         
           <div v-if="step === 0">
             <v-stepper-window>
               <div>
                 <v-row>
                   <v-container class="mt-2">
+                    <!--Row that contains the form for entering ride specific data and the map-->
                     <v-row class=" align-center">
                       <v-col>
+
+                        <!--The v-form that a user enters the data in for a ride-->
                         <v-form>
                           <v-row class="pb-6 align-center">
                             <v-autocomplete
@@ -48,12 +60,15 @@
                               :items="orte"
                               :rules="[startLocationRule, requiredRule]"
                             ></v-autocomplete>
+
+                          <!--Extra overlapping row for the swap button-->
                           </v-row>
                           <v-row class="justify-end mt-n13 mb-n4">
                             <v-btn icon @click="swapLocations" class="SwapButton">
                               <v-icon>mdi-swap-horizontal</v-icon>
                             </v-btn>
                           </v-row>
+
                           <v-row class="pb-4 align-center">
                             <v-autocomplete
                               ref="endLocInput"
@@ -66,6 +81,8 @@
                               :rules="[endLocationRule, requiredRule]"
                             ></v-autocomplete>
                           </v-row>
+
+                          <!--Row containing input fields for Datum and Uhrzeit-->
                           <v-row class="pb-1 align-center">
                             <v-col class="pl-0">
                               <v-text-field
@@ -76,6 +93,7 @@
                                 :rules="[dateRule]"
                               ></v-text-field>
                             </v-col>
+
                             <v-col class="pr-0">
                               <v-text-field
                                 label="Uhrzeit"
@@ -86,6 +104,8 @@
                               ></v-text-field>
                             </v-col>
                           </v-row>
+
+                          <!--Row for choosing the amount of Sitzplätze-->
                           <v-row class="pb-3">
                             <v-col cols="6 pl-0">
                               <v-select
@@ -99,7 +119,10 @@
                           </v-row>
                         </v-form> 
                       </v-col>
+
+                      <!--Column for the map component-->
                       <v-col class="map-column v-col-sm-6 v-col-12 ml-6">
+                        <!--Renders and adds the map component-->
                         <Map_Component></Map_Component>
                       </v-col>
                     </v-row>
@@ -108,16 +131,22 @@
               </div>  
             </v-stepper-window>
           </div>
+          
+          <!--Specifies content for step 2-->
           <div v-if="step === 1"> 
             <v-stepper-content step="2">
               <v-container fluid>
                 <v-row dense>
+
+                  <!--Holds the list of rides pulled from the database that match the 
+                  specifics entered by the user in step 1-->
                   <v-col cols="6">
                     <v-card class="overflow-y-auto" max-height="600px">
-                      <div v-if="rideOffers.length === 0" class="no-offer-container text-centered"> 
+                      <div v-if="rideOffers.length === 0" text-align="center" class="no-offer-container"> 
                         <h2 class="headline font-weight-bold mb-5"> 
                           Für die ausgewählten Daten gibt es leider kein Fahrtangebot. 
                         </h2>
+                        <!--Button offering the option to offer a ride if there is no match-->
                         <v-btn
                           class="offer-ride-button"
                           color="#008557"
@@ -127,6 +156,8 @@
                           Eine Fahrt anbieten
                         </v-btn>
                       </div> 
+
+                      <!--Case for if there are matching rides in the database-->
                       <div v-else>  
                         <v-list lines="two">
                           <v-list-item
@@ -138,24 +169,33 @@
                             link
                           >
                             <v-divider class="mb-2"></v-divider>
+
+                            <!--Prepends user icon and appends the button "Auswählen" to each item in the list-->
                             <template v-slot:prepend>
                               <v-avatar color="info">
                                 <v-icon icon="mdi-account-circle"></v-icon>
                               </v-avatar>
                             </template>
                             <template v-slot:append>
+
+                              <!--The click on the button triggers the slicing of the chosen ride and its properties 
+                              into the initially empty selected array for further use of the specific data.-->
                               <v-list-item-action>
                                 <v-btn @click="selected = rideOffers.slice(n, n+1)">
                                   Auswählen
                                 </v-btn>
                               </v-list-item-action>
                             </template>
+
+                            <!--Adds Preis and Abfahrtszeit to each item in the list-->
                             <v-card> 
                               <div class="ma-1">
                                 <v-row no-gutters>
                                   <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded>
                                     Abfahrtszeit: {{ person.time }} Uhr
                                   </v-sheet>
+
+                                  <!--Info tag for price information-->
                                   <v-sheet elevation="1" height="40" class="pa-2 ma-2" border rounded stacked>
                                     {{ person.price}}
                                     <v-icon></v-icon>
@@ -168,14 +208,22 @@
                               </div>
                             </v-card>
                           </v-list-item>
+
                         </v-list>
                       </div>
                     </v-card>
                   </v-col>
+
+                  <!--Column holding the map component-->
                   <v-col class="map-column v-col-sm-5 v-col-12 ml-6">
+                    <!--Map component with properties to subscribe to changes in
+                    startLocation and endLocation entered by the user as well as distance and time
+                    emitted from the Map_Component itself to show the route-->
                     <Map_Component :start-location="startLocation" :end-location="endLocation" @distance-changed="handleDistanceChange" @ttime-changed="handleTimeChange"
                       />
                   </v-col>
+
+                  <!--Icon button in top right corner that triggers a bottom sheet with price information-->
                   <v-col>
                     <v-btn
                         color="#009260"
@@ -194,32 +242,39 @@
                     </v-btn>
                   </v-col>
                 </v-row>
+
+                <!--Corresponding bottom sheet-->
                 <v-bottom-sheet v-model="sheet">
-                <v-card class="text-center" height="200">
-                  <v-card-text>
-                    <v-btn variant="text" @click="sheet = !sheet"> Preisinformation schließen </v-btn>
-                    <br />
-                    <div>
-                      Der Preis berechnet sich aus einem Durchschnittsverbrauch von 7,7l/100km, multipliziert mit einem am derzeitigen Literpreis orientierten Wert von 1,78€ und wird auf die Fahrtteilnehmer aufgeteilt. Pro Person (außer für den Fahrer) wird eine Nutzungspauschale von 0,90€ für den Fahrzeugsteller berechnet.
-                      Wenn du mehr als einen Sitzplatz buchst, wird dir in der Liste der Preis für beide Sitzplätze zusammen angezeigt. 
-                      Der Benzinpreis wird am 15. Tag eines jeden Monats aktualisiert.
-                    </div>
-                  </v-card-text>
-                </v-card>
-        </v-bottom-sheet>
+                  <v-card class="text-center" height="200">
+                    <v-card-text>
+                      <v-btn variant="text" @click="sheet = !sheet"> Preisinformation schließen </v-btn>
+                      <br />
+                      <div>
+                        Der Preis berechnet sich aus einem Durchschnittsverbrauch von 7,7l/100km, multipliziert mit einem am derzeitigen Literpreis orientierten Wert von 1,78€ und wird auf die Fahrtteilnehmer aufgeteilt. Pro Person (außer für den Fahrer) wird eine Nutzungspauschale von 0,90€ für den Fahrzeugsteller berechnet.
+                        Wenn du mehr als einen Sitzplatz buchst, wird dir in der Liste der Preis für alle gebuchten Sitzplätze zusammen angezeigt. 
+                        Der Benzinpreis wird am 15. Tag eines jeden Monats aktualisiert.
+                      </div>
+                    </v-card-text>
+                  </v-card>
+                </v-bottom-sheet>
               </v-container>
             </v-stepper-content>
           </div>
+
+          <!--Specifies content of step 3-->
           <div v-if="step === 2">
             <v-stepper-content step="3">
               <v-container fluid>
                 <v-row>
+
+                  <!--Column containing the list of the picked ride's Fahrer and Mitfahrer-->
                   <v-col cols="6" class="left-column">
-                    <v-card class="overflow-y-auto" max-height="490px" style="font-family: 'Arial'">
+
+                    <!--Adds information about Fahrer: Name, Rolle, freie Sitzplätze-->
+                    <v-card class="overflow-y-auto" max-height="490px">
                       <span
                         style="font-weight: bold; font-size: 30px; color: #009260; padding:10px"
-                      >
-                        Fahrer
+                      >Fahrer
                       </span>
                       <div style="display: flex; align-items: center; margin-top: 10px;">
                         <img
@@ -244,20 +299,25 @@
                         </div>
                       </div>
                       <v-divider class="my-4"></v-divider>
+
+                      <!--Adds the list of Mitfahrer and their corresponding information: Name, Rolle-->
                       <span
-                        style="font-family: Arial; font-weight: bold; font-size: 30px; color: #009260; padding:10px;"
-                      >
-                        Mitfahrer
+                        style="font-weight: bold; font-size: 30px; color: #009260; padding:10px;"
+                      >Mitfahrer
                       </span>
-                      <div v-if="ride.length === 0">
+
+                      <!--Placeholder for the list of Mitfahrer if there are no other people 
+                      taking this ride so far-->
+                      <div v-if="ridePassengers.length === 0">
                         <div class="ma-4" style="font-size: 20px; font-weight: 500;">
                           Du bist bisher der einzige Mitfahrer.
                         </div>
                       </div>
+                      
                       <v-list lines="two" v-else>
                         <v-item-group>
                           <v-list-item
-                            v-for="(person, n) in ride"
+                            v-for="(person, n) in ridePassengers"
                             :key="n"
                             link
                           >
@@ -265,7 +325,6 @@
                               <div>
                                 <span
                                   :style="{
-                                    fontFamily: 'Arial',
                                     fontSize: '20px',
                                     fontWeight: 'bold'
                                   }"
@@ -275,6 +334,7 @@
                                 <br>
                               </div>
                             </template>
+                            <!--Prepends the profile icon/profile picture of each person on the ride-->
                             <template v-slot:prepend>
                               <img
                                 src="/assets/Profilbild.png"
@@ -295,12 +355,18 @@
                       </v-list>
                     </v-card>
                   </v-col>
+
+                  <!--This columns holds a card that shows an overview over the ride's
+                  data: Startort, Zielort, Abfahrtszeit, Ankunftszeit-->
                   <v-col cols="6" class="right-column">
                     <v-card class="mx-auto" max-width="500" max-height="490px">
                       <v-toolbar color="#E5E1E1">
                         <v-toolbar-title class="text-h6" text="Verlauf der Fahrt">
                         </v-toolbar-title>
                       </v-toolbar>
+
+                      <!--Specifying how each location is added to the overview card.
+                      Data is taken from the array fahrtverlauf-->
                       <v-card-text>
                         <div class="font-weight-bold ms-1 mb-2">Abfahrt</div>
                         <v-timeline align="start" density="compact">
@@ -327,12 +393,19 @@
               </v-container>
             </v-stepper-content>
           </div>
+          
+          <!--Specifies the content for step 4-->
           <div v-if="step === 3">
             <v-stepper-content step="4">
               <v-stepper-window>
+
+                <!--Puts in the center a request for confirmation by the user
+                whether or not they wish to book the ride.-->
                 <v-container align="center" justify="center">
                   <h2>Diese Fahrt jetzt buchen?</h2>
                 </v-container>
+
+                <!--Opens this dialog by clicking yes-->
                 <v-card-actions>
                   <v-row align="center" justify="center">
                     <v-col cols="auto">
@@ -348,6 +421,9 @@
                         Ja
                       </v-btn>
                     </v-col>
+
+                    <!--Abbrechen button that cancels the process and routes the user 
+                    back to the homepage-->
                     <v-col cols="auto">
                       <v-btn
                         rounded="sm"
@@ -362,10 +438,14 @@
                     </v-col>
                   </v-row>
                 </v-card-actions>
+
               </v-stepper-window>
             </v-stepper-content>
           </div>
         </v-stepper-items>
+
+        <!--Calls the corresponding method to specify what happens for each 
+        step by clicking next or prev and when a button should be disabled-->
         <v-stepper-actions
           :disabled="disabled"
           @click:prev="setStep(this.step-1)"
@@ -374,6 +454,8 @@
         </v-stepper-actions>
       </v-stepper>
     </v-container>
+
+    <!--This is the dialog popping up when a user clicks 'Ja' in step 4-->
     <v-fade-transition hide-on-leave>
       <v-overlay v-model="overlay">
         <div class="centered-container">
@@ -397,6 +479,8 @@
               </div>
               <v-divider></v-divider>
               <div class="pa-4 text-end">
+                <!--When a user clicks on OK the participation in the ride is inserted 
+                into the database by calling insertBook() and the user is routed to their profile page-->
                 <v-btn
                   class="text-none"
                   color="medium-emphasis"
@@ -416,7 +500,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from 'vue';      /* Imports the ref function from Vue to declare reactive variables and track component changes*/
+/*Declares variables that are reactive to being changed by the user. Used in BookRide*/
 const dialog = ref(false);
 const overlay = ref(false);
 const sheet = ref(false);
@@ -427,6 +512,8 @@ import "leaflet/dist/leaflet.css";
 import Map_Component from './Map_Component.vue';
 import NavigationBar from './NavigationBar.vue';
 import { supabase } from '../lib/supabaseClient';
+//Imports Map_Component and NavigationBar
+//Imports the supabase client for connection to the database and the leaftlet API for the map use
 
 export default {
   component:{
@@ -435,32 +522,49 @@ export default {
   },
   data() {
     return {
+      /*Declares the variables used for BookRide that a user will specify 
+      by filling the form in step 1*/
       startLocation: '',
       endLocation: '',
       date: '',
       time: '',
       neededSeats: '',
       seats: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-      orte: [],
-      step: 0,
-      completeStep1: false,
-      completeStep2: false,
-      selected: null,
-      dialog: false,
-      overlay: false,
-      sheet: false,
-      rideOffers: [],
-      ride: [],
-      fahrtverlauf: [],
-      passengerCountArray: {},
+      orte: [],                       /*Empty array the locations from the database relation Ort are transfered into after request. Several methods draw from this.*/
+      
+      step: 0,                       /*Counter for the steps in the stepper*/
+      completeStep1: false,          /*Boolean to check if step 1 is completed*/
+      completeStep2: false,          /*Boolean to check if step 2 is completed*/
+
+      selected: null,                /*Initially empty variable that is being filled/overwritten by slicing a ride's data from the rides offered in step 2*/
+      dialog: false,                 /*Boolean to check if the dialog is open or closed*/
+      overlay: false,                /*Boolean to check if the overlay is activated or not*/
+      sheet: false,                  /*Boolean to check if the sheet is open or closed*/
+      rideOffers: [],                /*Array that the data of offered rides matching the user's entered details is transfered into after the request to the database */
+      ridePassengers: [],            /*Array that the data of Mitfahrer in the selected ride is entered into.*/           
+      fahrtverlauf: [],              /*Array that the ride's route and time details are entered into in step 3*/
+      passengerCountArray: {},       /*Initially empty object that will hold the number of Mitfahrer in a ride to calculate the price*/
+      
+      //Variables containing distance in km and driving time in hours and minutes of a route that the user chose in step 1
       tdistance: 0,
       ttime: 0
     };
   },
   computed: {
+    
+    /*This section contains a set of rules that are checked whenever the user enters
+    something into the form in step 1 to make sure the required format is given as well 
+    as there are no empty input fields remaining*/
+
+    //each field in the form is required so this is applied to all input fields
     requiredRule() {
       return v => !!v || 'Dieses Feld ist erforderlich';
     },
+
+    /*The following rules are specific to each input field and show a hint of the error 
+    to the user so they can correct it*/
+
+    //Makes sure the startLocation and endLocation are not the same
     startLocationRule() {
       return v => {
         if (v === this.endLocation) return 'Start- und Zielort dürfen nicht gleich sein';
@@ -473,6 +577,9 @@ export default {
         return !!v || 'Zielort ist erforderlich';
       };
     },
+
+    /*This rule makes sure the entered date is not already in the past by retrieving the exact 
+    time at this moment (today) and is no further than four weeks in the future (maxDate)*/
     dateRule() {
       return v => {
         if (!v) return 'Datum ist erforderlich';
@@ -486,6 +593,9 @@ export default {
           || 'Datum muss in den nächsten 4 Wochen liegen';
       };
     },
+
+    /*This method compares the exact time of this moment (now) to the chosen time to make 
+    sure it is in the future */
     timeRule() {
       return v => {
         if (!v) return 'Uhrzeit ist erforderlich';
@@ -502,12 +612,16 @@ export default {
         return true;
       };
     },
+
     seatRule() {
       return v => {
         if (!v) return 'Sitzplätze sind erforderlich';
         return (v >= 1 && v <= 9) || 'Sitzplätze müssen zwischen 1 und 9 sein';
       };
     },
+
+    /*This property checks whether the input to each field is according to its rules.
+    This is used to for example allow the process to continue*/
     isFormValid() {
       return (
         this.requiredRule &&
@@ -518,6 +632,10 @@ export default {
         this.seatRule(this.neededSeats) === true
       );
     },
+
+    /*Makes changes to the disabled property depending on step, completeness of a step 
+    and whether isFormValid is true or not */
+
     disabled() {
       return this.step === 0
         ? 'prev'
@@ -527,12 +645,16 @@ export default {
     },
   },
   watch: {
+     //Observes changes startLocation and endLocation
     startLocation() {
       this.$refs.endLocInput && this.$refs.endLocInput.validate();
     },
     endLocation() {
       this.$refs.startLocInput && this.$refs.startLocInput.validate();
     },
+
+      /*Observes changes to selected array and changes the status of completeness
+       of a step accordingly*/
     selected() {
       if (this.selected === null) {
         this.completeStep2 = false;
@@ -542,13 +664,20 @@ export default {
       }
     }
   },
-  provide() {
-    return {
-      getStartLocation: () => this.startLocation,
-      getEndLocation: () => this.endLocation
-    };
-  },
+
+    /*Allows the BookRide component to provide the two functions to the Map_Component
+    to make startLocation and endLocation available to show the route on the map */
+    provide() {
+      return {
+        getStartLocation: () => this.startLocation,
+        getEndLocation: () => this.endLocation
+      };
+    }, 
+
   methods: {
+
+    /*Is called by clicking on the Next-button in the stepper to call the needed 
+    methods accordingly*/
     async setNextStep() {
         if (this.step === 0 && this.isFormValid) {
         await this.getRidesFromDatabase();
@@ -562,20 +691,39 @@ export default {
       }
       this.step++;
     },
+
+    /*Is called to set the step to @param a when clicking the prev-Button 
+      in the stepper or on a step title in the header */
     setStep(a) {
       this.step = a;
     },
+
+    //Returns the time and date of Berlin at this exact moment
     getBerlinNow() {
       return new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
     },
+
+    //Called by clicking on swap button in step 1. Swaps entered values of startLocation and endLocation. 
     swapLocations() {
       const temp = this.startLocation;
       this.startLocation = this.endLocation;
       this.endLocation = temp;
     },
+
+    /*These two methods are setting the variables tdistance and ttime in BookRide to the 
+    updated values of tdistance and ttime that are being emitted from Map_Component. 
+    This way the distance and time between start and end location as well as the needed 
+    driving time can be used in various methods in BookRide */
+
     handleDistanceChange(distance) {
       this.tdistance = distance;
       console.log('Distance in bookride' + this.tdistance);
+
+      /*this line calculates the price a user expectedly will have to pay for a ride taking
+      into account the current amount of people on the ride. 
+      7.7/100 - is the amount of petrol a car on average needs per km.
+      1.78 - is the continuously updated monthly average of petrol cost/litre in Germany.
+      0.90 are charged per passenger and further needed seats (except for the driver)*/ 
       this.rideOffers.forEach(ride => {
         ride.price = parseFloat(((this.tdistance*(7.7/100)*1.78)/((this.passengerCountArray[ride.id] || 0 ) + this.neededSeats+1))*this.neededSeats+0.90*this.neededSeats).toFixed(2) + '€';
       });
@@ -584,6 +732,8 @@ export default {
       this.ttime = time;
       console.log('TTime in bookride' + this.ttime);
     },
+
+    //Retrieves the address or name of all locations from the database relation Ort
     async getLocations() {
       const { data: locations, error } = await supabase
         .from('Ort')
@@ -593,12 +743,17 @@ export default {
         console.error('Error fetching data from Supabase:', error);
         return;
       }
-
+      //enters each location ort into the orte array
       locations.forEach((ort) => {
         this.orte.push(ort.Adresse);
       });
     },
+
+    //Is called after entering all details into the form in step one and clicking next.
+    /*Applies all entered constraints and enters the matching rides from the database
+    into the */
     async getRidesFromDatabase() {
+      //Selects all matching rides from the database relation Fahrt
       try {
         const { data: rides, error } = await supabase
           .from('Fahrt')
@@ -611,25 +766,32 @@ export default {
           .order('Abfahrtszeit', { ascending: true });
 
         console.log('Fetched rides:', rides);
-            
+        
+        //Selects all tuples from the relation ist_mitfahrer 
         const { data: passengerData } = await supabase
           .from('ist_mitfahrer')
           .select('*');
 
+        /*Counts the number of all passengers of a ride that already has at least one
+        passenger and adds the amount of further seats each passenger booked*/
         const passengerCount = {};
           passengerData.forEach(row => {
             passengerCount[row.Fahrt_ID] = (passengerCount[row.Fahrt_ID] || 1) + row.anzahl_weitere_platzbuchungen;
           });
+          //The number of passengers and further seats is entered into the passengerCountArray object
           this.passengerCountArray = passengerCount;
           console.log('Passenger counts as array:', this.passengerCountArray);
   
+         /*Filters the constraint-matching rides retrieved from the database by checking whether
+         there are still enough seats left*/ 
         const filteredRides = rides.filter(ride => {
           const matchedCount = passengerCount[ride.Fahrt_ID] || 0;
           return matchedCount <= ride.Sitzplaetze && (matchedCount + this.neededSeats) <= ride.Sitzplaetze;
         });
         console.log('Filtered rides:', filteredRides);
 
-        for (const ride of rides) {
+        //Retrieves the driver's full name for each ride that matches all constraints and has enough seats
+        for (const ride of filteredRides) {
           const { data: driverData, error: driverError } = await supabase
             .from('Person')
             .select('Vorname, Nachname')
@@ -639,12 +801,13 @@ export default {
             ? (driverData.Vorname + ' ' + driverData.Nachname)
             : ride.Fahrer;
         }
-
         if (error) {
           console.error('Error fetching rides:', error);
           return;
         } 
-
+        
+        /*Puts the necessary details of the filtered rides into the rideOffers array to be 
+          displayed in the list to choose from in step 2 */
         this.rideOffers = filteredRides.map(r => ({
           id: r.Fahrt_ID,
           driverEmail: r.Fahrer,
@@ -658,18 +821,25 @@ export default {
         console.error('Error:', err);
       }
       console.log('Ride offers:', this.rideOffers);
-      
     },
+
+    //Method being called by setNextStep() after selecting a ride and clicking on next in step 2
+    //It fetches all the details about the driver and passengers of the selected ride 
     async fetchRideDetails() {
       try {
+        //retrieves the ID-number of a ride from the array that holds the properties of the selected ride
         const selectedRideId = this.selected[0]?.id;
         console.log('Selected ride ID:', selectedRideId);
 
         if (!selectedRideId) return;
 
+        /*Calls the method with @param selectedRideId to get the time and 
+        location details for the Fahrtverlauf overview*/
         await this.fetchFahrtverlauf(selectedRideId);
         console.log('Fahrtverlauf', this.fahrtverlauf);
 
+        /*Retrieves information about the driver from the database relation Person to
+        further complete the data stored in the selected array*/
         const {data: driverData } = await supabase
           .from('Person')
           .select('Vorname, Nachname, Rolle, E_Mail_Adresse')
@@ -680,11 +850,10 @@ export default {
           this.selected[0].name = driverData.Vorname + ' ' + driverData.Nachname;
           this.selected[0].role = driverData.Rolle;
         }
-
         console.log('Driver data:', driverData);
         console.log(this.selected[0]);
 
-
+        //Requests all data of the selected ride's passengers from the relation ist_mitfahrer
         const { data: passengers, error } = await supabase
           .from('ist_mitfahrer')
           .select('*')
@@ -694,9 +863,11 @@ export default {
           console.error('Error fetching passengers:', error);
           return;
         }
+
+        //Enters the passengers' details into the array ridePassengers if there are any
         if (!passengers || passengers.length === 0) {
           console.warn('No passengers found for this Fahrt_ID');
-          this.ride = [];
+          this.ridePassengers = [];
           return;
         }
         const newRide = [];
@@ -715,12 +886,17 @@ export default {
           }
         }
         console.log('newRide data:', newRide);
-        this.ride = newRide;
+        this.ridePassengers = newRide;
         
       } catch (err) {
         console.error('Error fetching ride details:', err);
       }
     },
+
+    /*Requests from the database relation Fahrt and the relation Ort the ride's details 
+    about the start location and end location as well as the timestamp Ankunftszeit */
+    //Is called from the method fetchRideDetails()
+    
     async fetchFahrtverlauf(fahrtId) {
       try {
         const { data: fahrtData } = await supabase
@@ -732,13 +908,14 @@ export default {
 
         if (!fahrtData) return;
     
+        //adds the start details
         const newVerlauf = [{
           location: fahrtData.Startort,
           time: this.formatTime(fahrtData.Abfahrtszeit),
           color: '#03B276',
         }];
 
-        const { data: stops } = await supabase
+        /*const { data: stops } = await supabase
           .from('hält_in')
           .select('Adresse, Ankunftszeit')
           .eq('Fahrt_ID', fahrtId)
@@ -751,8 +928,9 @@ export default {
             time: this.formatTime(stop.Ankunftszeit),
             color: 'blue',
           });
-        });
+        }); */
 
+        //adds the arrival details
         newVerlauf.push({
           location: fahrtData.Zielort,
           time: this.addToTime(fahrtData.Abfahrtszeit, this.ttime),
@@ -765,7 +943,11 @@ export default {
         console.error('Error fetching fahrtverlauf:', err);
       }
     },
+
+    /*This method is called to insert the booking into the ist_mitfahrer relation in the
+    database as soon a user clicks the confirmation at the end of the booking process*/
     async insertBook(fahrtId){
+          //checks for the user's email in the localStorage, needed as a persons unique id
           const userEmail = localStorage.getItem('userEmail');
           if (!userEmail) {
             console.error('No user email found in localStorage.');
@@ -775,15 +957,21 @@ export default {
         .from('ist_mitfahrer')
         .insert([
           { Fahrt_ID: fahrtId, Person: userEmail, anzahl_weitere_platzbuchungen: this.neededSeats - 1, Preis: parseFloat(this.selected[0].price) }
-    ])
-    if(error) {
-          console.error('Unexpected error:', error);
-          this.errorMessage = 'Fehler beim Buchen der Fahrt';
-  }
-  this.updatePrices(fahrtId);
-},
+          ])
+
+        if(error) {
+              console.error('Unexpected error:', error);
+              this.errorMessage = 'Fehler beim Buchen der Fahrt';
+        }
+          this.updatePrices(fahrtId);
+      },
+      
+    //Is called at the end of insertBook(). 
+    /*Reevaluates the price each passenger has to pay for the ride depending on the
+      the new amount of passengers.*/
     async updatePrices(fahrtId){
       try {
+        //Requests from the database the amount of passengers and further seats for the specific ride
         const { data, err } = await supabase
           .from('ist_mitfahrer')
           .select('Fahrt_ID, Person, anzahl_weitere_platzbuchungen, Preis')
@@ -794,15 +982,20 @@ export default {
             console.error('Fehler beim Abrufen der Mitfahrer: ', err);
           } 
 
-        const mitfahrer = (this.passengerCountArray[fahrtId] || 0 )
+        const mitfahrer = (this.passengerCountArray[fahrtId] || 0 )   //the number of passengers+seats counted
         console.log('Mitfahrer: ', mitfahrer)
+
+        //calculates the part of the price each person on the ride as well as the driver has to pay
         const gesamtpreis = parseFloat(((this.tdistance*(7.7/100)*1.78)/(1+mitfahrer+this.neededSeats)));
         console.log('Gesamtpreis: ', gesamtpreis);
-          
+        
+        //Calculates sum of the price each passenger and their companions have to pay altogether
         for (const passenger of data) {
             console.log('Aktueller Passagier:', passenger);
           const neuerPreis = parseFloat((gesamtpreis+0.90) * (passenger.anzahl_weitere_platzbuchungen + 1));
             console.log('neuerpreis: ', neuerPreis);
+
+            //enters the updatet fees into the database
           const {error: updateError} = await supabase
             .from('ist_mitfahrer')
             .update({ Preis: neuerPreis})
@@ -815,33 +1008,9 @@ export default {
       }catch (err) {
         console.error('Fehler beim Anpassen der Preise: ', err);
       }
-      console.log('Preise wurden angepasst');
+        console.log('Preise wurden angepasst');
       },
-
-    async replaceStartEndForFahrt1() {
-      try {
-        const { data: ride1 } = await supabase
-          .from('Fahrt')
-          .select('Startort, Zielort, Abfahrtszeit')
-          .eq('Fahrt_ID', 1)
-          .single();
-        if (!ride1) return;
-        this.fahrtverlauf = [
-          {
-            location: ride1.Startort,
-            time: ride1.Abfahrtszeit,
-            color: '#03B276'
-          },
-          {
-            location: ride1.Zielort,
-            time: ride1.Abfahrtszeit,
-            color: 'info'
-          }
-        ];
-      } catch (err) {
-        console.error('Error fetching ride1 data:', err);
-      }
-    },
+    
     navigateToOfferRide() {
       console.log('Navigating to Offer Ride');
       this.$router.push({
@@ -879,12 +1048,17 @@ export default {
   },
   async mounted() {
     await this.getLocations();
-    await this.replaceStartEndForFahrt1();
   }
 };
 </script>
 
 <style scoped>
+/*Applies Arial to the entire component*/
+body {
+  font-family: Arial, sans-serif;
+}
+
+/*styling and dimensions for the stepper component */
 .v-sheet.v-theme-light--v-stepper {
   height: 100vh !important;
   min-height: 100vh !important;
@@ -897,6 +1071,7 @@ export default {
   box-sizing: border-box;
 }
 
+/*Dimensions for the entire component */
 .bookride {
   position: relative;
   width: 100%;
@@ -904,6 +1079,7 @@ export default {
   z-index: 1;
 }
 
+/*Styling and positioning of the map */
 .map-column {
   justify-content: center;
 }
@@ -919,28 +1095,7 @@ export default {
   border-radius: 10px;
 }
 
-.row {
-  display: flex;
-  width: 100%;
-  height: 25%;
-}
-
-.col {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
-.profilebackground {
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  object-fit: cover;
-  position: absolute;
-}
-
+/*Applies styling to the swap button */
 .SwapButton {
   z-index: 1000;
   width: 60px;
@@ -948,6 +1103,7 @@ export default {
   color: "#26874E";
 }
 
+/*Animation for the fade-in of the checkmark in the confirmation dialog*/
 .icon-container {
   animation: fadeIn 0.4s;
 }
@@ -974,6 +1130,7 @@ export default {
   border-left: 40px solid black;
 }
 
+/*Padding for the left and right column in step 3*/
 .left-column {
   padding: 50px;
 }
@@ -982,6 +1139,7 @@ export default {
   padding: 50px;
 }
 
+/*Styling of the two options and their containers in step 2*/
 .no-offer-container {
   position: relative;
   width: 100%;
@@ -995,7 +1153,4 @@ export default {
   transform: translate(-50%, -50%);
 }
 
-.text-centered {
-  text-align: center;
-}
 </style>

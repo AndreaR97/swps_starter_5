@@ -331,6 +331,8 @@ export default {
 
     async deletePassenger(rideId) {
       try { 
+        console.log('Ride_ID: ', rideId)
+        console.log('Person: ', this.email)
           const response = await supabase
             .from('ist_mitfahrer')
             .delete()
@@ -341,7 +343,7 @@ export default {
           return response; 
         }
       } catch (error) {
-      console.log('Fahrt löschen fehlgeschlagen', error);
+      console.log('Fahrt Löschen fehlgeschlagen', error);
       }
     },
 
