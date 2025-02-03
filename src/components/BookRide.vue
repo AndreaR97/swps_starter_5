@@ -17,18 +17,21 @@
             @click="setStep(0)"
           ></v-stepper-item>
           <v-divider></v-divider>
+
           <v-stepper-item
             title="Wähle eine Fahrt aus"
             value="2"
             @click="setStep(1)"
           ></v-stepper-item>
           <v-divider></v-divider>
+
           <v-stepper-item
             title="Details zur Fahrt"
             value="3"
             @click="setStep(2)"
           ></v-stepper-item>
           <v-divider></v-divider>
+
           <v-stepper-item
             title="Fertig"
             value="4"
@@ -365,7 +368,7 @@
                         </v-toolbar-title>
                       </v-toolbar>
 
-                      <!--Specifying how each location is added to the overview card.
+                      <!--Specifying how each location is added to overview card.
                       Data is taken from the array fahrtverlauf-->
                       <v-card-text>
                         <div class="font-weight-bold ms-1 mb-2">Abfahrt</div>
@@ -500,7 +503,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';      /* Imports the ref function from Vue to declare reactive variables and track component changes*/
+/* Imports the ref function from Vue to declare reactive variables and track component changes*/
+import { ref } from 'vue';
+
 /*Declares variables that are reactive to being changed by the user. Used in BookRide*/
 const dialog = ref(false);
 const overlay = ref(false);
@@ -578,14 +583,14 @@ export default {
       };
     },
 
-    /*This rule makes sure the entered date is not already in the past by retrieving the exact 
-    time at this moment (today) and is no further than four weeks in the future (maxDate)*/
+    /*This rule makes sure the entered date is not already in the past and is no further 
+    than four weeks in the future (maxDate)*/
     dateRule() {
       return v => {
         if (!v) return 'Datum ist erforderlich';
-        const today = this.getBerlinNow();
+        const today = this.getBerlinNow();    //retrieves the exact date at this moment (today)
         today.setHours(0,0,0,0);
-        const maxDate = new Date(today);
+        const maxDate = new Date(today);      //maximum date
         maxDate.setDate(today.getDate() + 28);
         const selectedDate = new Date(v);
         selectedDate.setHours(0,0,0,0);
@@ -635,7 +640,6 @@ export default {
 
     /*Makes changes to the disabled property depending on step, completeness of a step 
     and whether isFormValid is true or not */
-
     disabled() {
       return this.step === 0
         ? 'prev'
@@ -675,7 +679,6 @@ export default {
     }, 
 
   methods: {
-
     /*Is called by clicking on the Next-button in the stepper to call the needed 
     methods accordingly*/
     async setNextStep() {
@@ -721,9 +724,9 @@ export default {
 
       /*this line calculates the price a user expectedly will have to pay for a ride taking
       into account the current amount of people on the ride. 
-      7.7/100 - is the amount of petrol a car on average needs per km.
-      1.78 - is the continuously updated monthly average of petrol cost/litre in Germany.
-      0.90 are charged per passenger and further needed seats (except for the driver)*/ 
+        *7.7/100 - is the amount of petrol a car on average needs per km.
+        *1.78 - is the continuously updated monthly average of petrol cost/litre in Germany.
+        *0.90 are charged per passenger and further needed seats (except for the driver)*/ 
       this.rideOffers.forEach(ride => {
         ride.price = parseFloat(((this.tdistance*(7.7/100)*1.78)/((this.passengerCountArray[ride.id] || 0 ) + this.neededSeats+1))*this.neededSeats+0.90*this.neededSeats).toFixed(2) + '€';
       });
