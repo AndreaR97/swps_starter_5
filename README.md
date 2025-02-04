@@ -1,6 +1,6 @@
-# SWPS Starter
+# CampusConnect - Entwicklung einer App für Fahrgemeinschaften
 
-This is an example project that shows how Vue + Vuetify + Supabase + Leaflet can be used together.
+Im Rahmen dieses Projekts wird eine Webanwendung zum Suchen und Anbieten von Fahrgemeinschaften innerhalb einer Institution entwickelt.
 
 You need to install [NodeJS](https://nodejs.org/en/download) first to use `npm`.
 
@@ -40,6 +40,10 @@ npm install
 ```
 
 ## How to Run the Code
+Um den Development Server zu starten, führen Sie folgenden Befehl aus:
+```bash
+npm run serve
+```
 
 ### Setup
 
@@ -68,6 +72,17 @@ or
 ```bash
 yarn serve -o
 ```
+
+## Autoren
+Das grundlegende Fundament entstammt dem Projekt [swps_starter](https://github.com/8sd/swps_starter).
+Unser Projekt ist eine Weiterentwicklung dessen und durch ein Fork entstanden.
+
+Autoren des Projekts sind:
+- [@sebastianneubig](https://www.github.com/sebastianneubig)
+  
+- [@AndreaR97](https://www.github.com/AndreaR97)
+  
+- [@jonas351](https://www.github.com/jonas351)
 
 ## Documentation
 
